@@ -4,6 +4,8 @@ import { updateDocumentStatus, getVendorDocuments } from '@/services/document.se
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { updateVendorStatusAuto } from '@/services/vendorStatus.service';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(request: NextRequest) {
   const user = getCurrentUser();
 

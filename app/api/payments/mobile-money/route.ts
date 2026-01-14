@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/payments/mobile-money
  * Initie un paiement via Mobile Money (MTN ou Airtel)

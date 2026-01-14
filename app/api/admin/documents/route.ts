@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth';
 import { getPendingDocuments, getVendorDocuments } from '@/services/document.service';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const user = getCurrentUser();
 

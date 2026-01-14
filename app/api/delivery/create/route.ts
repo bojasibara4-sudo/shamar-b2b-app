@@ -4,6 +4,8 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { createDelivery } from '@/services/delivery.service';
 import { isVendorVerified } from '@/lib/vendor-utils';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   const user = getCurrentUser();
 

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
 // Mock user database (fallback si Supabase n'est pas configuré)
 const mockUsers = [
   { id: '1', email: 'admin@shamar.com', password: 'admin123', role: 'admin' as const },

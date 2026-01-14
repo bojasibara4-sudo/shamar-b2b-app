@@ -5,6 +5,8 @@ import { getVendorByUserId } from '@/services/vendor.service';
 import { createDocument } from '@/services/document.service';
 import { updateVendorStatusAuto } from '@/services/vendorStatus.service';
 
+export const dynamic = 'force-dynamic';
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
 

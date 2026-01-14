@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth';
 import { submitShopForVerification } from '@/services/shop.service';
 import { updateVendorStatusAuto } from '@/services/vendorStatus.service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   const user = getCurrentUser();
 

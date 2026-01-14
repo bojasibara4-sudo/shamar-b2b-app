@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { createReview } from '@/services/review.service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   const user = getCurrentUser();
 

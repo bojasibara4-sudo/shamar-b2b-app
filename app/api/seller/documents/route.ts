@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth';
 import { getVendorByUserId } from '@/services/vendor.service';
 import { getVendorDocuments } from '@/services/document.service';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const user = getCurrentUser();
 

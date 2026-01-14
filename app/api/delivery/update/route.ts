@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth';
 import { updateDeliveryStatus } from '@/services/delivery.service';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(request: NextRequest) {
   const user = getCurrentUser();
 

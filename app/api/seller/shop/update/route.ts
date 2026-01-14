@@ -4,6 +4,8 @@ import { updateShop } from '@/services/shop.service';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { getVendorByUserId } from '@/services/vendor.service';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(request: NextRequest) {
   const user = getCurrentUser();
 

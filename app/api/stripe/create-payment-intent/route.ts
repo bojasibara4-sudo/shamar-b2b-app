@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripeService } from '@/lib/payments/stripe';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/stripe/create-payment-intent
  * Crée un PaymentIntent Stripe pour une commande
