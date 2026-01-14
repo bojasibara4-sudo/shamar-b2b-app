@@ -8,7 +8,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
@@ -72,7 +72,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });

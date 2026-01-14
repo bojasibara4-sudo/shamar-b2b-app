@@ -1,44 +1,64 @@
-import { cookies } from 'next/headers';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { User } from '@/services/auth.service';
 
 /**
  * Vérifie si l'utilisateur est authentifié
- * Source de vérité : cookie shamar_user (défini par API route serveur)
+ * Source de vérité : session Supabase
  */
-export function isAuthenticated(): boolean {
-  const cookieStore = cookies();
-  const userCookie = cookieStore.get('shamar_user');
-  return !!userCookie;
+export async function isAuthenticated(): Promise<boolean> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return false;
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return !!session;
 }
 
 /**
- * Récupère l'utilisateur depuis le cookie serveur
- * Source de vérité unique : cookie shamar_user (toujours défini par API route)
+ * Récupère l'utilisateur depuis la session Supabase
+ * Source de vérité unique : session Supabase
  */
-export function getCurrentUser(): User | null {
-  const cookieStore = cookies();
-  
-  // Lecture du cookie utilisateur (unique source de vérité)
-  const userCookie = cookieStore.get('shamar_user');
-  if (!userCookie) {
+export async function getCurrentUser(): Promise<User | null> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
     return null;
   }
 
   try {
-    const decoded = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    
-    // Validation des champs requis
-    if (!decoded.id || !decoded.email || !decoded.role) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) {
       return null;
     }
 
+    // Récupérer le profil utilisateur depuis la table users
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('id, email, role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error || !userData) {
+      // Si l'utilisateur n'existe pas dans la table users, utiliser les infos de la session
+      return {
+        id: session.user.id,
+        email: session.user.email || '',
+        role: 'buyer', // Rôle par défaut
+      };
+    }
+
     return {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
+      id: userData.id,
+      email: userData.email,
+      role: userData.role,
     };
   } catch (error) {
-    console.error('Error decoding user cookie:', error);
+    console.error('Error getting current user:', error);
     return null;
   }
 }

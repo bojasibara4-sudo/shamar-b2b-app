@@ -5,7 +5,7 @@ import { geminiService } from '@/lib/ai/gemini';
 export async function POST(request: NextRequest) {
   try {
     // Vérification authentification
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (!supabase) {
       return NextResponse.json(
         { error: 'Supabase not configured' },

@@ -6,13 +6,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
 
     if (!user || user.role !== 'seller') {
       return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
     }
 
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (!supabase) {
       return NextResponse.json(
         { error: 'Configuration Supabase manquante' },

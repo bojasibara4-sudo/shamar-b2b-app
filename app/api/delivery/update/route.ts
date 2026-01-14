@@ -6,13 +6,13 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 export const dynamic = 'force-dynamic';
 
 export async function PUT(request: NextRequest) {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json(
       { error: 'Configuration Supabase manquante' },

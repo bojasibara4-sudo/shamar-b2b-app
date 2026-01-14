@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Tentative d'inscription avec Supabase si disponible
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (supabase) {
       try {
         // Créer l'utilisateur dans Supabase Auth

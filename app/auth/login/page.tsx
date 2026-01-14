@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,27 +19,38 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Authentification via API route serveur (source de vérité unique)
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include', // Inclure les cookies dans la requête
+      const supabase = createClient();
+
+      // Authentification directe avec Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erreur de connexion');
+      if (authError || !authData.session) {
+        throw new Error(authError?.message || 'Email ou mot de passe incorrect');
       }
 
-      // Les cookies sont définis par l'API route serveur
-      // Redirection uniquement après succès confirmé
-      router.push('/dashboard');
+      // Attendre que la session soit bien établie
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Erreur lors de la création de la session');
+      }
+
+      // Rafraîchir le router pour mettre à jour le middleware
       router.refresh();
+
+      // Rediriger vers la page demandée ou dashboard par défaut
+      const redirectedFrom = searchParams.get('redirectedFrom');
+      const redirectTo = redirectedFrom || '/dashboard';
+      
+      // Petit délai pour s'assurer que les cookies sont bien définis
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 100);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion');
-    } finally {
       setLoading(false);
     }
   };

@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ payments: [] });
   }

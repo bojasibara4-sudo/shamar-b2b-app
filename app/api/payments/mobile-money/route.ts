@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const transactionId = `${provider.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Mise à jour de la commande dans Supabase
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (supabase) {
       await supabase
         .from('orders')

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function POST() {
   try {
     // Déconnexion Supabase si disponible
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (supabase) {
       try {
         await supabase.auth.signOut();
@@ -15,10 +15,6 @@ export async function POST() {
         console.warn('Supabase logout error:', error);
       }
     }
-
-    // Suppression du cookie utilisateur (source de vérité)
-    const cookieStore = await cookies();
-    cookieStore.delete('shamar_user');
 
     return NextResponse.json({ success: true });
   } catch {

@@ -1,20 +1,14 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 /**
- * Crée un client Supabase côté serveur
- * Retourne null si les variables d'environnement ne sont pas configurées
+ * Crée un client Supabase côté serveur avec gestion des cookies
+ * Utilise @supabase/ssr pour la gestion correcte des sessions
  */
-export function createSupabaseServerClient(): SupabaseClient | null {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return null;
-  }
-
+export async function createSupabaseServerClient() {
   try {
-    return createClient(supabaseUrl, supabaseAnonKey);
-  } catch {
+    return await createServerClient();
+  } catch (error) {
+    console.error('Error creating Supabase server client:', error);
     return null;
   }
 }

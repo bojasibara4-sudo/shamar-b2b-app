@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     let user: { id: string; email: string; role: 'admin' | 'seller' | 'buyer' } | null = null;
 
     // Tentative de connexion avec Supabase (source de vérité)
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     if (supabase) {
       try {
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({

@@ -6,7 +6,7 @@ import { getVendorDocuments } from '@/services/document.service';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
