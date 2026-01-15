@@ -14,34 +14,80 @@ export default function GlobalHeaderWithAuth() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
-    async function checkAuth() {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        // Récupérer le profil utilisateur
-        const { data: profile } = await supabase
-          .from('users')
-          .select('id, email, role')
-          .eq('id', session.user.id)
-          .single();
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
 
-        if (profile) {
-          setUser({
-            id: profile.id,
-            email: profile.email,
-            role: profile.role,
-          });
-        } else {
-          // Si pas de profil, utiliser les infos de session
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            role: 'buyer',
-          });
+    // Timeout de sécurité : après 1.5s, arrêter le loading
+    timeoutId = setTimeout(() => {
+      if (mounted) {
+        setLoading(false);
+      }
+    }, 1500);
+
+    async function checkAuth() {
+      try {
+        const supabase = createClient();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+
+        if (error) {
+          console.error('Error getting session in header:', error);
+          clearTimeout(timeoutId);
+          setLoading(false);
+          return;
+        }
+        
+        if (session?.user) {
+          // Récupérer le profil utilisateur avec timeout
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('users')
+              .select('id, email, role')
+              .eq('id', session.user.id)
+              .single();
+
+            if (profileError) {
+              console.error('Error loading profile:', profileError);
+              // Utiliser les infos de session même si le profil échoue
+              if (mounted) {
+                setUser({
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  role: 'buyer',
+                });
+              }
+            } else if (profile && mounted) {
+              setUser({
+                id: profile.id,
+                email: profile.email,
+                role: profile.role,
+              });
+            }
+          } catch (profileErr) {
+            console.error('Error in profile fetch:', profileErr);
+            // Fallback sur les infos de session
+            if (mounted) {
+              setUser({
+                id: session.user.id,
+                email: session.user.email || '',
+                role: 'buyer',
+              });
+            }
+          }
+        }
+        
+        if (mounted) {
+          clearTimeout(timeoutId);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in checkAuth:', error);
+        if (mounted) {
+          clearTimeout(timeoutId);
+          setLoading(false);
         }
       }
-      setLoading(false);
     }
 
     checkAuth();
@@ -49,10 +95,16 @@ export default function GlobalHeaderWithAuth() {
     // Écouter les changements d'auth
     const supabase = createClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
+      if (mounted) {
+        checkAuth();
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Navigation canonique selon structure UI

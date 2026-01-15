@@ -2,8 +2,10 @@ import { requireBuyer } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BuyerSearchPage() {
-  requireBuyer();
+  await requireBuyer();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

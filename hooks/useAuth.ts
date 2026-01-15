@@ -21,32 +21,67 @@ export function useAuth() {
   const router = useRouter();
 
   useEffect(() => {
-    // Récupérer la session initiale
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadUserProfile(session.user.id);
-      } else {
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
+
+    // Timeout de sécurité : après 1.5s, arrêter le loading même si la session n'est pas chargée
+    timeoutId = setTimeout(() => {
+      if (mounted) {
         setLoading(false);
       }
-    });
+    }, 1500);
+
+    // Récupérer la session initiale avec gestion d'erreur
+    supabaseClient.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        if (!mounted) return;
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setLoading(false);
+          return;
+        }
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          loadUserProfile(session.user.id);
+        } else {
+          clearTimeout(timeoutId);
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error('Error in getSession:', error);
+        if (mounted) {
+          clearTimeout(timeoutId);
+          setLoading(false);
+        }
+      });
 
     // Écouter les changements d'auth
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        clearTimeout(timeoutId);
         loadUserProfile(session.user.id);
       } else {
+        clearTimeout(timeoutId);
         setProfile(null);
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const loadUserProfile = async (userId: string) => {

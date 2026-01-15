@@ -10,15 +10,27 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  if (!session) {
+    if (!session) {
+      redirect('/auth/login');
+    }
+
+    const user = await getCurrentUser();
+    if (!user) {
+      redirect('/auth/login');
+    }
+  } catch (error) {
+    // En cas d'erreur (ex: Supabase indisponible), rediriger vers login
+    console.error('Error in AppLayout:', error);
     redirect('/auth/login');
   }
 
+  // Réexécuter getCurrentUser pour avoir user dans le scope
   const user = await getCurrentUser();
   if (!user) {
     redirect('/auth/login');
