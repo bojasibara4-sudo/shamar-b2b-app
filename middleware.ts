@@ -34,26 +34,39 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Routes protégées qui nécessitent une authentification
-  const protectedRoutes = ['/app', '/dashboard'];
+  // Routes protégées UNIQUEMENT selon la liste officielle
+  const protectedRoutes = [
+    '/dashboard',
+    '/messages',
+    '/orders',
+    '/products',
+    '/payments',
+    '/profile',
+    '/settings',
+    '/b2b',
+    '/vendor'
+  ];
+  
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname === route || pathname.startsWith(route + '/')
   );
 
   // Routes d'authentification
-  const authRoutes = ['/auth/login', '/auth/register'];
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const authRoutes = ['/auth/login', '/auth/register', '/login', '/register'];
+  const isAuthRoute = authRoutes.some((route) => 
+    pathname === route || pathname.startsWith(route + '/')
+  );
 
   // Si l'utilisateur est sur une route protégée et n'est pas authentifié
   if (isProtectedRoute && !session) {
-    const redirectUrl = new URL('/auth/login', request.url);
+    const redirectUrl = new URL('/login', request.url);
     redirectUrl.searchParams.set('redirectedFrom', pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Si l'utilisateur est authentifié et essaie d'accéder aux routes d'auth, rediriger vers /app/dashboard
+  // Si l'utilisateur est authentifié et essaie d'accéder aux routes d'auth, rediriger vers /dashboard
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/app/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return supabaseResponse;

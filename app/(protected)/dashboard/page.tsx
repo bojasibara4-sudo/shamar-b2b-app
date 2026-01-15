@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/auth/login');
+    redirect('/login');
   }
 
   const supabase = await createClient();
@@ -142,115 +142,6 @@ export default async function DashboardPage() {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Actions rapides</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {user.role === 'buyer' && (
-            <>
-              <a
-                href="/products"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Parcourir les produits</h3>
-                <p className="text-sm text-gray-600 mt-1">Découvrir les offres disponibles</p>
-              </a>
-              <a
-                href="/dashboard/buyer/orders"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Mes commandes</h3>
-                <p className="text-sm text-gray-600 mt-1">Voir toutes mes commandes</p>
-              </a>
-              <a
-                href="/panier"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Mon panier</h3>
-                <p className="text-sm text-gray-600 mt-1">Voir mon panier</p>
-              </a>
-              <a
-                href="/messages"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Messages</h3>
-                <p className="text-sm text-gray-600 mt-1">Mes conversations</p>
-              </a>
-            </>
-          )}
-          {user.role === 'seller' && (
-            <>
-              <a
-                href="/dashboard/seller/products"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Mes produits</h3>
-                <p className="text-sm text-gray-600 mt-1">Gérer mes produits</p>
-              </a>
-              <a
-                href="/dashboard/seller/orders"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Mes ventes</h3>
-                <p className="text-sm text-gray-600 mt-1">Voir mes commandes</p>
-              </a>
-              <a
-                href="/dashboard/seller/messages"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Messages</h3>
-                <p className="text-sm text-gray-600 mt-1">Mes conversations</p>
-              </a>
-              <a
-                href="/dashboard/seller/analytics"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Analytiques</h3>
-                <p className="text-sm text-gray-600 mt-1">Statistiques de vente</p>
-              </a>
-            </>
-          )}
-          {user.role === 'admin' && (
-            <>
-              <a
-                href="/dashboard/admin/orders"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Toutes les commandes</h3>
-                <p className="text-sm text-gray-600 mt-1">Gérer les commandes</p>
-              </a>
-              <a
-                href="/dashboard/admin/users"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Utilisateurs</h3>
-                <p className="text-sm text-gray-600 mt-1">Gérer les utilisateurs</p>
-              </a>
-              <a
-                href="/dashboard/admin/products"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Produits</h3>
-                <p className="text-sm text-gray-600 mt-1">Gérer tous les produits</p>
-              </a>
-              <a
-                href="/dashboard/admin/settings"
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900">Paramètres</h3>
-                <p className="text-sm text-gray-600 mt-1">Configuration plateforme</p>
-              </a>
-            </>
-          )}
-          <a
-            href="/app/profile"
-            className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <h3 className="font-semibold text-gray-900">Mon profil</h3>
-            <p className="text-sm text-gray-600 mt-1">Gérer mes informations</p>
-          </a>
-        </div>
       </div>
     </div>
   );

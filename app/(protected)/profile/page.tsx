@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function ProfilePage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/auth/login');
+    redirect('/login');
   }
 
   const supabase = await createClient();
