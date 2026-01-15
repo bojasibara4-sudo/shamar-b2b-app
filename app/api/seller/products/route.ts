@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { productsDB } from '@/lib/mock-data';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,8 +15,34 @@ export async function GET() {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const products = productsDB.getBySellerId(user.id);
-  return NextResponse.json({ products });
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Configuration Supabase manquante' },
+      { status: 500 }
+    );
+  }
+
+  try {
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('seller_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching seller products:', error);
+      return NextResponse.json({ products: [] });
+    }
+
+    return NextResponse.json({ products: products || [] });
+  } catch (error) {
+    console.error('Error in GET /api/seller/products:', error);
+    return NextResponse.json(
+      { error: 'Erreur lors de la récupération des produits' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -30,9 +56,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Configuration Supabase manquante' },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
-    const { name, description, price } = body;
+    const { name, description, price, category, currency, image_url } = body;
 
     if (!name || !description || price === undefined) {
       return NextResponse.json(
@@ -48,15 +82,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = productsDB.create({
-      name,
-      description,
-      price,
-      sellerId: user.id,
-    });
+    const { data: product, error } = await supabase
+      .from('products')
+      .insert({
+        name,
+        description,
+        price: Number(price),
+        seller_id: user.id,
+        category: category || 'other',
+        currency: currency || 'FCFA',
+        image_url: image_url || null,
+        status: 'active',
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating product:', error);
+      return NextResponse.json(
+        { error: 'Erreur lors de la création du produit' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ product }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('Error in POST /api/seller/products:', error);
     return NextResponse.json(
       { error: 'Erreur lors de la création' },
       { status: 500 }

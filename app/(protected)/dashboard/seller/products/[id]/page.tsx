@@ -1,23 +1,37 @@
 import { redirect } from 'next/navigation';
 import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { productsDB } from '@/lib/mock-data';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import ProductFormClient from '@/components/ProductFormClient';
+
+export const dynamic = 'force-dynamic';
 
 export default async function EditProductPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const user = requireSeller();
+  const user = await requireSeller();
 
-  const product = productsDB.getById(params.id);
-
-  if (!product) {
+  const supabase = await createSupabaseServerClient();
+  
+  if (!supabase) {
     redirect('/dashboard/seller/products');
   }
 
-  if (product.sellerId !== user.id) {
+  // Charger le produit depuis Supabase
+  const { data: product, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', params.id)
+    .single();
+
+  if (error || !product) {
+    redirect('/dashboard/seller/products');
+  }
+
+  // Vérifier que le produit appartient au seller connecté
+  if (product.seller_id !== user.id) {
     redirect('/dashboard/seller/products');
   }
 
@@ -39,8 +53,8 @@ export default async function EditProductPage({
         <ProductFormClient
           initialData={{
             name: product.name,
-            description: product.description,
-            price: product.price,
+            description: product.description || '',
+            price: Number(product.price),
           }}
           productId={params.id}
         />

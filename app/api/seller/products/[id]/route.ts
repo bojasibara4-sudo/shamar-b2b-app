@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { productsDB } from '@/lib/mock-data';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,19 +18,32 @@ export async function PUT(
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const product = productsDB.getById(params.id);
-
-  if (!product) {
-    return NextResponse.json({ error: 'Produit non trouvé' }, { status: 404 });
-  }
-
-  if (product.sellerId !== user.id) {
-    return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Configuration Supabase manquante' },
+      { status: 500 }
+    );
   }
 
   try {
+    // Vérifier que le produit existe et appartient au seller
+    const { data: existingProduct, error: fetchError } = await supabase
+      .from('products')
+      .select('id, seller_id')
+      .eq('id', params.id)
+      .single();
+
+    if (fetchError || !existingProduct) {
+      return NextResponse.json({ error: 'Produit non trouvé' }, { status: 404 });
+    }
+
+    if (existingProduct.seller_id !== user.id) {
+      return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
+    }
+
     const body = await request.json();
-    const { name, description, price } = body;
+    const { name, description, price, category, currency, image_url, status } = body;
 
     if (!name || !description || price === undefined) {
       return NextResponse.json(
@@ -46,21 +59,39 @@ export async function PUT(
       );
     }
 
-    const updated = productsDB.update(params.id, {
+    // Mise à jour du produit
+    const updateData: any = {
       name,
       description,
-      price,
-    });
+      price: Number(price),
+      updated_at: new Date().toISOString(),
+    };
 
-    if (!updated) {
+    // Champs optionnels
+    if (category !== undefined) updateData.category = category;
+    if (currency !== undefined) updateData.currency = currency;
+    if (image_url !== undefined) updateData.image_url = image_url;
+    if (status !== undefined) updateData.status = status;
+
+    const { data: updatedProduct, error: updateError } = await supabase
+      .from('products')
+      .update(updateData)
+      .eq('id', params.id)
+      .eq('seller_id', user.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating product:', updateError);
       return NextResponse.json(
         { error: 'Erreur lors de la mise à jour' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ product: updated });
-  } catch {
+    return NextResponse.json({ product: updatedProduct });
+  } catch (error) {
+    console.error('Error in PUT /api/seller/products/[id]:', error);
     return NextResponse.json(
       { error: 'Erreur lors de la mise à jour' },
       { status: 500 }
@@ -82,24 +113,52 @@ export async function DELETE(
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const product = productsDB.getById(params.id);
-
-  if (!product) {
-    return NextResponse.json({ error: 'Produit non trouvé' }, { status: 404 });
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Configuration Supabase manquante' },
+      { status: 500 }
+    );
   }
 
-  if (product.sellerId !== user.id) {
-    return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
-  }
+  try {
+    // Vérifier que le produit existe et appartient au seller
+    const { data: existingProduct, error: fetchError } = await supabase
+      .from('products')
+      .select('id, seller_id')
+      .eq('id', params.id)
+      .single();
 
-  const deleted = productsDB.delete(params.id);
-  if (!deleted) {
+    if (fetchError || !existingProduct) {
+      return NextResponse.json({ error: 'Produit non trouvé' }, { status: 404 });
+    }
+
+    if (existingProduct.seller_id !== user.id) {
+      return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
+    }
+
+    // Supprimer le produit
+    const { error: deleteError } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', params.id)
+      .eq('seller_id', user.id);
+
+    if (deleteError) {
+      console.error('Error deleting product:', deleteError);
+      return NextResponse.json(
+        { error: 'Erreur lors de la suppression' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error in DELETE /api/seller/products/[id]:', error);
     return NextResponse.json(
       { error: 'Erreur lors de la suppression' },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ success: true });
 }
 

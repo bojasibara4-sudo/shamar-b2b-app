@@ -1,14 +1,29 @@
 import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { productsDB } from '@/lib/mock-data';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import ProductFormClient from '@/components/ProductFormClient';
 import DeleteProductButton from '@/components/DeleteProductButton';
 import Link from 'next/link';
 
-export default async function SellerProductsPage() {
-  const user = requireSeller();
+export const dynamic = 'force-dynamic';
 
-  const products = productsDB.getBySellerId(user.id);
+export default async function SellerProductsPage() {
+  const user = await requireSeller();
+
+  const supabase = await createSupabaseServerClient();
+  let products: any[] = [];
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('seller_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      products = data;
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -52,7 +67,12 @@ export default async function SellerProductsPage() {
                         {product.description}
                       </p>
                       <p className="text-lg font-bold text-gray-900 mt-2">
-                        {product.price.toFixed(2)} €
+                        {Number(product.price || 0).toLocaleString()} {product.currency || 'FCFA'}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Statut: <span className={`font-semibold ${product.status === 'active' ? 'text-green-600' : 'text-gray-600'}`}>
+                          {product.status === 'active' ? 'Actif' : 'Inactif'}
+                        </span>
                       </p>
                     </div>
                     <div className="flex gap-2 ml-4">
