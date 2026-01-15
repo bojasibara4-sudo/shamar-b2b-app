@@ -3,8 +3,10 @@ import LogoutButton from '@/components/LogoutButton';
 import { ordersDB, usersDB } from '@/lib/mock-data';
 import OrderListClient from '@/components/orders/OrderListClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminOrdersPage() {
-  requireAdmin();
+  await requireAdmin();
 
   const orders = ordersDB.getAll();
   const allUsers = usersDB.getAll();

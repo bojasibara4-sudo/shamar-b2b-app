@@ -3,7 +3,7 @@ import LogoutButton from '@/components/LogoutButton';
 import SellerDashboardClient from '@/components/seller/SellerDashboardClient';
 
 export default async function SellerDashboardPage() {
-  const user = requireSeller();
+  const user = await requireSeller();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

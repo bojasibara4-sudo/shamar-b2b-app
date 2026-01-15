@@ -7,8 +7,8 @@ import { User } from '@/services/auth.service';
  * Guard pour protéger une route selon le rôle
  * Utilisé dans les layouts et pages
  */
-export function requireAuth(): User {
-  const user = getCurrentUser();
+export async function requireAuth(): Promise<User> {
+  const user = await getCurrentUser();
   if (!user) {
     redirect('/auth/login');
   }
@@ -18,12 +18,12 @@ export function requireAuth(): User {
 /**
  * Guard pour protéger une route selon le rôle
  */
-export function requireRole(role: UserRole | UserRole[]): User {
-  const user = requireAuth();
+export async function requireRole(role: UserRole | UserRole[]): Promise<User> {
+  const user = await requireAuth();
   
   const allowedRoles = Array.isArray(role) ? role : [role];
   if (!allowedRoles.includes(user.role)) {
-    redirect('/dashboard');
+    redirect('/app/dashboard');
   }
   
   return user;
@@ -32,21 +32,21 @@ export function requireRole(role: UserRole | UserRole[]): User {
 /**
  * Guard pour protéger une route admin
  */
-export function requireAdmin(): User {
+export async function requireAdmin(): Promise<User> {
   return requireRole('admin');
 }
 
 /**
  * Guard pour protéger une route seller
  */
-export function requireSeller(): User {
+export async function requireSeller(): Promise<User> {
   return requireRole('seller');
 }
 
 /**
  * Guard pour protéger une route buyer
  */
-export function requireBuyer(): User {
+export async function requireBuyer(): Promise<User> {
   return requireRole('buyer');
 }
 

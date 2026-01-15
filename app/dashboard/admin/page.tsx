@@ -3,7 +3,7 @@ import LogoutButton from '@/components/LogoutButton';
 import AdminDashboardClient from '@/components/admin/AdminDashboardClient';
 
 export default async function AdminDashboardPage() {
-  const user = requireAdmin();
+  const user = await requireAdmin();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

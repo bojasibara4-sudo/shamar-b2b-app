@@ -44,11 +44,31 @@ export async function getCurrentUser(): Promise<User | null> {
       .single();
 
     if (error || !userData) {
-      // Si l'utilisateur n'existe pas dans la table users, utiliser les infos de la session
+      // Si l'utilisateur n'existe pas dans la table users, créer le profil automatiquement
+      const { data: newUserData, error: insertError } = await supabase
+        .from('users')
+        .insert({
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'buyer', // Rôle par défaut
+        })
+        .select()
+        .single();
+
+      if (insertError || !newUserData) {
+        // Si erreur lors de la création, retourner quand même les infos de base
+        console.error('Error creating user profile:', insertError);
+        return {
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'buyer', // Rôle par défaut
+        };
+      }
+
       return {
-        id: session.user.id,
-        email: session.user.email || '',
-        role: 'buyer', // Rôle par défaut
+        id: newUserData.id,
+        email: newUserData.email,
+        role: newUserData.role,
       };
     }
 

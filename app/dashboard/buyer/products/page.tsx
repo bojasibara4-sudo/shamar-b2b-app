@@ -3,8 +3,10 @@ import LogoutButton from '@/components/LogoutButton';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import ProductsGrid from '@/components/products/ProductsGrid';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BuyerProductsPage() {
-  requireBuyer();
+  await requireBuyer();
 
   const supabase = createSupabaseServerClient();
   

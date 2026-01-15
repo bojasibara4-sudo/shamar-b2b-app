@@ -38,17 +38,45 @@ export default function LoginPage() {
         throw new Error('Erreur lors de la création de la session');
       }
 
-      // Rafraîchir le router pour mettre à jour le middleware
-      router.refresh();
+      // Récupérer le profil utilisateur pour déterminer la redirection
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        const { data: userProfile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', authUser.id)
+          .single();
 
-      // Rediriger vers la page demandée ou dashboard par défaut
-      const redirectedFrom = searchParams.get('redirectedFrom');
-      const redirectTo = redirectedFrom || '/dashboard';
-      
-      // Petit délai pour s'assurer que les cookies sont bien définis
-      setTimeout(() => {
-        router.push(redirectTo);
-      }, 100);
+        const role = userProfile?.role || 'buyer';
+        
+        // Rafraîchir le router pour mettre à jour le middleware
+        router.refresh();
+
+        // Rediriger selon le rôle ou la page demandée
+        const redirectedFrom = searchParams.get('redirectedFrom');
+        let redirectTo = '/app/dashboard';
+        
+        // Si la redirection vient d'une route /app, la préserver
+        if (redirectedFrom && redirectedFrom.startsWith('/app')) {
+          redirectTo = redirectedFrom;
+        } else if (redirectedFrom && redirectedFrom.startsWith('/dashboard')) {
+          redirectTo = '/app/dashboard';
+        } else {
+          // Redirection par défaut selon le rôle
+          if (role === 'admin') {
+            redirectTo = '/app/admin';
+          } else if (role === 'seller') {
+            redirectTo = '/app/vendor';
+          } else {
+            redirectTo = '/app/dashboard';
+          }
+        }
+        
+        // Petit délai pour s'assurer que les cookies sont bien définis
+        setTimeout(() => {
+          router.push(redirectTo);
+        }, 100);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion');
       setLoading(false);

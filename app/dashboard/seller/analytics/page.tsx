@@ -3,8 +3,10 @@ import LogoutButton from '@/components/LogoutButton';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { TrendingUp, Package, DollarSign, ShoppingCart } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerAnalyticsPage() {
-  const user = requireSeller();
+  const user = await requireSeller();
 
   const supabase = createSupabaseServerClient();
   

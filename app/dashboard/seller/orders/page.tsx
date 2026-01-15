@@ -4,8 +4,10 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 import OrderStatusBadge from '@/components/OrderStatusBadge';
 import OrderStatusSelector from '@/components/OrderStatusSelector';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerOrdersPage() {
-  const user = requireSeller();
+  const user = await requireSeller();
 
   const supabase = createSupabaseServerClient();
   

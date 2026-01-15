@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Routes protégées qui nécessitent une authentification
-  const protectedRoutes = ['/dashboard'];
+  const protectedRoutes = ['/app', '/dashboard'];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
@@ -51,9 +51,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Si l'utilisateur est authentifié et essaie d'accéder aux routes d'auth, rediriger vers dashboard
+  // Si l'utilisateur est authentifié et essaie d'accéder aux routes d'auth, rediriger vers /app/dashboard
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/app/dashboard', request.url));
   }
 
   return supabaseResponse;
