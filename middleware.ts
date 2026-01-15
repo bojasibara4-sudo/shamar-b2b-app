@@ -34,16 +34,16 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Routes protégées UNIQUEMENT selon la liste officielle
+  // Routes protégées selon la synthèse fonctionnelle officielle
+  // Routes publiques : /, /sourcing, /b2b, /international, /sourcing-chine, /airbnb, /negociation, /products, /panier, /parametres
+  // Routes protégées : /dashboard, /messages, /orders, /payments, /profile, /settings, /vendor
   const protectedRoutes = [
     '/dashboard',
     '/messages',
     '/orders',
-    '/products',
     '/payments',
     '/profile',
     '/settings',
-    '/b2b',
     '/vendor'
   ];
   
