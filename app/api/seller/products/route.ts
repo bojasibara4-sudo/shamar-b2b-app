@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,16 +15,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
-    const { data: products, error } = await supabase
+    const { data: products, error } = await (supabase as any)
       .from('products')
       .select('*')
       .eq('seller_id', user.id)
@@ -56,13 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -82,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: product, error } = await supabase
+    const { data: product, error } = await (supabase as any)
       .from('products')
       .insert({
         name,

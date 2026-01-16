@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { getVendorByUserId } from '@/services/vendor.service';
 import { updateVendorStatusAuto } from '@/services/vendorStatus.service';
 
@@ -17,13 +17,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -51,7 +45,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Mettre à jour selon l'action
-    let updateData: any = { updated_at: new Date().toISOString() };
+    const updateData: any = { updated_at: new Date().toISOString() };
 
     if (action === 'verify') {
       updateData.status = 'verified';
@@ -69,7 +63,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { data: updatedShop, error: updateError } = await supabase
+    const { data: updatedShop, error: updateError } = await (supabase as any)
       .from('shops')
       .update(updateData)
       .eq('id', shopId)
@@ -85,14 +79,17 @@ export async function PUT(request: NextRequest) {
     }
 
     // Mettre à jour automatiquement le statut du vendor
-    const { data: vendor } = await supabase
-      .from('vendors')
-      .select('user_id')
-      .eq('id', shop.vendor_id)
-      .single();
-    
-    if (vendor) {
-      await updateVendorStatusAuto(vendor.user_id);
+    const shopWithVendorId = shop as any;
+    if (shopWithVendorId.vendor_id) {
+      const { data: vendor } = await (supabase as any)
+        .from('vendors')
+        .select('user_id')
+        .eq('id', shopWithVendorId.vendor_id)
+        .single();
+      
+      if (vendor) {
+        await updateVendorStatusAuto(vendor.user_id);
+      }
     }
 
     return NextResponse.json({ shop: updatedShop });

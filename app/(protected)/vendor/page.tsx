@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function VendorPage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/login');
+    redirect('/auth/login');
   }
 
   if (user.role !== 'seller') {

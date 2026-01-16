@@ -8,8 +8,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-export default function BuyerSidebar() {
-  const user = getCurrentUser();
+export default async function BuyerSidebar() {
+  const user = await getCurrentUser();
 
   if (!user || user.role !== 'buyer') {
     return null;

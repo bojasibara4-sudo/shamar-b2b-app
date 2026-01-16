@@ -10,8 +10,8 @@ import {
   DollarSign
 } from 'lucide-react';
 
-export default function SellerSidebar() {
-  const user = getCurrentUser();
+export default async function SellerSidebar() {
+  const user = await getCurrentUser();
 
   if (!user || user.role !== 'seller') {
     return null;

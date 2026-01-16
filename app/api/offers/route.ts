@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
@@ -10,13 +10,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createSupabaseServerClient();
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Supabase non configuré' },
-        { status: 503 }
-      );
-    }
+    const supabase = await createClient();
 
     const cookieStore = await cookies();
     const userCookie = cookieStore.get('shamar_user');
@@ -32,7 +26,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const role = user.role;
 
-    let query = supabase
+    let query = (supabase as any)
       .from('offers')
       .select(`
         *,
@@ -81,13 +75,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createSupabaseServerClient();
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Supabase non configuré' },
-        { status: 503 }
-      );
-    }
+    const supabase = await createClient();
 
     const cookieStore = await cookies();
     const userCookie = cookieStore.get('shamar_user');
@@ -117,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Récupération du produit pour obtenir le seller_id
-    const { data: product, error: productError } = await supabase
+    const { data: product, error: productError } = await (supabase as any)
       .from('products')
       .select('seller_id')
       .eq('id', product_id)
@@ -130,12 +118,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: offer, error: offerError } = await supabase
+    const productData = product as any;
+    const { data: offer, error: offerError } = await (supabase as any)
       .from('offers')
       .insert({
         product_id,
         buyer_id: user.id,
-        seller_id: product.seller_id,
+        seller_id: productData.seller_id,
         price: parseFloat(price),
         quantity: parseInt(quantity),
         currency: currency || 'FCFA',

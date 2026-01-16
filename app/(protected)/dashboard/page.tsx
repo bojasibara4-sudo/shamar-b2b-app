@@ -8,13 +8,13 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/login');
+    redirect('/auth/login');
   }
 
   const supabase = await createClient();
   
   // Récupérer les statistiques selon le rôle
-  let stats = {
+  const stats = {
     totalOrders: 0,
     pendingOrders: 0,
     totalRevenue: 0,
@@ -23,12 +23,12 @@ export default async function DashboardPage() {
 
   try {
     if (user.role === 'buyer') {
-      const { count: totalOrders } = await supabase
+      const { count: totalOrders } = await (supabase as any)
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('buyer_id', user.id);
       
-      const { count: pendingOrders } = await supabase
+      const { count: pendingOrders } = await (supabase as any)
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('buyer_id', user.id)
@@ -37,18 +37,18 @@ export default async function DashboardPage() {
       stats.totalOrders = totalOrders || 0;
       stats.pendingOrders = pendingOrders || 0;
     } else if (user.role === 'seller') {
-      const { count: totalOrders } = await supabase
+      const { count: totalOrders } = await (supabase as any)
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('seller_id', user.id);
       
-      const { count: activeProducts } = await supabase
+      const { count: activeProducts } = await (supabase as any)
         .from('products')
         .select('*', { count: 'exact', head: true })
         .eq('seller_id', user.id)
         .eq('status', 'active');
 
-      const { data: completedOrders } = await supabase
+      const { data: completedOrders } = await (supabase as any)
         .from('orders')
         .select('total_amount')
         .eq('seller_id', user.id)
@@ -56,13 +56,13 @@ export default async function DashboardPage() {
 
       stats.totalOrders = totalOrders || 0;
       stats.activeProducts = activeProducts || 0;
-      stats.totalRevenue = completedOrders?.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) || 0;
+      stats.totalRevenue = completedOrders?.reduce((sum: number, order: any) => sum + Number(order.total_amount || 0), 0) || 0;
     } else if (user.role === 'admin') {
-      const { count: totalOrders } = await supabase
+      const { count: totalOrders } = await (supabase as any)
         .from('orders')
         .select('*', { count: 'exact', head: true });
       
-      const { count: pendingOrders } = await supabase
+      const { count: pendingOrders } = await (supabase as any)
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'PENDING');

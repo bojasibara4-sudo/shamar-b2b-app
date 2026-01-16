@@ -1,6 +1,6 @@
 import { requireBuyer } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import ProductsGrid from '@/components/products/ProductsGrid';
 
 export const dynamic = 'force-dynamic';
@@ -8,12 +8,11 @@ export const dynamic = 'force-dynamic';
 export default async function BuyerProductsPage() {
   await requireBuyer();
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createClient();
   
   // Récupérer les produits actifs depuis Supabase
   let products: any[] = [];
-  if (supabase) {
-    const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
       .from('products')
       .select(`
         *,
@@ -22,8 +21,8 @@ export default async function BuyerProductsPage() {
       .eq('status', 'active')
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      products = data.map(product => ({
+  if (!error && data) {
+    products = data.map((product: any) => ({
         id: product.id,
         name: product.name,
         description: product.description,
@@ -38,7 +37,6 @@ export default async function BuyerProductsPage() {
         sellerEmail: product.seller?.email || product.seller?.company_name || 'Vendeur',
         sellerName: product.seller?.company_name || product.seller?.full_name || product.seller?.email || 'Vendeur',
       }));
-    }
   }
 
   return (

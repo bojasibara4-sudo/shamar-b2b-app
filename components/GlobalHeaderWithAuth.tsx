@@ -15,10 +15,8 @@ export default function GlobalHeaderWithAuth() {
 
   useEffect(() => {
     let mounted = true;
-    let timeoutId: NodeJS.Timeout;
-
     // Timeout de sécurité : après 1.5s, arrêter le loading
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       if (mounted) {
         setLoading(false);
       }
@@ -41,7 +39,7 @@ export default function GlobalHeaderWithAuth() {
         if (session?.user) {
           // Récupérer le profil utilisateur avec timeout
           try {
-            const { data: profile, error: profileError } = await supabase
+            const { data: profile, error: profileError } = await (supabase as any)
               .from('users')
               .select('id, email, role')
               .eq('id', session.user.id)

@@ -12,8 +12,8 @@ import {
   UserCircle
 } from 'lucide-react';
 
-export default function AdminSidebar() {
-  const user = getCurrentUser();
+export default async function AdminSidebar() {
+  const user = await getCurrentUser();
 
   if (!user || user.role !== 'admin') {
     return null;

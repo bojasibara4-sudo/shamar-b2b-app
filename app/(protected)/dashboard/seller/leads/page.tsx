@@ -2,6 +2,8 @@ import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerLeadsPage() {
   requireSeller();
 

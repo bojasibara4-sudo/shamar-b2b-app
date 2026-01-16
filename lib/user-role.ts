@@ -5,8 +5,8 @@ import { UserRole } from './permissions';
  * Source unique de vérité pour le rôle utilisateur
  * Centralise l'accès au rôle depuis getCurrentUser()
  */
-export function getCurrentUserRole(): UserRole | null {
-  const user = getCurrentUser();
+export async function getCurrentUserRole(): Promise<UserRole | null> {
+  const user = await getCurrentUser();
   if (!user) {
     return null;
   }
@@ -23,8 +23,8 @@ export function getCurrentUserRole(): UserRole | null {
 /**
  * Vérifie si l'utilisateur a un rôle spécifique
  */
-export function hasUserRole(role: UserRole | UserRole[]): boolean {
-  const userRole = getCurrentUserRole();
+export async function hasUserRole(role: UserRole | UserRole[]): Promise<boolean> {
+  const userRole = await getCurrentUserRole();
   if (!userRole) {
     return false;
   }
@@ -39,20 +39,20 @@ export function hasUserRole(role: UserRole | UserRole[]): boolean {
 /**
  * Vérifie si l'utilisateur est admin
  */
-export function isUserAdmin(): boolean {
+export async function isUserAdmin(): Promise<boolean> {
   return hasUserRole('admin');
 }
 
 /**
  * Vérifie si l'utilisateur est seller
  */
-export function isUserSeller(): boolean {
+export async function isUserSeller(): Promise<boolean> {
   return hasUserRole('seller');
 }
 
 /**
  * Vérifie si l'utilisateur est buyer
  */
-export function isUserBuyer(): boolean {
+export async function isUserBuyer(): Promise<boolean> {
   return hasUserRole('buyer');
 }

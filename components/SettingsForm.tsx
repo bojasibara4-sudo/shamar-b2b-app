@@ -104,7 +104,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
         </div>
         <div className="space-y-4">
           <a
-            href="/app/profile"
+            href="/profile"
             className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <p className="font-medium text-gray-900">Changer le mot de passe</p>

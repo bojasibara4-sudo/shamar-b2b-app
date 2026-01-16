@@ -3,7 +3,7 @@
  * Calcule les commissions basées sur le niveau vendeur et la catégorie
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import type { VendorLevel } from './vendor.service';
 
 export interface Commission {
@@ -29,13 +29,12 @@ export async function getCommissionRate(
   vendorLevel: VendorLevel,
   category?: string
 ): Promise<number> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return 15.0; // Taux par défaut (Bronze)
+  const supabase = await createClient();
 
   try {
     // Chercher d'abord une commission spécifique à la catégorie
     if (category) {
-      const { data: categoryCommission } = await supabase
+      const { data: categoryCommission } = await (supabase as any)
         .from('commissions')
         .select('percentage')
         .eq('category', category)
@@ -48,7 +47,7 @@ export async function getCommissionRate(
     }
 
     // Sinon, utiliser le taux général pour le niveau
-    const { data: generalCommission } = await supabase
+    const { data: generalCommission } = await (supabase as any)
       .from('commissions')
       .select('percentage')
       .is('category', null)
@@ -102,11 +101,10 @@ export async function createTransaction(
   amount: number,
   commissionAmount: number
 ): Promise<string | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('transactions')
       .insert({
         order_id: orderId,
@@ -136,11 +134,10 @@ export async function updateTransactionStatus(
   transactionId: string,
   status: 'pending' | 'paid' | 'failed'
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('transactions')
       .update({ status })
       .eq('id', transactionId);
@@ -161,11 +158,10 @@ export async function updateTransactionStatus(
  * Récupère les transactions d'un vendor
  */
 export async function getVendorTransactions(vendorId: string) {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('transactions')
       .select(`
         *,

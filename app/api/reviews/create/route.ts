@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { createReview } from '@/services/review.service';
 
 export const dynamic = 'force-dynamic';
@@ -16,13 +16,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -43,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande appartient au buyer
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from('orders')
       .select('id, buyer_id, seller_id, status')
       .eq('id', order_id)
@@ -56,7 +50,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (order.buyer_id !== user.id) {
+    const orderData = order as any;
+    if (orderData.buyer_id !== user.id) {
       return NextResponse.json(
         { error: 'Vous n\'êtes pas autorisé à noter cette commande' },
         { status: 403 }
@@ -64,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande est livrée
-    if (order.status !== 'DELIVERED') {
+    if (orderData.status !== 'DELIVERED') {
       return NextResponse.json(
         { error: 'Seules les commandes livrées peuvent être notées' },
         { status: 400 }
@@ -74,7 +69,7 @@ export async function POST(request: NextRequest) {
     const review = await createReview(
       order_id,
       user.id,
-      order.seller_id,
+      orderData.seller_id,
       rating,
       comment
     );

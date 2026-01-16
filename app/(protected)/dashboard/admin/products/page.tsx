@@ -3,6 +3,8 @@ import LogoutButton from '@/components/LogoutButton';
 import { productsDB, usersDB } from '@/lib/mock-data';
 import DeleteAdminProductButton from '@/components/DeleteAdminProductButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminProductsPage() {
   requireAdmin();
 

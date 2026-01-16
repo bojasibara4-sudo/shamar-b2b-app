@@ -1,6 +1,6 @@
 import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import OrderStatusBadge from '@/components/OrderStatusBadge';
 import OrderStatusSelector from '@/components/OrderStatusSelector';
 
@@ -9,12 +9,11 @@ export const dynamic = 'force-dynamic';
 export default async function SellerOrdersPage() {
   const user = await requireSeller();
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createClient();
   
   // Récupérer les commandes où le vendeur est le seller_id
   let orders: any[] = [];
-  if (supabase) {
-    const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
       .from('orders')
       .select(`
         *,
@@ -27,9 +26,8 @@ export default async function SellerOrdersPage() {
       .eq('seller_id', user.id)
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      orders = data;
-    }
+  if (!error && data) {
+    orders = data;
   }
 
   return (

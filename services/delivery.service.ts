@@ -3,7 +3,7 @@
  * PHASE 8 - Production Ready
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export type DeliveryMethod = 'standard' | 'express' | 'pickup';
 export type DeliveryStatus = 'pending' | 'shipped' | 'delivered' | 'disputed';
@@ -53,15 +53,14 @@ export async function createDelivery(
   shippingAddress?: string,
   currency: string = 'FCFA'
 ): Promise<Delivery | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     const cost = calculateDeliveryCost(method);
     const estimatedDate = new Date();
     estimatedDate.setDate(estimatedDate.getDate() + (method === 'express' ? 2 : 5));
 
-    const { data: delivery, error } = await supabase
+    const { data: delivery, error } = await (supabase as any)
       .from('deliveries')
       .insert({
         order_id: orderId,
@@ -98,8 +97,7 @@ export async function updateDeliveryStatus(
   trackingCode?: string,
   notes?: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     const updateData: any = {
@@ -119,7 +117,7 @@ export async function updateDeliveryStatus(
       updateData.actual_delivery_date = new Date().toISOString().split('T')[0];
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('deliveries')
       .update(updateData)
       .eq('id', deliveryId);
@@ -131,14 +129,14 @@ export async function updateDeliveryStatus(
 
     // Mettre à jour le statut de la commande si livrée
     if (status === 'delivered') {
-      const { data: delivery } = await supabase
+      const { data: delivery } = await (supabase as any)
         .from('deliveries')
         .select('order_id')
         .eq('id', deliveryId)
         .single();
 
       if (delivery) {
-        await supabase
+        await (supabase as any)
           .from('orders')
           .update({ status: 'DELIVERED' })
           .eq('id', delivery.order_id);
@@ -156,11 +154,10 @@ export async function updateDeliveryStatus(
  * Récupère une livraison par order_id
  */
 export async function getDeliveryByOrderId(orderId: string): Promise<Delivery | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data: delivery, error } = await supabase
+    const { data: delivery, error } = await (supabase as any)
       .from('deliveries')
       .select('*')
       .eq('order_id', orderId)
@@ -183,11 +180,10 @@ export async function getDeliveryByOrderId(orderId: string): Promise<Delivery | 
  * Récupère les livraisons d'un vendeur
  */
 export async function getVendorDeliveries(vendorId: string): Promise<Delivery[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data: deliveries, error } = await supabase
+    const { data: deliveries, error } = await (supabase as any)
       .from('deliveries')
       .select('*')
       .eq('vendor_id', vendorId)

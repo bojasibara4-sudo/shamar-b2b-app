@@ -58,7 +58,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           </div>
           
           <a
-            href="/app/dashboard"
+            href="/dashboard"
             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => setIsOpen(false)}
           >
@@ -67,7 +67,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           </a>
           
           <a
-            href="/app/profile"
+            href="/profile"
             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => setIsOpen(false)}
           >
@@ -76,7 +76,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           </a>
           
           <a
-            href="/app/settings"
+            href="/settings"
             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => setIsOpen(false)}
           >
@@ -86,7 +86,7 @@ export default function UserMenu({ user }: UserMenuProps) {
 
           {user.role === 'seller' && (
             <a
-              href="/app/vendor"
+              href="/vendor"
               className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -97,7 +97,7 @@ export default function UserMenu({ user }: UserMenuProps) {
 
           {user.role === 'admin' && (
             <a
-              href="/app/admin"
+              href="/dashboard/admin"
               className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={() => setIsOpen(false)}
             >

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -49,15 +49,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createClient();
 
     // Traitement des événements
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        if (supabase && paymentIntent.metadata.order_id) {
+        if (paymentIntent.metadata.order_id) {
           // Mise à jour du statut de la commande
-          await supabase
+          await (supabase as any)
             .from('orders')
             .update({
               payment_status: 'paid',
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
 
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object as Stripe.PaymentIntent;
-        if (supabase && failedPayment.metadata.order_id) {
-          await supabase
+        if (failedPayment.metadata.order_id) {
+          await (supabase as any)
             .from('orders')
             .update({
               payment_status: 'failed',
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
 
       case 'charge.refunded':
         const refund = event.data.object as Stripe.Charge;
-        if (supabase && refund.metadata.order_id) {
-          await supabase
+        if (refund.metadata.order_id) {
+          await (supabase as any)
             .from('orders')
             .update({
               payment_status: 'refunded',

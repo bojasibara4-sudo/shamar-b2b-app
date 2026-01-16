@@ -3,7 +3,7 @@
  * PHASE 9 - Production Ready
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export type DisputeStatus = 'open' | 'resolved' | 'rejected';
 
@@ -32,11 +32,10 @@ export async function createDispute(
   reason: string,
   description?: string
 ): Promise<Dispute | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data: dispute, error } = await supabase
+    const { data: dispute, error } = await (supabase as any)
       .from('disputes')
       .insert({
         order_id: orderId,
@@ -70,11 +69,10 @@ export async function resolveDispute(
   status: 'resolved' | 'rejected',
   resolutionNote: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('disputes')
       .update({
         status,
@@ -101,11 +99,10 @@ export async function resolveDispute(
  * Récupère les litiges d'un utilisateur
  */
 export async function getUserDisputes(userId: string): Promise<Dispute[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data: disputes, error } = await supabase
+    const { data: disputes, error } = await (supabase as any)
       .from('disputes')
       .select('*')
       .or(`raised_by.eq.${userId},against_user.eq.${userId}`)

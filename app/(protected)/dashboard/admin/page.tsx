@@ -2,6 +2,8 @@ import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import AdminDashboardClient from '@/components/admin/AdminDashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
   const user = await requireAdmin();
 

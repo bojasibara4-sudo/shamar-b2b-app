@@ -3,7 +3,7 @@
  * PHASE 7 - Production Ready
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { calculateCommission } from './commission.service';
 import { getVendorByUserId } from './vendor.service';
 
@@ -38,8 +38,7 @@ export async function createStripePayment(
   amount: number,
   currency: string = 'FCFA'
 ): Promise<{ payment: Payment; stripeSessionId: string } | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     // Récupérer le vendor pour calculer la commission
@@ -47,7 +46,7 @@ export async function createStripePayment(
     if (!vendor) return null;
 
     // Récupérer la catégorie du produit pour le calcul de commission
-    const { data: order } = await supabase
+    const { data: order } = await (supabase as any)
       .from('orders')
       .select('order_items:order_items(product:products(category))')
       .eq('id', orderId)
@@ -66,7 +65,7 @@ export async function createStripePayment(
     const vendorAmount = amount - commissionAmount;
 
     // Créer le paiement en base
-    const { data: payment, error: paymentError } = await supabase
+    const { data: payment, error: paymentError } = await (supabase as any)
       .from('payments')
       .insert({
         order_id: orderId,
@@ -93,7 +92,7 @@ export async function createStripePayment(
     const stripeSessionId = `cs_test_${payment.id.slice(0, 24)}`;
 
     // Mettre à jour avec le session_id
-    const { data: updatedPayment } = await supabase
+    const { data: updatedPayment } = await (supabase as any)
       .from('payments')
       .update({ provider_session_id: stripeSessionId })
       .eq('id', payment.id)
@@ -119,8 +118,7 @@ export async function updatePaymentStatus(
   providerPaymentId?: string,
   metadata?: any
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     const updateData: any = {
@@ -136,7 +134,7 @@ export async function updatePaymentStatus(
       updateData.metadata = metadata;
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('payments')
       .update(updateData)
       .eq('id', paymentId);
@@ -148,14 +146,14 @@ export async function updatePaymentStatus(
 
     // Si le paiement est payé, mettre à jour la commande
     if (status === 'paid') {
-      const { data: payment } = await supabase
+      const { data: payment } = await (supabase as any)
         .from('payments')
         .select('order_id')
         .eq('id', paymentId)
         .single();
 
       if (payment) {
-        await supabase
+        await (supabase as any)
           .from('orders')
           .update({
             status: 'CONFIRMED',
@@ -176,11 +174,10 @@ export async function updatePaymentStatus(
  * Récupère un paiement par order_id
  */
 export async function getPaymentByOrderId(orderId: string): Promise<Payment | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data: payment, error } = await supabase
+    const { data: payment, error } = await (supabase as any)
       .from('payments')
       .select('*')
       .eq('order_id', orderId)

@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Récupération du profil utilisateur depuis la table users
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError } = await (supabase as any)
           .from('users')
           .select('id, email, role')
           .eq('id', authData.user.id)

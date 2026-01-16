@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +18,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -45,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande existe et que l'utilisateur a accès
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from('orders')
       .select('id, buyer_id, seller_id')
       .eq('id', order_id)
@@ -59,7 +53,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que l'utilisateur est le buyer ou le seller de la commande
-    if (order.buyer_id !== user.id && order.seller_id !== user.id) {
+    const orderData = order as any;
+    if (orderData.buyer_id !== user.id && orderData.seller_id !== user.id) {
       return NextResponse.json(
         { error: 'Vous n\'êtes pas autorisé à envoyer un message pour cette commande' },
         { status: 403 }
@@ -67,10 +62,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Déterminer le destinataire
-    const recipient_id = order.buyer_id === user.id ? order.seller_id : order.buyer_id;
+    const recipient_id = orderData.buyer_id === user.id ? orderData.seller_id : orderData.buyer_id;
 
     // Créer le message
-    const { data: message, error: messageError } = await supabase
+    const { data: message, error: messageError } = await (supabase as any)
       .from('messages')
       .insert({
         sender_id: user.id,

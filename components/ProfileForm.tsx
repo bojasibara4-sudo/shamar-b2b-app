@@ -36,7 +36,7 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
     try {
       const supabase = createClient();
       
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('users')
         .update({
           full_name: formData.full_name || null,
@@ -45,7 +45,7 @@ export default function ProfileForm({ user, profile }: ProfileFormProps) {
           company_address: formData.company_address || null,
           country: formData.country || null,
           updated_at: new Date().toISOString(),
-        } as any)
+        })
         .eq('id', user.id);
 
       if (updateError) throw updateError;

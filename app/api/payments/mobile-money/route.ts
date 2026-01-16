@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,16 +45,14 @@ export async function POST(request: NextRequest) {
     const transactionId = `${provider.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Mise à jour de la commande dans Supabase
-    const supabase = await createSupabaseServerClient();
-    if (supabase) {
-      await supabase
-        .from('orders')
-        .update({
-          payment_method: `${provider}_mobile_money`,
-          payment_status: 'pending',
-        })
-        .eq('id', orderId);
-    }
+    const supabase = await createClient();
+    await (supabase as any)
+      .from('orders')
+      .update({
+        payment_method: `${provider}_mobile_money`,
+        payment_status: 'pending',
+      })
+      .eq('id', orderId);
 
     // Dans un environnement réel, vous devriez :
     // 1. Appeler l'API du provider (MTN/Airtel)

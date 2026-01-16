@@ -32,24 +32,24 @@ export async function GET() {
       { data: recentUsers },
       { data: recentOrders }
     ] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }),
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'seller'),
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'buyer'),
-      supabase.from('products').select('*', { count: 'exact', head: true }),
-      supabase.from('orders').select('*', { count: 'exact', head: true }),
-      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
-      supabase.from('offers').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-      supabase.from('users').select('id, email, role, created_at').order('created_at', { ascending: false }).limit(5),
-      supabase.from('orders').select('id, total_amount, status, created_at, buyer_id').order('created_at', { ascending: false }).limit(5)
+      (supabase as any).from('users').select('*', { count: 'exact', head: true }),
+      (supabase as any).from('users').select('*', { count: 'exact', head: true }).eq('role', 'seller'),
+      (supabase as any).from('users').select('*', { count: 'exact', head: true }).eq('role', 'buyer'),
+      (supabase as any).from('products').select('*', { count: 'exact', head: true }),
+      (supabase as any).from('orders').select('*', { count: 'exact', head: true }),
+      (supabase as any).from('orders').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
+      (supabase as any).from('offers').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      (supabase as any).from('users').select('id, email, role, created_at').order('created_at', { ascending: false }).limit(5),
+      (supabase as any).from('orders').select('id, total_amount, status, created_at, buyer_id').order('created_at', { ascending: false }).limit(5)
     ]);
 
     // Calculer le revenu total (somme des commandes livrées)
-    const { data: completedOrders } = await supabase
+    const { data: completedOrders } = await (supabase as any)
       .from('orders')
       .select('total_amount')
       .eq('status', 'DELIVERED');
 
-    const totalRevenue = completedOrders?.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) || 0;
+    const totalRevenue = completedOrders?.reduce((sum: number, order: any) => sum + Number(order.total_amount || 0), 0) || 0;
 
     return NextResponse.json({
       stats: {

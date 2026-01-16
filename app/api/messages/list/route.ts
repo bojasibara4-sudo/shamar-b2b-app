@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +18,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const { searchParams } = new URL(request.url);
@@ -33,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (order_id) {
       // Récupérer les messages d'une commande spécifique
       // Vérifier d'abord que l'utilisateur a accès à la commande
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error: orderError } = await (supabase as any)
         .from('orders')
         .select('id, buyer_id, seller_id')
         .eq('id', order_id)
@@ -47,7 +41,8 @@ export async function GET(request: NextRequest) {
       }
 
       // Vérifier que l'utilisateur est le buyer ou le seller
-      if (order.buyer_id !== user.id && order.seller_id !== user.id) {
+      const orderData = order as any;
+      if (orderData.buyer_id !== user.id && orderData.seller_id !== user.id) {
         return NextResponse.json(
           { error: 'Vous n\'êtes pas autorisé à voir les messages de cette commande' },
           { status: 403 }
@@ -55,7 +50,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Récupérer les messages
-      const { data: messages, error: messagesError } = await supabase
+      const { data: messages, error: messagesError } = await (supabase as any)
         .from('messages')
         .select(`
           *,
@@ -80,7 +75,7 @@ export async function GET(request: NextRequest) {
           .map((m: any) => m.id);
 
         if (unreadMessageIds.length > 0) {
-          await supabase
+          await (supabase as any)
             .from('messages')
             .update({ is_read: true })
             .in('id', unreadMessageIds);
@@ -91,7 +86,7 @@ export async function GET(request: NextRequest) {
     } else {
       // Récupérer toutes les conversations de l'utilisateur (groupées par commande)
       // Récupérer les commandes où l'utilisateur est buyer ou seller
-      const { data: userOrders, error: ordersError } = await supabase
+      const { data: userOrders, error: ordersError } = await (supabase as any)
         .from('orders')
         .select('id, buyer_id, seller_id, created_at')
         .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
@@ -101,10 +96,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ conversations: [] });
       }
 
-      const orderIds = userOrders.map(o => o.id);
+      const orderIds = userOrders.map((o: any) => o.id);
 
       // Récupérer les messages pour ces commandes
-      const { data: allMessages, error: messagesError } = await supabase
+      const { data: allMessages, error: messagesError } = await (supabase as any)
         .from('messages')
         .select(`
           *,
@@ -130,8 +125,9 @@ export async function GET(request: NextRequest) {
         allMessages.forEach((msg: any) => {
           const orderId = msg.order_id;
           if (!conversationsMap.has(orderId)) {
-            const order = userOrders.find(o => o.id === orderId);
-            const otherUserId = order?.buyer_id === user.id ? order?.seller_id : order?.buyer_id;
+            const order = userOrders.find((o: any) => o.id === orderId);
+            const orderData = order as any;
+            const otherUserId = orderData?.buyer_id === user.id ? orderData?.seller_id : orderData?.buyer_id;
             
             conversationsMap.set(orderId, {
               order_id: orderId,

@@ -135,25 +135,25 @@ export default function BuyerDashboardClient() {
           value={stats.totalOrders}
           change={`${stats.pendingOrders} en attente`}
           trend={stats.pendingOrders > 0 ? 'neutral' : 'up'}
-          icon={ShoppingBag}
+          icon={<ShoppingBag size={24} />}
           iconColor="bg-blue-50 text-blue-600"
         />
         <StatCard
           title="Montant dépensé"
           value={formatCurrency(stats.totalSpent)}
-          icon={DollarSign}
+          icon={<DollarSign size={24} />}
           iconColor="bg-green-50 text-green-600"
         />
         <StatCard
           title="Offres actives"
           value={stats.activeOffers}
-          icon={MessageSquare}
+          icon={<MessageSquare size={24} />}
           iconColor="bg-amber-50 text-amber-600"
         />
         <StatCard
           title="Commandes en attente"
           value={stats.pendingOrders}
-          icon={Clock}
+          icon={<Clock size={24} />}
           iconColor="bg-orange-50 text-orange-600"
         />
       </div>

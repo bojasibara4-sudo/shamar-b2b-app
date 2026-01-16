@@ -2,6 +2,8 @@ import { requireBuyer } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import BuyerDashboardClient from '@/components/buyer/BuyerDashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BuyerDashboardPage() {
   const user = await requireBuyer();
 

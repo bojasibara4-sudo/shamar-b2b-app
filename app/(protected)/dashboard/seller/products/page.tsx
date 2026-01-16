@@ -1,6 +1,6 @@
 import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import ProductFormClient from '@/components/ProductFormClient';
 import DeleteProductButton from '@/components/DeleteProductButton';
 import Link from 'next/link';
@@ -10,11 +10,10 @@ export const dynamic = 'force-dynamic';
 export default async function SellerProductsPage() {
   const user = await requireSeller();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createClient();
   let products: any[] = [];
 
-  if (supabase) {
-    const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
       .from('products')
       .select('*')
       .eq('seller_id', user.id)
@@ -23,7 +22,6 @@ export default async function SellerProductsPage() {
     if (!error && data) {
       products = data;
     }
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

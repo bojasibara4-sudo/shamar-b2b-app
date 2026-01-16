@@ -1,6 +1,6 @@
 import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { TrendingUp, Package, DollarSign, ShoppingCart } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 export default async function SellerAnalyticsPage() {
   const user = await requireSeller();
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createClient();
   
-  let stats = {
+  const stats = {
     totalOrders: 0,
     pendingOrders: 0,
     confirmedOrders: 0,
@@ -21,54 +21,53 @@ export default async function SellerAnalyticsPage() {
     topProducts: [] as Array<{ id: string; name: string; quantity: number; revenue: number }>,
   };
 
-  if (supabase) {
-    // Total commandes et par statut
-    const { data: allOrders, error: ordersError } = await supabase
-      .from('orders')
-      .select('id, status, total_amount, created_at')
-      .eq('seller_id', user.id);
+  // Total commandes et par statut
+  const { data: allOrders, error: ordersError } = await (supabase as any)
+    .from('orders')
+    .select('id, status, total_amount, created_at')
+    .eq('seller_id', user.id);
 
-    if (!ordersError && allOrders) {
-      stats.totalOrders = allOrders.length;
-      stats.pendingOrders = allOrders.filter(o => o.status === 'PENDING').length;
-      stats.confirmedOrders = allOrders.filter(o => o.status === 'CONFIRMED' || o.status === 'PROCESSING').length;
-      stats.shippedOrders = allOrders.filter(o => o.status === 'SHIPPED').length;
-      stats.deliveredOrders = allOrders.filter(o => o.status === 'DELIVERED').length;
+  if (!ordersError && allOrders) {
+    stats.totalOrders = allOrders.length;
+    stats.pendingOrders = allOrders.filter((o: any) => o.status === 'PENDING').length;
+    stats.confirmedOrders = allOrders.filter((o: any) => o.status === 'CONFIRMED' || o.status === 'PROCESSING').length;
+    stats.shippedOrders = allOrders.filter((o: any) => o.status === 'SHIPPED').length;
+    stats.deliveredOrders = allOrders.filter((o: any) => o.status === 'DELIVERED').length;
 
-      // Revenus totaux (seulement commandes payées ou confirmées)
-      const paidOrders = allOrders.filter(o => 
-        ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status)
-      );
-      stats.totalRevenue = paidOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+    // Revenus totaux (seulement commandes payées ou confirmées)
+    const paidOrders = allOrders.filter((o: any) => 
+      ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status)
+    );
+    stats.totalRevenue = paidOrders.reduce((sum: number, o: any) => sum + Number(o.total_amount || 0), 0);
 
-      // Revenus ce mois-ci
-      const now = new Date();
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const thisMonthOrders = paidOrders.filter(o => 
-        new Date(o.created_at) >= firstDayOfMonth
-      );
-      stats.thisMonthRevenue = thisMonthOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
-    }
+    // Revenus ce mois-ci
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonthOrders = paidOrders.filter((o: any) => 
+      new Date(o.created_at) >= firstDayOfMonth
+    );
+    stats.thisMonthRevenue = thisMonthOrders.reduce((sum: number, o: any) => sum + Number(o.total_amount || 0), 0);
+  }
 
-    // Produits les plus vendus
-    // Récupérer les commandes du vendeur d'abord
-    const { data: sellerOrders, error: ordersError2 } = await supabase
-      .from('orders')
-      .select('id')
-      .eq('seller_id', user.id)
-      .in('status', ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED']);
+  // Produits les plus vendus
+  // Récupérer les commandes du vendeur d'abord
+  const { data: sellerOrders, error: ordersError2 } = await (supabase as any)
+    .from('orders')
+    .select('id')
+    .eq('seller_id', user.id)
+    .in('status', ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED']);
 
-    if (!ordersError2 && sellerOrders && sellerOrders.length > 0) {
-      const orderIds = sellerOrders.map(o => o.id);
-      
-      const { data: orderItems, error: itemsError } = await supabase
-        .from('order_items')
-        .select(`
-          quantity,
-          price,
-          product:products(id, name)
-        `)
-        .in('order_id', orderIds);
+  if (!ordersError2 && sellerOrders && sellerOrders.length > 0) {
+    const orderIds = sellerOrders.map((o: any) => o.id);
+    
+    const { data: orderItems, error: itemsError } = await (supabase as any)
+      .from('order_items')
+      .select(`
+        quantity,
+        price,
+        product:products(id, name)
+      `)
+      .in('order_id', orderIds);
 
     if (!itemsError && orderItems) {
       const productMap = new Map<string, { name: string; quantity: number; revenue: number }>();
@@ -86,11 +85,10 @@ export default async function SellerAnalyticsPage() {
         product.revenue += (Number(item.price || 0) * (item.quantity || 0));
       });
 
-        stats.topProducts = Array.from(productMap.entries())
-          .map(([id, data]) => ({ id, ...data }))
-          .sort((a, b) => b.revenue - a.revenue)
-          .slice(0, 5);
-      }
+      stats.topProducts = Array.from(productMap.entries())
+        .map(([id, data]) => ({ id, ...data }))
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5);
     }
   }
 

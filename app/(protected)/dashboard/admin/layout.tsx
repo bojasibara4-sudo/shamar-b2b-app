@@ -6,7 +6,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = requireAdmin();
+  const user = await requireAdmin();
   checkUserStatus(user);
 
   return (

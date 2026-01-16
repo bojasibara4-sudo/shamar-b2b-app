@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Ignorer les erreurs ESLint pendant le build (temporaire)
+  // Production-ready: ne pas ignorer les erreurs
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   },
   // Exclure le dossier audit de la compilation
   webpack: (config) => {

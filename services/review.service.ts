@@ -3,7 +3,7 @@
  * PHASE 9 - Production Ready
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export interface Review {
   id: string;
@@ -27,12 +27,11 @@ export async function createReview(
   rating: number,
   comment?: string
 ): Promise<Review | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     // Vérifier qu'un avis n'existe pas déjà pour cette commande
-    const { data: existing } = await supabase
+    const { data: existing } = await (supabase as any)
       .from('reviews')
       .select('id')
       .eq('order_id', orderId)
@@ -44,7 +43,7 @@ export async function createReview(
       return null;
     }
 
-    const { data: review, error } = await supabase
+    const { data: review, error } = await (supabase as any)
       .from('reviews')
       .insert({
         order_id: orderId,
@@ -76,11 +75,10 @@ export async function createReview(
  * Recalcule la note moyenne d'un vendeur
  */
 export async function recalculateVendorRating(vendorId: string): Promise<number> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return 0;
+  const supabase = await createClient();
 
   try {
-    const { data: reviews } = await supabase
+    const { data: reviews } = await (supabase as any)
       .from('reviews')
       .select('rating')
       .eq('vendor_id', vendorId)
@@ -88,7 +86,7 @@ export async function recalculateVendorRating(vendorId: string): Promise<number>
 
     if (!reviews || reviews.length === 0) return 0;
 
-    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const totalRating = reviews.reduce((sum: number, review: any) => sum + review.rating, 0);
     const averageRating = totalRating / reviews.length;
 
     // Note: On pourrait stocker cette moyenne dans une table vendors ou shops
@@ -105,11 +103,10 @@ export async function recalculateVendorRating(vendorId: string): Promise<number>
  * Récupère les avis d'un vendeur
  */
 export async function getVendorReviews(vendorId: string): Promise<Review[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data: reviews, error } = await supabase
+    const { data: reviews, error } = await (supabase as any)
       .from('reviews')
       .select('*')
       .eq('vendor_id', vendorId)

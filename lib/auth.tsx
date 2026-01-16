@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { User } from '@/services/auth.service';
 
 /**
@@ -6,10 +6,7 @@ import { User } from '@/services/auth.service';
  * Source de vérité : session Supabase
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return false;
-  }
+  const supabase = await createClient();
 
   const {
     data: { session },
@@ -22,10 +19,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * Source de vérité unique : session Supabase
  */
 export async function getCurrentUser(): Promise<User | null> {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return null;
-  }
+  const supabase = await createClient();
 
   try {
     const {
@@ -37,7 +31,7 @@ export async function getCurrentUser(): Promise<User | null> {
     }
 
     // Récupérer le profil utilisateur depuis la table users
-    const { data: userData, error } = await supabase
+    const { data: userData, error } = await (supabase as any)
       .from('users')
       .select('id, email, role')
       .eq('id', session.user.id)
@@ -45,7 +39,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
     if (error || !userData) {
       // Si l'utilisateur n'existe pas dans la table users, créer le profil automatiquement
-      const { data: newUserData, error: insertError } = await supabase
+      const { data: newUserData, error: insertError } = await (supabase as any)
         .from('users')
         .insert({
           id: session.user.id,

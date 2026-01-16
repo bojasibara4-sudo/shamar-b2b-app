@@ -2,8 +2,10 @@ import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import { commissionsDB } from '@/lib/mock-data';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerCommissionsPage() {
-  const user = requireSeller();
+  const user = await requireSeller();
 
   const commissions = commissionsDB.getBySellerId(user.id);
   const totalRevenue = commissionsDB.getTotalBySellerId(user.id);

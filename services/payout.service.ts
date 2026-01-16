@@ -3,7 +3,7 @@
  * PHASE 7 - Production Ready
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { getVendorByUserId } from './vendor.service';
 
 export type PayoutStatus = 'pending' | 'sent' | 'failed';
@@ -26,12 +26,11 @@ export interface Payout {
  * Calcule le montant disponible pour un vendeur (paiements payés non versés)
  */
 export async function calculateVendorPendingAmount(userId: string): Promise<number> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return 0;
+  const supabase = await createClient();
 
   try {
 
-    const { data: payments } = await supabase
+    const { data: payments } = await (supabase as any)
       .from('payments')
       .select('vendor_amount, currency')
       .eq('vendor_id', userId)
@@ -41,19 +40,19 @@ export async function calculateVendorPendingAmount(userId: string): Promise<numb
 
     // Calculer le total des paiements payés
     let totalAmount = 0;
-    payments.forEach((payment) => {
+    payments.forEach((payment: any) => {
       totalAmount += Number(payment.vendor_amount || 0);
     });
 
     // Soustraire les payouts déjà envoyés
-    const { data: payouts } = await supabase
+    const { data: payouts } = await (supabase as any)
       .from('payouts')
       .select('amount')
       .eq('vendor_id', userId)
       .in('status', ['sent', 'pending']);
 
     if (payouts && payouts.length > 0) {
-      payouts.forEach((payout) => {
+      payouts.forEach((payout: any) => {
         totalAmount -= Number(payout.amount || 0);
       });
     }
@@ -75,11 +74,10 @@ export async function createPayout(
   periodEnd: string,
   currency: string = 'FCFA'
 ): Promise<Payout | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data: payout, error } = await supabase
+    const { data: payout, error } = await (supabase as any)
       .from('payouts')
       .insert({
         vendor_id: vendorId,
@@ -112,8 +110,7 @@ export async function updatePayoutStatus(
   status: PayoutStatus,
   providerPayoutId?: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     const updateData: any = {
@@ -125,7 +122,7 @@ export async function updatePayoutStatus(
       updateData.provider_payout_id = providerPayoutId;
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('payouts')
       .update(updateData)
       .eq('id', payoutId);
@@ -146,11 +143,10 @@ export async function updatePayoutStatus(
  * Récupère les payouts d'un vendeur
  */
 export async function getVendorPayouts(userId: string): Promise<Payout[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data: payouts, error } = await supabase
+    const { data: payouts, error } = await (supabase as any)
       .from('payouts')
       .select('*')
       .eq('vendor_id', userId)

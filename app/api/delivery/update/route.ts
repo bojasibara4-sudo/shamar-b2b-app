@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { updateDeliveryStatus } from '@/services/delivery.service';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,13 +12,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -32,7 +26,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Vérifier que la livraison appartient au vendeur (si seller) ou admin
-    const { data: delivery, error: deliveryError } = await supabase
+    const { data: delivery, error: deliveryError } = await (supabase as any)
       .from('deliveries')
       .select('vendor_id')
       .eq('id', delivery_id)
@@ -45,7 +39,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (user.role === 'seller' && delivery.vendor_id !== user.id) {
+    const deliveryData = delivery as any;
+    if (user.role === 'seller' && deliveryData.vendor_id !== user.id) {
       return NextResponse.json(
         { error: 'Vous n\'êtes pas autorisé à modifier cette livraison' },
         { status: 403 }
@@ -74,7 +69,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Récupérer la livraison mise à jour
-    const { data: updatedDelivery } = await supabase
+    const { data: updatedDelivery } = await (supabase as any)
       .from('deliveries')
       .select('*')
       .eq('id', delivery_id)

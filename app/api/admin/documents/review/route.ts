@@ -72,15 +72,18 @@ export async function PUT(request: NextRequest) {
     }
 
     // Récupérer le user_id du vendor pour mettre à jour le statut
-    const { data: vendor } = await supabase
-      .from('vendors')
-      .select('user_id')
-      .eq('id', document.vendor_id)
-      .single();
+    const documentWithVendorId = document as any;
+    if (documentWithVendorId.vendor_id) {
+      const { data: vendor } = await (supabase as any)
+        .from('vendors')
+        .select('user_id')
+        .eq('id', documentWithVendorId.vendor_id)
+        .single();
 
-    if (vendor) {
-      // Mettre à jour automatiquement le statut du vendor
-      await updateVendorStatusAuto(vendor.user_id);
+      if (vendor) {
+        // Mettre à jour automatiquement le statut du vendor
+        await updateVendorStatusAuto(vendor.user_id);
+      }
     }
 
     // Récupérer le document mis à jour

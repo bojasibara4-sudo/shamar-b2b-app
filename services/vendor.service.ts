@@ -3,7 +3,7 @@
  * Gère les profils vendeurs, niveaux, statuts
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export type VendorStatus = 'pending' | 'verified' | 'suspended';
 export type VendorLevel = 'bronze' | 'silver' | 'gold' | 'premium';
@@ -30,11 +30,10 @@ export interface VendorWithUser extends Vendor {
  * Crée un vendor pour un utilisateur seller
  */
 export async function createVendor(userId: string): Promise<Vendor | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vendors')
       .insert({
         user_id: userId,
@@ -60,11 +59,10 @@ export async function createVendor(userId: string): Promise<Vendor | null> {
  * Récupère un vendor par user_id
  */
 export async function getVendorByUserId(userId: string): Promise<Vendor | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vendors')
       .select('*')
       .eq('user_id', userId)
@@ -86,11 +84,10 @@ export async function getVendorByUserId(userId: string): Promise<Vendor | null> 
  * Récupère un vendor avec ses informations utilisateur
  */
 export async function getVendorWithUser(userId: string): Promise<VendorWithUser | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vendors')
       .select(`
         *,
@@ -118,11 +115,10 @@ export async function updateVendorLevel(
   vendorId: string,
   level: VendorLevel
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('vendors')
       .update({ level })
       .eq('id', vendorId);
@@ -146,11 +142,10 @@ export async function updateVendorStatus(
   vendorId: string,
   status: VendorStatus
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('vendors')
       .update({ status })
       .eq('id', vendorId);
@@ -176,12 +171,11 @@ export async function updateVendorStatus(
  * - Premium : 200+ commandes validées, revenus > 10M FCFA, tous documents validés
  */
 export async function calculateVendorLevel(vendorId: string): Promise<VendorLevel> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return 'bronze';
+  const supabase = await createClient();
 
   try {
     // Compter les commandes validées/complétées
-    const { data: orders, error: ordersError } = await supabase
+    const { data: orders, error: ordersError } = await (supabase as any)
       .from('orders')
       .select('total_amount, currency')
       .eq('seller_id', vendorId)
@@ -196,7 +190,7 @@ export async function calculateVendorLevel(vendorId: string): Promise<VendorLeve
 
     // Calculer le revenu total (convertir en FCFA pour comparaison)
     let totalRevenue = 0;
-    orders?.forEach((order) => {
+    orders?.forEach((order: any) => {
       let amount = Number(order.total_amount);
       // Conversion simple (approximative)
       if (order.currency === 'USD') amount *= 600; // 1 USD ≈ 600 FCFA
@@ -205,7 +199,7 @@ export async function calculateVendorLevel(vendorId: string): Promise<VendorLeve
     });
 
     // Vérifier les documents validés (pour Premium)
-    const { data: documents } = await supabase
+    const { data: documents } = await (supabase as any)
       .from('documents')
       .select('status')
       .eq('vendor_id', vendorId);
@@ -213,7 +207,7 @@ export async function calculateVendorLevel(vendorId: string): Promise<VendorLeve
     const allDocumentsApproved =
       documents &&
       documents.length > 0 &&
-      documents.every((doc) => doc.status === 'approved');
+      documents.every((doc: any) => doc.status === 'approved');
 
     // Calcul du niveau
     if (orderCount >= 200 && totalRevenue >= 10_000_000 && allDocumentsApproved) {

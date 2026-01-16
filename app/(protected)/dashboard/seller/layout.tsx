@@ -6,7 +6,7 @@ export default async function SellerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = requireSeller();
+  const user = await requireSeller();
   checkSellerStatus(user);
 
   return (

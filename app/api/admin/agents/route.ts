@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('agents')
       .insert({
         user_id,

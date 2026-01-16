@@ -3,7 +3,7 @@
  * Gère l'upload et la validation des documents légaux
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export type DocumentType = 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre';
 export type DocumentStatus = 'pending' | 'approved' | 'rejected';
@@ -27,11 +27,10 @@ export async function createDocument(
   type: DocumentType,
   fileUrl: string
 ): Promise<Document | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('documents')
       .insert({
         vendor_id: vendorId,
@@ -58,11 +57,10 @@ export async function createDocument(
  * Récupère les documents d'un vendor
  */
 export async function getVendorDocuments(vendorId: string): Promise<Document[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('documents')
       .select('*')
       .eq('vendor_id', vendorId)
@@ -88,8 +86,7 @@ export async function updateDocumentStatus(
   status: DocumentStatus,
   rejectionReason?: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     const updateData: { status: DocumentStatus; rejection_reason?: string } = {
@@ -102,7 +99,7 @@ export async function updateDocumentStatus(
       updateData.rejection_reason = undefined;
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('documents')
       .update(updateData)
       .eq('id', documentId);
@@ -115,7 +112,7 @@ export async function updateDocumentStatus(
     // Si le document est approuvé, vérifier si tous les documents sont approuvés
     // et mettre à jour le statut du vendor si nécessaire
     if (status === 'approved') {
-      const { data: document } = await supabase
+      const { data: document } = await (supabase as any)
         .from('documents')
         .select('vendor_id')
         .eq('id', documentId)
@@ -137,11 +134,10 @@ export async function updateDocumentStatus(
  * Vérifie si tous les documents requis sont approuvés et vérifie le vendor
  */
 async function checkAndVerifyVendor(vendorId: string): Promise<void> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return;
+  const supabase = await createClient();
 
   try {
-    const { data: documents } = await supabase
+    const { data: documents } = await (supabase as any)
       .from('documents')
       .select('status, type')
       .eq('vendor_id', vendorId);
@@ -150,15 +146,15 @@ async function checkAndVerifyVendor(vendorId: string): Promise<void> {
 
     // Documents requis minimaux : RCCM + ID Fiscal
     const hasRCCM = documents.some(
-      (doc) => doc.status === 'approved' && doc.type === 'rccm'
+      (doc: any) => doc.status === 'approved' && doc.type === 'rccm'
     );
     const hasIDFiscal = documents.some(
-      (doc) => doc.status === 'approved' && doc.type === 'id_fiscal'
+      (doc: any) => doc.status === 'approved' && doc.type === 'id_fiscal'
     );
 
     // Si tous les documents requis sont approuvés, vérifier le vendor
     if (hasRCCM && hasIDFiscal) {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('vendors')
         .update({ status: 'verified' })
         .eq('id', vendorId);
@@ -178,11 +174,10 @@ async function checkAndVerifyVendor(vendorId: string): Promise<void> {
  * Récupère tous les documents en attente (admin)
  */
 export async function getPendingDocuments(): Promise<Document[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('documents')
       .select('*')
       .eq('status', 'pending')

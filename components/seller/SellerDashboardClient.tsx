@@ -153,7 +153,7 @@ export default function SellerDashboardClient() {
           value={formatCurrency(stats.totalRevenue)}
           change="+8%"
           trend="up"
-          icon={DollarSign}
+          icon={<DollarSign size={24} />}
           iconColor="bg-green-50 text-green-600"
         />
         <StatCard
@@ -161,7 +161,7 @@ export default function SellerDashboardClient() {
           value={stats.totalOrders}
           change={`${stats.pendingOrders} en attente`}
           trend={stats.pendingOrders > 0 ? 'neutral' : 'up'}
-          icon={ShoppingBag}
+          icon={<ShoppingBag size={24} />}
           iconColor="bg-purple-50 text-purple-600"
         />
         <StatCard
@@ -169,13 +169,13 @@ export default function SellerDashboardClient() {
           value={stats.activeProducts}
           change={`${stats.totalProducts} au total`}
           trend="up"
-          icon={Package}
+          icon={<Package size={24} />}
           iconColor="bg-emerald-50 text-emerald-600"
         />
         <StatCard
           title="Offres actives"
           value={stats.activeOffers}
-          icon={MessageSquare}
+          icon={<MessageSquare size={24} />}
           iconColor="bg-amber-50 text-amber-600"
         />
       </div>

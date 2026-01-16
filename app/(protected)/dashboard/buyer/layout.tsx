@@ -6,7 +6,7 @@ export default async function BuyerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = requireBuyer();
+  const user = await requireBuyer();
   checkUserStatus(user);
 
   return (

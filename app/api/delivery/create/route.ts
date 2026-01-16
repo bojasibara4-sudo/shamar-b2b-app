@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande appartient au vendeur
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from('orders')
       .select('id, buyer_id, seller_id, currency')
       .eq('id', order_id)

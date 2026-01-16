@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,13 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
     }
 
-    const supabase = await createSupabaseServerClient();
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Configuration Supabase manquante' },
-        { status: 500 }
-      );
-    }
+    const supabase = await createClient();
 
     // Récupérer les statistiques du vendeur
     const [
@@ -30,23 +24,23 @@ export async function GET() {
       { data: recentOrders },
       { data: recentProducts }
     ] = await Promise.all([
-      supabase.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id),
-      supabase.from('products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
-      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id),
-      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'PENDING'),
-      supabase.from('offers').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'pending'),
-      supabase.from('orders').select('id, total_amount, status, created_at, buyer_id').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
-      supabase.from('products').select('id, name, status, created_at').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5)
+      (supabase as any).from('products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id),
+      (supabase as any).from('products').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
+      (supabase as any).from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id),
+      (supabase as any).from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'PENDING'),
+      (supabase as any).from('offers').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'pending'),
+      (supabase as any).from('orders').select('id, total_amount, status, created_at, buyer_id').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+      (supabase as any).from('products').select('id, name, status, created_at').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5)
     ]);
 
     // Calculer le revenu total (somme des commandes livrées)
-    const { data: completedOrders } = await supabase
+    const { data: completedOrders } = await (supabase as any)
       .from('orders')
       .select('total_amount')
       .eq('seller_id', user.id)
       .eq('status', 'DELIVERED');
 
-    const totalRevenue = completedOrders?.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) || 0;
+    const totalRevenue = completedOrders?.reduce((sum: number, order: any) => sum + Number(order.total_amount || 0), 0) || 0;
 
     return NextResponse.json({
       stats: {

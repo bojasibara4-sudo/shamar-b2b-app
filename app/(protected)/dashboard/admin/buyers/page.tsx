@@ -2,6 +2,8 @@ import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import { usersDB } from '@/lib/mock-data';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminBuyersPage() {
   requireAdmin();
 

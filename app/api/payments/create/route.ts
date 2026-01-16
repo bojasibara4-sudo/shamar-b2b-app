@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { createStripePayment } from '@/services/payment.service';
 import { isVendorVerified } from '@/lib/vendor-utils';
 
@@ -20,13 +20,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-    const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Configuration Supabase manquante' },
-      { status: 500 }
-    );
-  }
+  const supabase = await createClient();
 
   try {
     const body = await request.json();
@@ -40,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande appartient au buyer
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from('orders')
       .select('id, buyer_id, seller_id, total_amount, currency, status, payment_status')
       .eq('id', order_id)
@@ -53,7 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (order.buyer_id !== user.id) {
+    const orderData = order as any;
+    if (orderData.buyer_id !== user.id) {
       return NextResponse.json(
         { error: 'Vous n\'êtes pas autorisé à payer cette commande' },
         { status: 403 }
@@ -61,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que le vendeur est vérifié
-    const vendorVerified = await isVendorVerified(order.seller_id);
+    const vendorVerified = await isVendorVerified(orderData.seller_id);
     if (!vendorVerified) {
       return NextResponse.json(
         { error: 'Le vendeur n\'est pas vérifié' },
@@ -70,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande n'est pas déjà payée
-    const { data: existingPayment } = await supabase
+    const { data: existingPayment } = await (supabase as any)
       .from('payments')
       .select('id, status')
       .eq('order_id', order_id)
@@ -85,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier que la commande est en statut PENDING
-    if (order.status !== 'PENDING') {
+    if (orderData.status !== 'PENDING') {
       return NextResponse.json(
         { error: 'Seules les commandes en attente peuvent être payées' },
         { status: 400 }
@@ -94,11 +89,11 @@ export async function POST(request: NextRequest) {
 
     // Créer le paiement Stripe
     const result = await createStripePayment(
-      order.id,
+      orderData.id,
       user.id,
-      order.seller_id,
-      Number(order.total_amount),
-      order.currency || 'FCFA'
+      orderData.seller_id,
+      Number(orderData.total_amount),
+      orderData.currency || 'FCFA'
     );
 
     if (!result) {

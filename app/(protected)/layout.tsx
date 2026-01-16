@@ -19,16 +19,16 @@ export default async function ProtectedLayout({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      redirect('/login');
+      redirect('/auth/login');
     }
 
     user = await getCurrentUser();
     if (!user) {
-      redirect('/login');
+      redirect('/auth/login');
     }
   } catch (error) {
     console.error('Error in ProtectedLayout:', error);
-    redirect('/login');
+    redirect('/auth/login');
   }
 
   return (

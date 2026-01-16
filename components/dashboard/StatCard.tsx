@@ -6,8 +6,10 @@ interface StatCardProps {
   value: string | number;
   change?: string;
   trend?: 'up' | 'down' | 'neutral';
-  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+  icon: React.ReactNode;
   iconColor?: string;
+  link?: string;
+  variant?: 'default' | 'success' | 'warning' | 'danger';
 }
 
 export default function StatCard({ 
@@ -15,18 +17,29 @@ export default function StatCard({
   value, 
   change, 
   trend, 
-  icon: Icon,
-  iconColor = 'bg-emerald-50 text-emerald-600'
+  icon,
+  iconColor,
+  link,
+  variant = 'default'
 }: StatCardProps) {
   const formattedValue = typeof value === 'number' 
     ? value.toLocaleString('fr-FR')
     : value;
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  const variantColors = {
+    default: 'bg-emerald-50 text-emerald-600',
+    success: 'bg-green-50 text-green-600',
+    warning: 'bg-yellow-50 text-yellow-600',
+    danger: 'bg-red-50 text-red-600',
+  };
+
+  const iconBgColor = iconColor || variantColors[variant];
+
+  const content = (
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${link ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}`}>
       <div className="flex justify-between items-start mb-4">
-        <div className={`p-3 rounded-lg ${iconColor}`}>
-          <Icon size={24} />
+        <div className={`p-3 rounded-lg ${iconBgColor}`}>
+          {icon}
         </div>
         {change && trend && (
           <div className={`flex items-center gap-1 text-sm font-medium ${
@@ -42,4 +55,14 @@ export default function StatCard({
       <p className="text-2xl font-bold text-gray-900">{formattedValue}</p>
     </div>
   );
+
+  if (link) {
+    return (
+      <a href={link} className="block">
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 }

@@ -2,6 +2,8 @@ import { requireSeller } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
 import SellerDashboardClient from '@/components/seller/SellerDashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SellerDashboardPage() {
   const user = await requireSeller();
 

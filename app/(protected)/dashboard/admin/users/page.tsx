@@ -3,6 +3,8 @@ import LogoutButton from '@/components/LogoutButton';
 import { usersDB } from '@/lib/mock-data';
 import DeleteUserButton from '@/components/DeleteUserButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
   requireAdmin();
 

@@ -16,8 +16,8 @@ export interface UserWithStatus {
 /**
  * Vérifie si l'utilisateur a le rôle requis
  */
-export function hasRole(requiredRole: UserRole | UserRole[]): boolean {
-  const user = getCurrentUser();
+export async function hasRole(requiredRole: UserRole | UserRole[]): Promise<boolean> {
+  const user = await getCurrentUser();
   if (!user) return false;
 
   if (Array.isArray(requiredRole)) {
@@ -30,29 +30,29 @@ export function hasRole(requiredRole: UserRole | UserRole[]): boolean {
 /**
  * Vérifie si l'utilisateur est admin
  */
-export function isAdmin(): boolean {
+export async function isAdmin(): Promise<boolean> {
   return hasRole('admin');
 }
 
 /**
  * Vérifie si l'utilisateur est seller
  */
-export function isSeller(): boolean {
+export async function isSeller(): Promise<boolean> {
   return hasRole('seller');
 }
 
 /**
  * Vérifie si l'utilisateur est buyer
  */
-export function isBuyer(): boolean {
+export async function isBuyer(): Promise<boolean> {
   return hasRole('buyer');
 }
 
 /**
  * Vérifie si l'utilisateur peut accéder à une route dashboard
  */
-export function canAccessDashboard(role?: UserRole): boolean {
-  const user = getCurrentUser();
+export async function canAccessDashboard(role?: UserRole): Promise<boolean> {
+  const user = await getCurrentUser();
   if (!user) return false;
 
   if (role) {
@@ -81,8 +81,8 @@ export function isSellerApproved(user: UserWithStatus | null): boolean {
 /**
  * Vérifie si un utilisateur peut accéder à son dashboard
  */
-export function canAccessRoleDashboard(role: UserRole): boolean {
-  const user = getCurrentUser();
+export async function canAccessRoleDashboard(role: UserRole): Promise<boolean> {
+  const user = await getCurrentUser();
   if (!user) return false;
 
   if (user.role !== role) return false;

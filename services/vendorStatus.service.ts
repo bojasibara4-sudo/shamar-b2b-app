@@ -3,7 +3,7 @@
  * PHASE 6 - Onboarding Vendeur
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { getVendorByUserId, VendorStatus } from './vendor.service';
 import { getVendorDocuments } from './document.service';
 
@@ -14,8 +14,7 @@ import { getVendorDocuments } from './document.service';
  * - TOUS les documents requis doivent être approved
  */
 export async function canVendorBeVerified(userId: string): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     // Récupérer le vendor
@@ -23,7 +22,7 @@ export async function canVendorBeVerified(userId: string): Promise<boolean> {
     if (!vendor) return false;
 
     // Vérifier si la boutique est verified
-    const { data: shops, error: shopsError } = await supabase
+    const { data: shops, error: shopsError } = await (supabase as any)
       .from('shops')
       .select('is_verified, status')
       .eq('vendor_id', vendor.id);
@@ -33,7 +32,7 @@ export async function canVendorBeVerified(userId: string): Promise<boolean> {
     }
 
     const hasVerifiedShop = shops.some(
-      (shop) => shop.is_verified === true && shop.status === 'verified'
+      (shop: any) => shop.is_verified === true && shop.status === 'verified'
     );
 
     if (!hasVerifiedShop) {
@@ -61,8 +60,7 @@ export async function canVendorBeVerified(userId: string): Promise<boolean> {
  * Appelé après validation boutique ou document
  */
 export async function updateVendorStatusAuto(userId: string): Promise<VendorStatus> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return 'pending';
+  const supabase = await createClient();
 
   try {
     const vendor = await getVendorByUserId(userId);
@@ -78,7 +76,7 @@ export async function updateVendorStatusAuto(userId: string): Promise<VendorStat
 
     if (canBeVerified) {
       // Mettre à jour le statut à verified
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('vendors')
         .update({ status: 'verified', updated_at: new Date().toISOString() })
         .eq('id', vendor.id);
@@ -88,7 +86,7 @@ export async function updateVendorStatusAuto(userId: string): Promise<VendorStat
       }
     } else {
       // Mettre à jour le statut à pending
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('vendors')
         .update({ status: 'pending', updated_at: new Date().toISOString() })
         .eq('id', vendor.id);
@@ -129,15 +127,14 @@ export interface VendorStatusDetails {
 }
 
 export async function getVendorStatusDetails(userId: string): Promise<VendorStatusDetails | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     const vendor = await getVendorByUserId(userId);
     if (!vendor) return null;
 
     // Récupérer le statut de la boutique
-    const { data: shops } = await supabase
+    const { data: shops } = await (supabase as any)
       .from('shops')
       .select('status')
       .eq('vendor_id', vendor.id)

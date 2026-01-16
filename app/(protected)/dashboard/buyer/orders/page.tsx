@@ -1,19 +1,20 @@
 import { requireBuyer } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import OrderListClient from '@/components/orders/OrderListClient';
 
-export default async function BuyerOrdersPage() {
-  const user = requireBuyer();
+export const dynamic = 'force-dynamic';
 
-  const supabase = createSupabaseServerClient();
+export default async function BuyerOrdersPage() {
+  const user = await requireBuyer();
+
+  const supabase = await createClient();
   
   // Récupérer les commandes depuis Supabase avec les paiements
   let orders: any[] = [];
   
   try {
-    if (supabase) {
-      const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
         .from('orders')
         .select(`
           *,
@@ -41,9 +42,6 @@ export default async function BuyerOrdersPage() {
       } else {
         orders = [];
       }
-    } else {
-      orders = [];
-    }
   } catch (error) {
     console.error('Error in BuyerOrdersPage:', error);
     orders = [];

@@ -59,7 +59,7 @@ export async function middleware(request: NextRequest) {
 
   // Si l'utilisateur est sur une route protégée et n'est pas authentifié
   if (isProtectedRoute && !session) {
-    const redirectUrl = new URL('/login', request.url);
+    const redirectUrl = new URL('/auth/login', request.url);
     redirectUrl.searchParams.set('redirectedFrom', pathname);
     return NextResponse.redirect(redirectUrl);
   }

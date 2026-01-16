@@ -3,7 +3,7 @@
  * Gère l'attribution automatique et manuelle des badges
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 
 export interface Badge {
   id: string;
@@ -26,11 +26,10 @@ export interface VendorBadge {
  * Récupère tous les badges disponibles
  */
 export async function getAllBadges(): Promise<Badge[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('badges')
       .select('*')
       .order('created_at', { ascending: false });
@@ -51,11 +50,10 @@ export async function getAllBadges(): Promise<Badge[]> {
  * Récupère un badge par code
  */
 export async function getBadgeByCode(code: string): Promise<Badge | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('badges')
       .select('*')
       .eq('code', code)
@@ -77,11 +75,10 @@ export async function getBadgeByCode(code: string): Promise<Badge | null> {
  * Récupère les badges d'un vendor
  */
 export async function getVendorBadges(vendorId: string): Promise<VendorBadge[]> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return [];
+  const supabase = await createClient();
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('vendor_badges')
       .select(`
         *,
@@ -109,12 +106,11 @@ export async function assignBadgeToVendor(
   vendorId: string,
   badgeId: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
     // Vérifier si le badge est déjà attribué
-    const { data: existing } = await supabase
+    const { data: existing } = await (supabase as any)
       .from('vendor_badges')
       .select('vendor_id, badge_id')
       .eq('vendor_id', vendorId)
@@ -126,7 +122,7 @@ export async function assignBadgeToVendor(
       return true;
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('vendor_badges')
       .insert({
         vendor_id: vendorId,
@@ -152,11 +148,10 @@ export async function removeBadgeFromVendor(
   vendorId: string,
   badgeId: string
 ): Promise<boolean> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return false;
+  const supabase = await createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('vendor_badges')
       .delete()
       .eq('vendor_id', vendorId)
@@ -178,12 +173,11 @@ export async function removeBadgeFromVendor(
  * Attribue automatiquement les badges selon les critères
  */
 export async function assignBadgesAuto(vendorId: string): Promise<void> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return;
+  const supabase = await createClient();
 
   try {
     // Récupérer le vendor
-    const { data: vendor } = await supabase
+    const { data: vendor } = await (supabase as any)
       .from('vendors')
       .select('status, level')
       .eq('id', vendorId)
@@ -200,7 +194,7 @@ export async function assignBadgesAuto(vendorId: string): Promise<void> {
     }
 
     // Badge "Nouveau Vendeur" : si créé récemment (< 30 jours)
-    const { data: vendorCreated } = await supabase
+    const { data: vendorCreated } = await (supabase as any)
       .from('vendors')
       .select('created_at')
       .eq('id', vendorId)
@@ -220,7 +214,7 @@ export async function assignBadgesAuto(vendorId: string): Promise<void> {
 
     // Badge "Top Vendeur" : si level = 'gold' ou 'premium' et >= 100 commandes
     if (vendor.level === 'gold' || vendor.level === 'premium') {
-      const { data: orders } = await supabase
+      const { data: orders } = await (supabase as any)
         .from('orders')
         .select('id')
         .eq('seller_id', vendorId)

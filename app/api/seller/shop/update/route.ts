@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { updateShop } from '@/services/shop.service';
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { getVendorByUserId } from '@/services/vendor.service';
 
 export const dynamic = 'force-dynamic';
@@ -37,15 +37,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const supabase = await createSupabaseServerClient();
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Configuration Supabase manquante' },
-        { status: 500 }
-      );
-    }
+    const supabase = await createClient();
 
-    const { data: existingShop } = await supabase
+    const { data: existingShop } = await (supabase as any)
       .from('shops')
       .select('id, status')
       .eq('id', id)

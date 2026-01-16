@@ -25,7 +25,7 @@ export async function GET() {
 
   try {
     // Récupérer les commandes de l'acheteur avec les items et produits
-    const { data: orders, error: ordersError } = await supabase
+    const { data: orders, error: ordersError } = await (supabase as any)
       .from('orders')
       .select(`
         *,
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const validatedItems: Array<{ product_id: string; quantity: number; price: number }> = [];
 
     for (const item of orderProducts) {
-      const { data: product, error: productError } = await supabase
+      const { data: product, error: productError } = await (supabase as any)
         .from('products')
         .select('*')
         .eq('id', item.productId)
@@ -107,9 +107,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Vérifier que le produit est actif
-      if (product.status !== 'active') {
+      const productData = product as any;
+      if (productData.status !== 'active') {
         return NextResponse.json(
-          { error: `Le produit ${product.name} n'est pas disponible` },
+          { error: `Le produit ${productData.name} n'est pas disponible` },
           { status: 400 }
         );
       }
@@ -145,7 +146,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Créer la commande
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await (supabase as any)
       .from('orders')
       .insert({
         buyer_id: user.id,
@@ -174,7 +175,7 @@ export async function POST(request: NextRequest) {
       price: item.price,
     }));
 
-    const { error: itemsError } = await supabase
+    const { error: itemsError } = await (supabase as any)
       .from('order_items')
       .insert(orderItems);
 

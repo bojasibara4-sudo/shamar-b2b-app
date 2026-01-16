@@ -162,7 +162,7 @@ export default function AdminDashboardClient() {
           value={stats.totalUsers}
           change="+12%"
           trend="up"
-          icon={Users}
+          icon={<Users size={24} />}
           iconColor="bg-blue-50 text-blue-600"
         />
         <StatCard
@@ -170,7 +170,7 @@ export default function AdminDashboardClient() {
           value={stats.totalProducts}
           change="+5%"
           trend="up"
-          icon={Package}
+          icon={<Package size={24} />}
           iconColor="bg-emerald-50 text-emerald-600"
         />
         <StatCard
@@ -178,7 +178,7 @@ export default function AdminDashboardClient() {
           value={stats.totalOrders}
           change={`${stats.pendingOrders} en attente`}
           trend="neutral"
-          icon={ShoppingBag}
+          icon={<ShoppingBag size={24} />}
           iconColor="bg-purple-50 text-purple-600"
         />
         <StatCard
@@ -186,7 +186,7 @@ export default function AdminDashboardClient() {
           value={formatCurrency(stats.totalRevenue)}
           change="+8%"
           trend="up"
-          icon={DollarSign}
+          icon={<DollarSign size={24} />}
           iconColor="bg-green-50 text-green-600"
         />
       </div>
@@ -196,19 +196,19 @@ export default function AdminDashboardClient() {
         <StatCard
           title="Vendeurs"
           value={stats.totalSellers}
-          icon={Users}
+          icon={<Users size={24} />}
           iconColor="bg-indigo-50 text-indigo-600"
         />
         <StatCard
           title="Acheteurs"
           value={stats.totalBuyers}
-          icon={Users}
+          icon={<Users size={24} />}
           iconColor="bg-cyan-50 text-cyan-600"
         />
         <StatCard
           title="Offres actives"
           value={stats.activeOffers}
-          icon={MessageSquare}
+          icon={<MessageSquare size={24} />}
           iconColor="bg-amber-50 text-amber-600"
         />
       </div>

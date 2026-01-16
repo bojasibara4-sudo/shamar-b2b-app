@@ -3,7 +3,7 @@
  * PHASE 6 - Onboarding Vendeur
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase/server';
 import { getVendorByUserId } from './vendor.service';
 
 export type ShopStatus = 'draft' | 'pending' | 'verified' | 'suspended';
@@ -35,8 +35,7 @@ export async function createShop(
     country?: string;
   }
 ): Promise<Shop | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     // Récupérer le vendor
@@ -47,7 +46,7 @@ export async function createShop(
     }
 
     // Vérifier qu'il n'existe pas déjà une boutique active
-    const { data: existingShops } = await supabase
+    const { data: existingShops } = await (supabase as any)
       .from('shops')
       .select('id, status')
       .eq('vendor_id', vendor.id)
@@ -59,7 +58,7 @@ export async function createShop(
     }
 
     // Créer la boutique
-    const { data: shop, error } = await supabase
+    const { data: shop, error } = await (supabase as any)
       .from('shops')
       .insert({
         vendor_id: vendor.id,
@@ -100,15 +99,14 @@ export async function updateShop(
     status?: ShopStatus;
   }
 ): Promise<Shop | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     // Vérifier que la boutique appartient au vendor
     const vendor = await getVendorByUserId(userId);
     if (!vendor) return null;
 
-    const { data: shop, error } = await supabase
+    const { data: shop, error } = await (supabase as any)
       .from('shops')
       .update({
         ...data,
@@ -135,11 +133,10 @@ export async function updateShop(
  * Récupère la boutique d'un vendeur
  */
 export async function getShopByVendorId(vendorId: string): Promise<Shop | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
-    const { data: shop, error } = await supabase
+    const { data: shop, error } = await (supabase as any)
       .from('shops')
       .select('*')
       .eq('vendor_id', vendorId)
@@ -175,14 +172,13 @@ export async function getShopByUserId(userId: string): Promise<Shop | null> {
  * Soumet une boutique pour validation (draft -> pending)
  */
 export async function submitShopForVerification(userId: string, shopId: string): Promise<Shop | null> {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  const supabase = await createClient();
 
   try {
     const vendor = await getVendorByUserId(userId);
     if (!vendor) return null;
 
-    const { data: shop, error } = await supabase
+    const { data: shop, error } = await (supabase as any)
       .from('shops')
       .update({
         status: 'pending',

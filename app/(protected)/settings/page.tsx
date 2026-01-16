@@ -7,16 +7,15 @@ export const dynamic = 'force-dynamic';
 export default async function SettingsPage() {
   const user = await getCurrentUser();
   if (!user) {
-    redirect('/login');
+    redirect('/auth/login');
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Paramètres</h1>
-        <p className="mt-2 text-gray-600">Gérez les préférences de votre compte.</p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Paramètres</h1>
+        <SettingsForm user={user} />
       </div>
-      <SettingsForm user={user} />
     </div>
   );
 }
