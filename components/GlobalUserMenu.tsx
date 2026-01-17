@@ -65,7 +65,7 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
     { href: '/app/settings', label: 'Paramètres', icon: Settings },
     { href: '/marketplace/products', label: 'Produits', icon: Package },
     { href: '/panier', label: 'Panier', icon: ShoppingCart },
-    { href: '/protected/messages', label: 'Messages', icon: MessageSquare },
+    { href: '/messages', label: 'Messages', icon: MessageSquare },
     { href: '/parametres', label: 'Mon espace', icon: FileText },
   ];
 

@@ -36,14 +36,14 @@ export default function StatCard({
   const iconBgColor = iconColor || variantColors[variant];
 
   const content = (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${link ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}`}>
+    <div className={`bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all ${link ? 'cursor-pointer' : ''}`}>
       <div className="flex justify-between items-start mb-4">
-        <div className={`p-3 rounded-lg ${iconBgColor}`}>
+        <div className={`p-3 rounded-xl ${iconBgColor}`}>
           {icon}
         </div>
         {change && trend && (
           <div className={`flex items-center gap-1 text-sm font-medium ${
-            trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'
+            trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-600' : 'text-slate-600'
           }`}>
             {trend === 'up' && <TrendingUp size={16} />}
             {trend === 'down' && <TrendingDown size={16} />}
@@ -51,8 +51,8 @@ export default function StatCard({
           </div>
         )}
       </div>
-      <h3 className="text-gray-500 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{formattedValue}</p>
+      <h3 className="text-slate-500 text-sm font-medium mb-1">{title}</h3>
+      <p className="text-3xl font-black text-slate-900">{formattedValue}</p>
     </div>
   );
 

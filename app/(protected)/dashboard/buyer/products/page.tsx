@@ -41,19 +41,23 @@ export default async function BuyerProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Catalogue Produits</h1>
-            <p className="mt-2 text-gray-600">
-              Parcourez et commandez les produits disponibles
-            </p>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+                Catalogue <span className="text-emerald-600">Produits</span>
+              </h1>
+              <p className="text-lg text-slate-500 font-medium">
+                Parcourez et commandez les produits disponibles
+              </p>
+            </div>
+            <LogoutButton />
           </div>
-          <LogoutButton />
         </div>
-      </div>
 
-      <ProductsGrid products={products} />
+        <ProductsGrid products={products} />
+      </div>
     </div>
   );
 }

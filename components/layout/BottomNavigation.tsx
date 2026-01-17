@@ -11,7 +11,7 @@ export default function BottomNavigation() {
     { id: 'home', label: 'Accueil', href: '/' },
     { id: 'products', label: 'Produits', href: '/marketplace/products' },
     { id: 'cart', label: 'Panier', href: '/panier' },
-    { id: 'messages', label: 'Messages', href: '/protected/messages' },
+    { id: 'messages', label: 'Messages', href: '/messages' },
     { id: 'settings', label: 'Mon espace', href: '/parametres' },
   ];
 

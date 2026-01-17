@@ -37,14 +37,12 @@ export default function OnboardingPage() {
       }
 
       // Rediriger vers le dashboard approprié
-      router.refresh();
-      setTimeout(() => {
-        if (selectedRole === 'seller') {
-          router.push('/dashboard/seller/onboarding');
-        } else {
-          router.push('/dashboard/buyer');
-        }
-      }, 100);
+      // Utiliser window.location.href pour forcer un rechargement complet
+      if (selectedRole === 'seller') {
+        window.location.href = '/dashboard/seller/onboarding';
+      } else {
+        window.location.href = '/dashboard/buyer';
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la sélection du rôle');
       setLoading(false);

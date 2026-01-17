@@ -32,9 +32,9 @@ export default function AgentsPage() {
   // Vérification du rôle côté client
   useEffect(() => {
     if (!authLoading && (!profile || profile.role !== 'admin')) {
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     }
-  }, [profile, authLoading, router]);
+  }, [profile, authLoading]);
   const [formData, setFormData] = useState({
     user_id: '',
     department: '',
@@ -148,73 +148,83 @@ export default function AgentsPage() {
 
   return (
     <AuthGuard>
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Gestion des Agents</h1>
-        <button
-          onClick={() => {
-            setEditingAgent(null);
-            setFormData({
-              user_id: '',
-              department: '',
-              phone: '',
-              address: '',
-              notes: '',
-              photo: null,
-            });
-            setShowModal(true);
-          }}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
-        >
-          <UserPlus size={20} />
-          Ajouter un agent
-        </button>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+                Gestion des <span className="text-orange-600">Agents</span>
+              </h1>
+              <p className="text-lg text-slate-500 font-medium">
+                Gérez les agents et équipes de la plateforme
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingAgent(null);
+                setFormData({
+                  user_id: '',
+                  department: '',
+                  phone: '',
+                  address: '',
+                  notes: '',
+                  photo: null,
+                });
+                setShowModal(true);
+              }}
+              className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-black"
+            >
+              <UserPlus size={20} />
+              Ajouter un agent
+            </button>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {agents.map((agent) => (
-          <div
-            key={agent.id}
-            className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
-          >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {agents.map((agent) => (
+            <div
+              key={agent.id}
+              className="bg-white rounded-[2rem] shadow-sm p-6 border border-slate-200 hover:shadow-xl transition-all"
+            >
             <div className="flex items-center gap-4 mb-4">
               {agent.photo_url ? (
                 <img
                   src={agent.photo_url}
                   alt={agent.user?.full_name || 'Agent'}
-                  className="w-16 h-16 rounded-full object-cover"
+                  className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-200"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                  <UserPlus size={32} className="text-gray-400" />
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center border-2 border-slate-200">
+                  <UserPlus size={32} className="text-slate-400" />
                 </div>
               )}
               <div>
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-black text-slate-900 text-lg">
                   {agent.user?.full_name || agent.user?.email || 'Agent'}
                 </h3>
-                <p className="text-sm text-gray-500">{agent.department}</p>
+                <p className="text-sm text-slate-500 font-medium">{agent.department}</p>
               </div>
             </div>
 
             {agent.phone && (
-              <p className="text-sm text-gray-600 mb-2">📞 {agent.phone}</p>
+              <p className="text-sm text-slate-600 mb-2 font-medium">📞 {agent.phone}</p>
             )}
             {agent.address && (
-              <p className="text-sm text-gray-600 mb-2">📍 {agent.address}</p>
+              <p className="text-sm text-slate-600 mb-2 font-medium">📍 {agent.address}</p>
             )}
 
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
               <button
                 onClick={() => handleEdit(agent)}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-3 py-2 rounded hover:bg-blue-100"
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl hover:bg-blue-100 transition-all font-black text-sm"
               >
                 <Edit2 size={16} />
                 Modifier
               </button>
               <button
                 onClick={() => handleDelete(agent.id)}
-                className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 px-3 py-2 rounded hover:bg-red-100"
+                className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition-all font-black text-sm"
               >
                 <Trash2 size={16} />
                 Supprimer
@@ -225,14 +235,14 @@ export default function AgentsPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl border border-slate-200">
+            <h2 className="text-2xl font-black text-slate-900 mb-6">
               {editingAgent ? 'Modifier l\'agent' : 'Nouvel agent'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   ID Utilisateur
                 </label>
                 <input
@@ -241,13 +251,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, user_id: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   Département
                 </label>
                 <input
@@ -256,13 +266,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, department: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   Téléphone
                 </label>
                 <input
@@ -271,12 +281,12 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   Adresse
                 </label>
                 <textarea
@@ -284,13 +294,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                   rows={2}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   Notes
                 </label>
                 <textarea
@@ -298,13 +308,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-black text-slate-900 mb-2">
                   Photo
                 </label>
                 <input
@@ -316,14 +326,14 @@ export default function AgentsPage() {
                       photo: e.target.files?.[0] || null,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+                  className="flex-1 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-black"
                 >
                   {editingAgent ? 'Modifier' : 'Créer'}
                 </button>
@@ -333,7 +343,7 @@ export default function AgentsPage() {
                     setShowModal(false);
                     setEditingAgent(null);
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                  className="flex-1 bg-slate-100 text-slate-900 px-6 py-3 rounded-xl hover:bg-slate-200 transition-all font-black"
                 >
                   Annuler
                 </button>
@@ -342,6 +352,7 @@ export default function AgentsPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
     </AuthGuard>
   );

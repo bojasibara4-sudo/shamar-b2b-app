@@ -29,8 +29,10 @@ export default function NegociationPage() {
       <div className="space-y-8 animate-in fade-in duration-500">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-slate-900">Matières Premières</h1>
-            <p className="text-slate-500">Flux directs entre producteurs et industriels.</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+              <span className="text-amber-600">Matières Premières</span>
+            </h1>
+            <p className="text-lg text-slate-500 font-medium">Flux directs entre producteurs et industriels.</p>
           </div>
           <div className="flex gap-2">
             <Link 

@@ -11,59 +11,61 @@ export default async function AdminBuyersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Gestion des Acheteurs
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Gérez les comptes acheteurs de la plateforme
-            </p>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+                Gestion des <span className="text-orange-600">Acheteurs</span>
+              </h1>
+              <p className="text-lg text-slate-500 font-medium">
+                Gérez les comptes acheteurs de la plateforme
+              </p>
+            </div>
+            <LogoutButton />
           </div>
-          <LogoutButton />
         </div>
-      </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        {buyers.length === 0 ? (
-          <p className="text-gray-600">Aucun acheteur</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rôle
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {buyers.map((b) => (
-                  <tr key={b.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {b.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {b.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                        {b.role}
-                      </span>
-                    </td>
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+          {buyers.length === 0 ? (
+            <p className="text-slate-500 text-center py-12 font-medium">Aucun acheteur</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-black text-slate-700 uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-black text-slate-700 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-black text-slate-700 uppercase tracking-wider">
+                      Rôle
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-200">
+                  {buyers.map((b) => (
+                    <tr key={b.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-black text-slate-900">
+                        {b.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-black text-slate-900">
+                        {b.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className="px-3 py-1 text-xs font-black rounded-full bg-indigo-100 text-indigo-800">
+                          {b.role}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -46,15 +46,15 @@ export default function ProductForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+        <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm font-medium">
           {error}
         </div>
       )}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-black text-slate-900 mb-2">
           Nom du produit
         </label>
         <input
@@ -63,14 +63,14 @@ export default function ProductForm({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
         />
       </div>
 
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-black text-slate-900 mb-2"
         >
           Description
         </label>
@@ -82,13 +82,13 @@ export default function ProductForm({
           }
           required
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
         />
       </div>
 
       <div>
-        <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-          Prix (€)
+        <label htmlFor="price" className="block text-sm font-black text-slate-900 mb-2">
+          Prix (FCFA)
         </label>
         <input
           type="number"
@@ -98,15 +98,15 @@ export default function ProductForm({
           value={formData.price}
           onChange={(e) => setFormData({ ...formData, price: e.target.value })}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+          className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
         />
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-black text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black"
         >
           {isLoading ? 'Enregistrement...' : 'Enregistrer'}
         </button>
@@ -114,7 +114,7 @@ export default function ProductForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-6 py-3 border-2 border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-black text-slate-900"
           >
             Annuler
           </button>

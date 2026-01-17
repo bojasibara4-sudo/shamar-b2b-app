@@ -8,10 +8,10 @@ export default function GlobalHeader() {
 
   // Navigation canonique selon structure UI (ordre strict et immuable)
   const navItems = [
-    { id: 'sourcing', label: 'SOURCING', href: '/sourcing' },
-    { id: 'b2b-b2c', label: 'B2B | B2C', href: '/b2b' }, // Groupé dans un bloc unique
-    { id: 'international', label: 'INTERNATIONAL', href: '/international' },
-    { id: 'sourcing-chine', label: 'SOURCING EN CHINE', href: '/sourcing-chine' },
+    { id: 'sourcing', label: 'SOURCING', href: '/marketplace/sourcing' },
+    { id: 'b2b-b2c', label: 'B2B | B2C', href: '/marketplace/b2b' }, // Groupé dans un bloc unique
+    { id: 'international', label: 'INTERNATIONAL', href: '/marketplace/international' },
+    { id: 'sourcing-chine', label: 'SOURCING EN CHINE', href: '/marketplace/sourcing-chine' },
     { id: 'airbnb', label: 'AIRBNB', href: '/airbnb' },
     { id: 'negociation', label: 'NÉGOCIATION MATIÈRES PREMIÈRES', href: '/negociation' },
   ];
@@ -40,7 +40,7 @@ export default function GlobalHeader() {
               key={item.id}
               href={item.href}
               className={`px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors ${
-                isActive(item.href) || (item.id === 'b2b-b2c' && (pathname?.startsWith('/b2b') || pathname?.startsWith('/b2c')))
+                isActive(item.href) || (item.id === 'b2b-b2c' && (pathname?.startsWith('/marketplace/b2b') || pathname?.startsWith('/marketplace/b2c')))
                   ? 'text-emerald-600 border-b-2 border-emerald-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}

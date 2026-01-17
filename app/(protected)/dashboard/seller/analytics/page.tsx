@@ -94,119 +94,125 @@ export default async function SellerAnalyticsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Statistiques</h1>
-            <p className="mt-2 text-gray-600">Vue d'ensemble de votre activité commerciale</p>
-          </div>
-          <LogoutButton />
-        </div>
-      </div>
-
-      {/* Cartes de statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center justify-between">
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Total Commandes</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalOrders}</p>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+                <span className="text-indigo-600">Statistiques</span>
+              </h1>
+              <p className="text-lg text-slate-500 font-medium">
+                Vue d'ensemble de votre activité commerciale
+              </p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Package className="text-blue-600" size={24} />
-            </div>
+            <LogoutButton />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        {/* Cartes de statistiques */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Revenus Totaux</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-sm text-slate-500 font-medium">Total Commandes</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{stats.totalOrders}</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-xl">
+              <Package className="text-blue-600" size={28} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Revenus Totaux</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">
                 {stats.totalRevenue.toLocaleString()} FCFA
               </p>
             </div>
-            <div className="p-3 bg-green-100 rounded-lg">
-              <DollarSign className="text-green-600" size={24} />
+            <div className="p-3 bg-green-100 rounded-xl">
+              <DollarSign className="text-green-600" size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Ce Mois</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
+              <p className="text-sm text-slate-500 font-medium">Ce Mois</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">
                 {stats.thisMonthRevenue.toLocaleString()} FCFA
               </p>
             </div>
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <TrendingUp className="text-purple-600" size={24} />
+            <div className="p-3 bg-purple-100 rounded-xl">
+              <TrendingUp className="text-purple-600" size={28} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Commandes Livrées</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.deliveredOrders}</p>
+              <p className="text-sm text-slate-500 font-medium">Commandes Livrées</p>
+              <p className="text-3xl font-black text-slate-900 mt-2">{stats.deliveredOrders}</p>
             </div>
-            <div className="p-3 bg-emerald-100 rounded-lg">
-              <ShoppingCart className="text-emerald-600" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Commandes par statut */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Commandes par Statut</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-700">En attente</span>
-              <span className="text-lg font-bold text-yellow-700">{stats.pendingOrders}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-700">Confirmées</span>
-              <span className="text-lg font-bold text-blue-700">{stats.confirmedOrders}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-700">Expédiées</span>
-              <span className="text-lg font-bold text-purple-700">{stats.shippedOrders}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-700">Livrées</span>
-              <span className="text-lg font-bold text-green-700">{stats.deliveredOrders}</span>
+            <div className="p-3 bg-emerald-100 rounded-xl">
+              <ShoppingCart className="text-emerald-600" size={28} />
             </div>
           </div>
         </div>
+        </div>
 
-        {/* Produits les plus vendus */}
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Produits les Plus Vendus</h2>
-          {stats.topProducts.length > 0 ? (
+        {/* Commandes par statut */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+            <h2 className="text-xl font-black text-slate-900 mb-4">Commandes par Statut</h2>
             <div className="space-y-3">
-              {stats.topProducts.map((product, index) => (
-                <div key={product.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">#{index + 1} {product.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {product.quantity} unités vendues
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900">
-                      {product.revenue.toLocaleString()} FCFA
-                    </p>
-                  </div>
-                </div>
-              ))}
+              <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-xl border border-yellow-100">
+                <span className="text-sm font-bold text-slate-700">En attente</span>
+                <span className="text-xl font-black text-yellow-700">{stats.pendingOrders}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <span className="text-sm font-bold text-slate-700">Confirmées</span>
+                <span className="text-xl font-black text-blue-700">{stats.confirmedOrders}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <span className="text-sm font-bold text-slate-700">Expédiées</span>
+                <span className="text-xl font-black text-purple-700">{stats.shippedOrders}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-green-50 rounded-xl border border-green-100">
+                <span className="text-sm font-bold text-slate-700">Livrées</span>
+                <span className="text-xl font-black text-green-700">{stats.deliveredOrders}</span>
+              </div>
             </div>
-          ) : (
-            <p className="text-sm text-gray-500 text-center py-8">Aucun produit vendu</p>
-          )}
+          </div>
+
+          {/* Produits les plus vendus */}
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
+            <h2 className="text-xl font-black text-slate-900 mb-4">Produits les Plus Vendus</h2>
+            {stats.topProducts.length > 0 ? (
+              <div className="space-y-3">
+                {stats.topProducts.map((product, index) => (
+                  <div key={product.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div>
+                      <p className="text-sm font-black text-slate-900">#{index + 1} {product.name}</p>
+                      <p className="text-xs text-slate-500 mt-1 font-medium">
+                        {product.quantity} unités vendues
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-black text-slate-900">
+                        {product.revenue.toLocaleString()} FCFA
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500 text-center py-8 font-medium">Aucun produit vendu</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

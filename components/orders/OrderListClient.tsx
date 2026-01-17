@@ -106,12 +106,12 @@ export default function OrderListClient({ orders, basePath = '/dashboard/admin/o
             </Link>
           ))
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 p-12">
-            <div className="flex flex-col items-center justify-center text-gray-400 space-y-4">
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-12">
+            <div className="flex flex-col items-center justify-center text-slate-400 space-y-4">
               <Package size={48} strokeWidth={1.5} />
               <div className="text-center">
-                <p className="font-medium text-gray-900 mb-1">Aucune commande</p>
-                <p className="text-sm">
+                <p className="font-black text-slate-900 mb-1">Aucune commande</p>
+                <p className="text-sm font-medium">
                   {orders.length === 0 
                     ? 'Vous n\'avez pas encore de commandes.' 
                     : 'Aucune commande ne correspond à vos critères de recherche.'}

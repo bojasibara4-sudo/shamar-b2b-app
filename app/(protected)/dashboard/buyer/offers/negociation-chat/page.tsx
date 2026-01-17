@@ -143,14 +143,15 @@ export default function NegociationChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <header className="bg-white shadow-sm p-4 flex items-center justify-between">
+    <div className="flex flex-col h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 p-6 flex items-center justify-between shadow-sm">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
-            Assistant Négociation B2B
+          <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+            <Sparkles className="text-emerald-600" size={28} />
+            Assistant Négociation <span className="text-emerald-600">B2B</span>
           </h1>
           {negotiationContext && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500 font-medium mt-2">
               {negotiationContext.commodity} - {negotiationContext.quantity}{' '}
               {negotiationContext.unit} - {negotiationContext.proposedPrice}{' '}
               {negotiationContext.currency}
@@ -161,7 +162,7 @@ export default function NegociationChatPage() {
           <button
             onClick={handleGetAIHelp}
             disabled={isLoading}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-black hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-lg shadow-emerald-600/20"
           >
             <Sparkles size={20} />
             Aide IA
@@ -169,29 +170,29 @@ export default function NegociationChatPage() {
         )}
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 space-y-4">
+      <main className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-md px-4 py-2 rounded-lg shadow ${
+              className={`max-w-md px-6 py-4 rounded-2xl shadow-sm ${
                 msg.sender === 'user'
                   ? 'bg-emerald-600 text-white'
-                  : 'bg-white text-gray-800 border border-gray-200'
+                  : 'bg-white text-slate-800 border-2 border-slate-200'
               }`}
             >
               {msg.sender === 'ai' && (
-                <div className="flex items-center gap-2 mb-2">
-                  <Bot size={16} className="text-emerald-600" />
-                  <span className="text-xs font-semibold text-emerald-600">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bot size={18} className="text-emerald-600" />
+                  <span className="text-xs font-black text-emerald-600 uppercase tracking-wider">
                     Assistant IA
                   </span>
                 </div>
               )}
-              <p className="whitespace-pre-wrap">{msg.text}</p>
-              <p className="text-xs opacity-70 mt-1">
+              <p className="whitespace-pre-wrap font-medium leading-relaxed">{msg.text}</p>
+              <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-emerald-100' : 'text-slate-400'}`}>
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </p>
             </div>
@@ -199,10 +200,10 @@ export default function NegociationChatPage() {
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="max-w-md px-4 py-2 rounded-lg shadow bg-white text-gray-800 border border-gray-200">
-              <div className="flex items-center gap-2">
-                <Bot size={16} className="text-emerald-600 animate-pulse" />
-                <span className="text-sm">L'assistant réfléchit...</span>
+            <div className="max-w-md px-6 py-4 rounded-2xl shadow-sm bg-white text-slate-800 border-2 border-slate-200">
+              <div className="flex items-center gap-3">
+                <Bot size={18} className="text-emerald-600 animate-pulse" />
+                <span className="text-sm font-medium text-slate-600">L'assistant réfléchit...</span>
               </div>
             </div>
           </div>
@@ -210,11 +211,11 @@ export default function NegociationChatPage() {
         <div ref={messagesEndRef} />
       </main>
 
-      <footer className="bg-white p-4 border-t border-gray-200">
-        <div className="flex items-center space-x-2">
+      <footer className="bg-white p-6 border-t-2 border-slate-200">
+        <div className="flex items-center gap-3">
           <input
             type="text"
-            className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
             placeholder="Votre message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -226,11 +227,11 @@ export default function NegociationChatPage() {
             disabled={isLoading}
           />
           <button
-            className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+            className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 transition-all shadow-lg shadow-emerald-600/20"
             onClick={handleSendMessage}
             disabled={isLoading || input.trim() === ''}
           >
-            <Send size={20} />
+            <Send size={22} />
           </button>
         </div>
       </footer>

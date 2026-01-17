@@ -25,26 +25,33 @@ export default async function EditProductPage({ params }: { params: { id: string
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6">
-        <Link
-          href="/dashboard/seller/products"
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Retour aux produits
-        </Link>
-      </div>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="mb-6">
+          <Link
+            href="/dashboard/seller/products"
+            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-emerald-600 font-medium transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Retour aux produits
+          </Link>
+        </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Modifier le produit</h1>
-        <ProductFormClient
-          productId={product.id}
-          initialData={{
-            name: product.name,
-            description: product.description || '',
-            price: Number(product.price || 0),
-          }}
-        />
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+            Modifier le <span className="text-indigo-600">produit</span>
+          </h1>
+          <p className="text-lg text-slate-500 font-medium mb-8">
+            {product.name}
+          </p>
+          <ProductFormClient
+            productId={product.id}
+            initialData={{
+              name: product.name,
+              description: product.description || '',
+              price: Number(product.price || 0),
+            }}
+          />
+        </div>
       </div>
     </div>
   );

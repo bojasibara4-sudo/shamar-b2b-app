@@ -49,18 +49,12 @@ export default function LoginPage() {
 
         const role = userProfile?.role || 'buyer';
         
-        // Rafraîchir le router pour mettre à jour le middleware
-        router.refresh();
-
         // Rediriger selon le rôle ou la page demandée
         const redirectedFrom = searchParams.get('redirectedFrom');
         let redirectTo = '/dashboard';
         
         // Si la redirection vient d'une route protégée, la préserver
         if (redirectedFrom && redirectedFrom.startsWith('/dashboard')) {
-          redirectTo = redirectedFrom;
-        } else if (redirectedFrom && redirectedFrom.startsWith('/app')) {
-          // Routes /app/* redirigent automatiquement vers les bonnes routes
           redirectTo = redirectedFrom;
         } else {
           // Redirection par défaut selon le rôle
@@ -73,10 +67,9 @@ export default function LoginPage() {
           }
         }
         
-        // Petit délai pour s'assurer que les cookies sont bien définis
-        setTimeout(() => {
-          router.push(redirectTo);
-        }, 100);
+        // Utiliser window.location.href pour forcer un rechargement complet
+        // Cela garantit que le middleware voit la nouvelle session
+        window.location.href = redirectTo;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion');

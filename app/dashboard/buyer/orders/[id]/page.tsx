@@ -52,83 +52,82 @@ export default async function BuyerOrderDetailPage({ params }: { params: { id: s
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6">
+      <div className="space-y-8 animate-in fade-in duration-500">
         <Link
           href="/dashboard/buyer/orders"
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-emerald-600 font-medium transition-colors"
         >
           <ArrowLeft size={16} />
           Retour aux commandes
         </Link>
-      </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Commande #{order.id.slice(0, 8)}</h1>
-            <p className="mt-2 text-gray-600">
-              Passée le {new Date(order.created_at).toLocaleDateString('fr-FR', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
-          </div>
-          <span className={`px-4 py-2 rounded-lg text-sm font-semibold ${status.color}`}>
-            {status.label}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <User className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Vendeur</h3>
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">Commande #{order.id.slice(0, 8)}</h1>
+              <p className="text-lg text-slate-500 font-medium">
+                Passée le {new Date(order.created_at).toLocaleDateString('fr-FR', { 
+                  day: 'numeric', 
+                  month: 'long', 
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
             </div>
-            <p className="text-gray-900">{order.seller?.company_name || order.seller?.full_name || 'N/A'}</p>
-            <p className="text-sm text-gray-600">{order.seller?.email}</p>
-            {order.seller?.phone && (
-              <p className="text-sm text-gray-600">{order.seller.phone}</p>
+            <span className={`px-4 py-2 rounded-xl text-sm font-black ${status.color}`}>
+              {status.label}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 rounded-[1.5rem] border border-slate-100 p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <User className="h-5 w-5 text-slate-600" />
+                <h3 className="font-black text-slate-900">Vendeur</h3>
+              </div>
+              <p className="text-slate-900 font-bold text-lg">{order.seller?.company_name || order.seller?.full_name || 'N/A'}</p>
+              <p className="text-sm text-slate-600 font-medium">{order.seller?.email}</p>
+              {order.seller?.phone && (
+                <p className="text-sm text-slate-600 font-medium">{order.seller.phone}</p>
+              )}
+            </div>
+
+            {order.shipping_address && (
+              <div className="bg-slate-50 rounded-[1.5rem] border border-slate-100 p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <MapPin className="h-5 w-5 text-slate-600" />
+                  <h3 className="font-black text-slate-900">Adresse de livraison</h3>
+                </div>
+                <p className="text-slate-900 font-medium">{order.shipping_address}</p>
+              </div>
             )}
           </div>
-
-          {order.shipping_address && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <MapPin className="h-5 w-5 text-gray-600" />
-                <h3 className="font-semibold text-gray-900">Adresse de livraison</h3>
-              </div>
-              <p className="text-gray-900">{order.shipping_address}</p>
-            </div>
-          )}
         </div>
-      </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          Articles commandés
-        </h2>
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+          <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
+            <Package className="h-6 w-6 text-emerald-600" />
+            Articles commandés
+          </h2>
         <div className="space-y-4">
           {orderItems.map((item: any) => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+              className="flex items-center justify-between p-5 border-2 border-slate-200 rounded-[1.5rem] hover:shadow-lg transition-all"
             >
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{item.product?.name || 'Produit'}</h3>
+                <h3 className="font-black text-slate-900 text-lg">{item.product?.name || 'Produit'}</h3>
                 {item.product?.description && (
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.product.description}</p>
+                  <p className="text-sm text-slate-600 mt-1 line-clamp-2 font-medium">{item.product.description}</p>
                 )}
-                <p className="text-sm text-gray-500 mt-2">Quantité: {item.quantity}</p>
+                <p className="text-sm text-slate-500 mt-2 font-medium">Quantité: {item.quantity}</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-gray-900">
+                <p className="font-black text-slate-900 text-lg">
                   {(Number(item.price) * item.quantity).toLocaleString()} {item.product?.currency || order.currency || 'FCFA'}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-slate-500 font-medium">
                   {Number(item.price).toLocaleString()} {item.product?.currency || order.currency || 'FCFA'} × {item.quantity}
                 </p>
               </div>
@@ -136,44 +135,45 @@ export default async function BuyerOrderDetailPage({ params }: { params: { id: s
           ))}
         </div>
 
-        <div className="mt-6 pt-6 border-t border-gray-200">
+        <div className="mt-6 pt-6 border-t border-slate-200">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-gray-900">Total</span>
-            <span className="text-2xl font-bold text-emerald-600">
+            <span className="text-xl font-black text-slate-900">Total</span>
+            <span className="text-3xl font-black text-emerald-600">
               {totalAmount.toLocaleString()} {order.currency || 'FCFA'}
             </span>
           </div>
         </div>
-      </div>
+        </div>
 
-      {order.payments && order.payments.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Paiements
-          </h2>
-          <div className="space-y-3">
-            {order.payments.map((payment: any) => (
-              <div
-                key={payment.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {payment.provider || 'Paiement'} - {payment.status || 'pending'}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {new Date(payment.created_at).toLocaleDateString('fr-FR')}
+        {order.payments && order.payments.length > 0 && (
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+            <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
+              <DollarSign className="h-6 w-6 text-emerald-600" />
+              Paiements
+            </h2>
+            <div className="space-y-3">
+              {order.payments.map((payment: any) => (
+                <div
+                  key={payment.id}
+                  className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100"
+                >
+                  <div>
+                    <p className="font-black text-slate-900">
+                      {payment.provider || 'Paiement'} - {payment.status || 'pending'}
+                    </p>
+                    <p className="text-sm text-slate-600 font-medium">
+                      {new Date(payment.created_at).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  <p className="font-black text-slate-900 text-lg">
+                    {Number(payment.amount_total || 0).toLocaleString()} {order.currency || 'FCFA'}
                   </p>
                 </div>
-                <p className="font-semibold text-gray-900">
-                  {Number(payment.amount_total || 0).toLocaleString()} {order.currency || 'FCFA'}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

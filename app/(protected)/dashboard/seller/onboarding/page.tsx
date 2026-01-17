@@ -165,87 +165,92 @@ export default function SellerOnboardingPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Onboarding Vendeur</h1>
-            <p className="mt-2 text-gray-600">Complétez votre profil pour commencer à vendre</p>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+                Onboarding <span className="text-indigo-600">Vendeur</span>
+              </h1>
+              <p className="text-lg text-slate-500 font-medium">Complétez votre profil pour commencer à vendre</p>
+            </div>
+            <LogoutButton />
           </div>
-          <LogoutButton />
         </div>
-      </div>
 
-      {/* Stepper */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <SellerOnboardingStepper
-          currentStep={currentStep}
-          steps={steps}
-          completedSteps={completedSteps}
-        />
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
-          {error}
+        {/* Stepper */}
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+          <SellerOnboardingStepper
+            currentStep={currentStep}
+            steps={steps}
+            completedSteps={completedSteps}
+          />
         </div>
-      )}
 
-      {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        {currentStep === 'shop' && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Informations de la boutique</h2>
-            <ShopForm
-              initialData={shop ? { name: shop.name, description: shop.description || '', category: shop.category || '', country: shop.country || '' } : undefined}
-              onSubmit={handleShopSubmit}
-              isLoading={submitting}
-              error={error}
-            />
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-red-700">
+            <p className="font-black text-lg mb-1">Erreur</p>
+            <p className="font-medium">{error}</p>
           </div>
         )}
 
-        {currentStep === 'documents' && (
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Documents KYC</h2>
-            <DocumentUploader
-              documents={documents}
-              onUpload={handleDocumentUpload}
-              isLoading={submitting}
-            />
-            {shop && shop.status === 'draft' && (
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <button
-                  onClick={handleSubmitForVerification}
-                  disabled={submitting}
-                  className="w-full px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                >
-                  {submitting ? 'Soumission...' : 'Soumettre pour validation'}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Step Content */}
+        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
+          {currentStep === 'shop' && (
+            <div>
+              <h2 className="text-2xl font-black text-slate-900 mb-6">Informations de la boutique</h2>
+              <ShopForm
+                initialData={shop ? { name: shop.name, description: shop.description || '', category: shop.category || '', country: shop.country || '' } : undefined}
+                onSubmit={handleShopSubmit}
+                isLoading={submitting}
+                error={error}
+              />
+            </div>
+          )}
 
-        {currentStep === 'validation' && (
-          <div className="text-center py-8">
-            <div className="mb-4">
-              {shop?.status === 'verified' ? (
-                <SellerStatusBadge status="verified" size="lg" />
-              ) : (
-                <SellerStatusBadge status="pending" size="lg" />
+          {currentStep === 'documents' && (
+            <div>
+              <h2 className="text-2xl font-black text-slate-900 mb-6">Documents KYC</h2>
+              <DocumentUploader
+                documents={documents}
+                onUpload={handleDocumentUpload}
+                isLoading={submitting}
+              />
+              {shop && shop.status === 'draft' && (
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <button
+                    onClick={handleSubmitForVerification}
+                    disabled={submitting}
+                    className="w-full px-6 py-4 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black shadow-lg shadow-emerald-600/20"
+                  >
+                    {submitting ? 'Soumission...' : 'Soumettre pour validation'}
+                  </button>
+                </div>
               )}
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {shop?.status === 'verified' ? 'Boutique vérifiée !' : 'En attente de validation'}
-            </h2>
-            <p className="text-gray-600">
-              {shop?.status === 'verified'
-                ? 'Votre boutique est vérifiée. Vous pouvez maintenant publier des produits.'
-                : 'Votre demande est en cours d\'examen par notre équipe.'}
-            </p>
-          </div>
-        )}
+          )}
+
+          {currentStep === 'validation' && (
+            <div className="text-center py-12">
+              <div className="mb-6">
+                {shop?.status === 'verified' ? (
+                  <SellerStatusBadge status="verified" size="lg" />
+                ) : (
+                  <SellerStatusBadge status="pending" size="lg" />
+                )}
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-3">
+                {shop?.status === 'verified' ? 'Boutique vérifiée !' : 'En attente de validation'}
+              </h2>
+              <p className="text-lg text-slate-500 font-medium max-w-md mx-auto">
+                {shop?.status === 'verified'
+                  ? 'Votre boutique est vérifiée. Vous pouvez maintenant publier des produits.'
+                  : 'Votre demande est en cours d\'examen par notre équipe.'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

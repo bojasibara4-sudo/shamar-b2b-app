@@ -75,73 +75,77 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="mt-2 text-gray-600">
-          Bienvenue, {user.email}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Commandes</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">{stats.totalOrders}</p>
-            </div>
-            <Package className="h-8 w-8 text-emerald-600" />
-          </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
+            Tableau de bord
+          </h1>
+          <p className="text-lg text-slate-500 font-medium">
+            Bienvenue, <span className="font-black text-slate-900">{user.email}</span>
+          </p>
         </div>
 
-        {user.role === 'buyer' && (
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">En attente</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{stats.pendingOrders}</p>
+                <p className="text-sm font-medium text-slate-500">Commandes</p>
+                <p className="text-3xl font-black text-slate-900 mt-2">{stats.totalOrders}</p>
               </div>
-              <ShoppingCart className="h-8 w-8 text-blue-600" />
+              <Package className="h-10 w-10 text-emerald-600" />
+            </div>
+          </div>
+
+        {user.role === 'buyer' && (
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-500">En attente</p>
+                <p className="text-3xl font-black text-slate-900 mt-2">{stats.pendingOrders}</p>
+              </div>
+              <ShoppingCart className="h-10 w-10 text-blue-600" />
             </div>
           </div>
         )}
 
         {user.role === 'seller' && (
           <>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Produits actifs</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">{stats.activeProducts}</p>
+                  <p className="text-sm font-medium text-slate-500">Produits actifs</p>
+                  <p className="text-3xl font-black text-slate-900 mt-2">{stats.activeProducts}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-purple-600" />
+                <TrendingUp className="h-10 w-10 text-purple-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Revenus</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                  <p className="text-sm font-medium text-slate-500">Revenus</p>
+                  <p className="text-3xl font-black text-slate-900 mt-2">
                     {stats.totalRevenue.toLocaleString()} FCFA
                   </p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-600" />
+                <TrendingUp className="h-10 w-10 text-green-600" />
               </div>
             </div>
           </>
         )}
 
         {user.role === 'admin' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">En attente</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{stats.pendingOrders}</p>
+                <p className="text-sm font-medium text-slate-500">En attente</p>
+                <p className="text-3xl font-black text-slate-900 mt-2">{stats.pendingOrders}</p>
               </div>
-              <Users className="h-8 w-8 text-orange-600" />
+              <Users className="h-10 w-10 text-orange-600" />
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
