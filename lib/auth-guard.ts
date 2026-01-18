@@ -23,7 +23,7 @@ export async function requireRole(role: UserRole | UserRole[]): Promise<User> {
   
   const allowedRoles = Array.isArray(role) ? role : [role];
   if (!allowedRoles.includes(user.role)) {
-    redirect('/app/dashboard');
+    redirect('/dashboard');
   }
   
   return user;

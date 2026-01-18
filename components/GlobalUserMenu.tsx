@@ -60,19 +60,18 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
   };
 
   const menuItems = [
-    { href: '/app/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-    { href: '/app/profile', label: 'Mon profil', icon: User },
-    { href: '/app/settings', label: 'Paramètres', icon: Settings },
+    { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+    { href: '/profile', label: 'Mon profil', icon: User },
+    { href: '/settings', label: 'Paramètres', icon: Settings },
     { href: '/marketplace/products', label: 'Produits', icon: Package },
-    { href: '/panier', label: 'Panier', icon: ShoppingCart },
+    { href: '/marketplace/cart', label: 'Panier', icon: ShoppingCart },
     { href: '/messages', label: 'Messages', icon: MessageSquare },
-    { href: '/parametres', label: 'Mon espace', icon: FileText },
   ];
 
   const roleSpecificItems = user.role === 'seller' 
-    ? [{ href: '/app/vendor', label: 'Espace vendeur', icon: Store }]
+    ? [{ href: '/vendor', label: 'Espace vendeur', icon: Store }]
     : user.role === 'admin'
-    ? [{ href: '/app/admin', label: 'Administration', icon: Shield }]
+    ? [{ href: '/admin/overview', label: 'Administration', icon: Shield }]
     : [];
 
   const allItems = [...menuItems, ...roleSpecificItems];

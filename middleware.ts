@@ -1,79 +1,60 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  const response = NextResponse.next()
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return supabaseResponse;
-  }
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: any) {
+          response.cookies.set({ name, value: '', ...options })
+        },
       },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value);
-          supabaseResponse.cookies.set(name, value, options);
-        });
-      },
-    },
-  });
+    }
+  )
 
-  // Vérifier la session Supabase
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl;
+  const { pathname } = request.nextUrl
 
-  // Routes protégées selon la synthèse fonctionnelle officielle
-  // Routes publiques : /, /sourcing, /b2b, /international, /sourcing-chine, /airbnb, /negociation, /products, /panier, /parametres
-  // Routes protégées : /dashboard, /messages, /orders, /payments, /profile, /settings, /vendor
-  const protectedRoutes = [
-    '/dashboard',
-    '/messages',
-    '/orders',
-    '/payments',
-    '/profile',
-    '/settings',
-    '/vendor'
-  ];
-  
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname === route || pathname.startsWith(route + '/')
-  );
-
-  // Routes d'authentification
-  const authRoutes = ['/auth/login', '/auth/register', '/login', '/register'];
-  const isAuthRoute = authRoutes.some((route) => 
-    pathname === route || pathname.startsWith(route + '/')
-  );
-
-  // Si l'utilisateur est sur une route protégée et n'est pas authentifié
-  if (isProtectedRoute && !session) {
-    const redirectUrl = new URL('/auth/login', request.url);
-    redirectUrl.searchParams.set('redirectedFrom', pathname);
-    return NextResponse.redirect(redirectUrl);
+  // Routes publiques
+  if (
+    pathname === '/' ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/public')
+  ) {
+    return response
   }
 
-  // Si l'utilisateur est authentifié et essaie d'accéder aux routes d'auth, rediriger vers /dashboard
-  if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Routes protégées
+  if (!user && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  return supabaseResponse;
+  return response
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)).*)',
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/profile/:path*',
+    '/settings/:path*',
+    '/vendor/:path*',
+    '/orders/:path*',
+    '/payments/:path*',
+    '/messages/:path*',
   ],
-};
+}
