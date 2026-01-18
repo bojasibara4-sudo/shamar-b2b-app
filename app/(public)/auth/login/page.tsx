@@ -62,8 +62,10 @@ export default function LoginPage() {
             redirectTo = '/dashboard/admin';
           } else if (role === 'seller') {
             redirectTo = '/dashboard/seller';
-          } else {
+          } else if (role === 'buyer') {
             redirectTo = '/dashboard/buyer';
+          } else {
+            redirectTo = '/dashboard';
           }
         }
         
