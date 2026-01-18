@@ -32,11 +32,25 @@ export function AuthGuard({ children, requiredRole }: AuthGuardProps) {
   }
 
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Redirection vers la page de connexion...</p>
+          <div className="text-sm text-gray-400">Veuillez patienter</div>
+        </div>
+      </div>
+    );
   }
 
   if (requiredRole && profile?.role !== requiredRole) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600 mb-2">Accès refusé</p>
+          <p className="text-sm text-gray-400">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

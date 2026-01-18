@@ -143,7 +143,14 @@ export default function AgentsPage() {
   }
 
   if (!profile || profile.role !== 'admin') {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600 mb-2">Accès refusé</p>
+          <p className="text-sm text-gray-400">Cette page est réservée aux administrateurs.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
