@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, description, price, category, currency, image_url } = body;
+    const { name, description, price, category, currency, image_url, shop_id } = body;
 
     if (!name || !description || price === undefined) {
       return NextResponse.json(
@@ -70,6 +70,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Récupérer la boutique du seller (obligatoire pour créer un produit)
+    let finalShopId = shop_id;
+    
+    if (!finalShopId) {
+      // Si shop_id n'est pas fourni, récupérer la première boutique active du seller
+      const { data: shops, error: shopsError } = await (supabase as any)
+        .from('shops')
+        .select('id')
+        .eq('seller_id', user.id)
+        .in('status', ['draft', 'pending', 'verified'])
+        .limit(1)
+        .single();
+
+      if (shopsError || !shops) {
+        return NextResponse.json(
+          { error: 'Vous devez créer une boutique avant de pouvoir ajouter des produits. Veuillez créer une boutique d\'abord.' },
+          { status: 400 }
+        );
+      }
+
+      finalShopId = shops.id;
+    } else {
+      // Vérifier que la boutique appartient bien au seller
+      const { data: shop, error: shopError } = await (supabase as any)
+        .from('shops')
+        .select('id, seller_id')
+        .eq('id', finalShopId)
+        .eq('seller_id', user.id)
+        .single();
+
+      if (shopError || !shop) {
+        return NextResponse.json(
+          { error: 'Boutique non trouvée ou vous n\'avez pas accès à cette boutique' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Créer le produit avec shop_id obligatoire
     const { data: product, error } = await (supabase as any)
       .from('products')
       .insert({
@@ -77,6 +116,7 @@ export async function POST(request: NextRequest) {
         description,
         price: Number(price),
         seller_id: user.id,
+        shop_id: finalShopId, // OBLIGATOIRE
         category: category || 'other',
         currency: currency || 'FCFA',
         image_url: image_url || null,

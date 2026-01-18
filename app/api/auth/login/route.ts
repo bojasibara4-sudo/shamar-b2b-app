@@ -4,13 +4,6 @@ import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
-// Mock user database (fallback si Supabase n'est pas configuré)
-const mockUsers = [
-  { id: '1', email: 'admin@shamar.com', password: 'admin123', role: 'admin' as const },
-  { id: '2', email: 'seller@shamar.com', password: 'seller123', role: 'seller' as const },
-  { id: '3', email: 'buyer@shamar.com', password: 'buyer123', role: 'buyer' as const },
-];
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -50,18 +43,45 @@ export async function POST(request: NextRequest) {
           .single();
 
         if (userError || !userData) {
-          // Si l'utilisateur n'existe pas dans la table users, on crée un profil par défaut
+          // Si l'utilisateur n'existe pas dans la table users, créer le profil (idempotent)
           if (!authData.user) {
             return NextResponse.json(
               { error: 'Erreur lors de la récupération de l\'utilisateur' },
               { status: 500 }
             );
           }
-          user = {
-            id: authData.user.id,
-            email: authData.user.email || email,
-            role: 'buyer', // Rôle par défaut
-          };
+          
+          // Créer le profil avec upsert pour éviter les duplications
+          const { data: newUserData, error: insertError } = await (supabase as any)
+            .from('users')
+            .upsert(
+              {
+                id: authData.user.id,
+                email: authData.user.email || email,
+                role: 'buyer', // Rôle par défaut
+              },
+              {
+                onConflict: 'id',
+                ignoreDuplicates: true,
+              }
+            )
+            .select('id, email, role')
+            .single();
+
+          if (insertError || !newUserData) {
+            // Si erreur, utiliser les infos de base de l'auth
+            user = {
+              id: authData.user.id,
+              email: authData.user.email || email,
+              role: 'buyer',
+            };
+          } else {
+            user = {
+              id: newUserData.id,
+              email: newUserData.email,
+              role: newUserData.role,
+            };
+          }
         } else {
           user = {
             id: userData.id,

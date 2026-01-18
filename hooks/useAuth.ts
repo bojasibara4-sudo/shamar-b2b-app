@@ -110,16 +110,25 @@ export function useAuth() {
     if (error) throw error;
 
     if (data.user && data.user.email) {
-      // Créer le profil utilisateur dans la table users
+      // Créer le profil utilisateur dans la table users (idempotent)
       const { error: profileError } = await supabaseClient
         .from('users')
-        .insert({
-          id: data.user.id,
-          email: data.user.email,
-          role: 'buyer', // Rôle par défaut
-        } as any);
+        .upsert(
+          {
+            id: data.user.id,
+            email: data.user.email,
+            role: 'buyer', // Rôle par défaut
+          } as any,
+          {
+            onConflict: 'id',
+            ignoreDuplicates: true,
+          }
+        );
 
-      if (profileError) throw profileError;
+      // Ne pas bloquer si le profil existe déjà (inscription multiple)
+      if (profileError && !profileError.message?.includes('duplicate')) {
+        throw profileError;
+      }
     }
 
     return data;

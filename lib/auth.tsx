@@ -38,19 +38,40 @@ export async function getCurrentUser(): Promise<User | null> {
       .single();
 
     if (error || !userData) {
-      // Si l'utilisateur n'existe pas dans la table users, créer le profil automatiquement
+      // Si l'utilisateur n'existe pas dans la table users, créer le profil automatiquement (idempotent)
       const { data: newUserData, error: insertError } = await (supabase as any)
         .from('users')
-        .insert({
-          id: session.user.id,
-          email: session.user.email || '',
-          role: 'buyer', // Rôle par défaut
-        })
-        .select()
+        .upsert(
+          {
+            id: session.user.id,
+            email: session.user.email || '',
+            role: 'buyer', // Rôle par défaut
+          },
+          {
+            onConflict: 'id',
+            ignoreDuplicates: true,
+          }
+        )
+        .select('id, email, role')
         .single();
 
       if (insertError || !newUserData) {
-        // Si erreur lors de la création, retourner quand même les infos de base
+        // Si erreur lors de la création (peut être une duplication), réessayer de récupérer
+        const { data: retryData, error: retryError } = await (supabase as any)
+          .from('users')
+          .select('id, email, role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (retryData && !retryError) {
+          return {
+            id: retryData.id,
+            email: retryData.email,
+            role: retryData.role,
+          };
+        }
+
+        // Si toujours erreur, retourner les infos de base
         console.error('Error creating user profile:', insertError);
         return {
           id: session.user.id,

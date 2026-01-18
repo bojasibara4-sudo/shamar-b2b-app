@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Créer le profil dans la table users avec rôle buyer par défaut
+        // Créer le profil dans la table users avec rôle buyer par défaut (idempotent)
         if (!authData.user) {
           return NextResponse.json(
             { error: 'Erreur lors de la création de l\'utilisateur' },
@@ -67,21 +67,25 @@ export async function POST(request: NextRequest) {
           );
         }
         
+        // Utiliser upsert pour éviter les erreurs de duplication
         const { error: profileError } = await (supabase as any)
           .from('users')
-          .insert({
-            id: authData.user.id,
-            email: authData.user.email || email,
-            role: 'buyer', // Rôle par défaut
-          });
+          .upsert(
+            {
+              id: authData.user.id,
+              email: authData.user.email || email,
+              role: 'buyer', // Rôle par défaut
+            },
+            {
+              onConflict: 'id',
+              ignoreDuplicates: true,
+            }
+          );
 
         if (profileError) {
-          // Si erreur lors de la création du profil, essayer de supprimer l'utilisateur auth
           console.error('Error creating user profile:', profileError);
-          return NextResponse.json(
-            { error: 'Erreur lors de la création du profil' },
-            { status: 500 }
-          );
+          // Ne pas bloquer l'inscription si le profil existe déjà
+          // (cas où l'utilisateur s'inscrit plusieurs fois)
         }
 
         // Définir le cookie utilisateur (source de vérité)

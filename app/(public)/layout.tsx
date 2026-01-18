@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import GlobalHeaderWithAuth from "@/components/GlobalHeaderWithAuth";
-import BottomNavigation from "@/components/layout/BottomNavigation";
 
 export const metadata: Metadata = {
   title: "SHAMAR B2B - Plateforme B2B Africaine",
@@ -14,9 +12,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <GlobalHeaderWithAuth />
-      <main className="pb-16 md:pb-0">{children}</main>
-      <BottomNavigation />
+      {children}
     </>
   );
 }
