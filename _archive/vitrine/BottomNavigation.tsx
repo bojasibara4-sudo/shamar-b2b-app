@@ -9,8 +9,8 @@ export default function BottomNavigation() {
   // Navigation basse canonique (ordre strict)
   const navItems = [
     { id: 'home', label: 'Accueil', href: '/' },
-    { id: 'products', label: 'Produits', href: '/marketplace/products' },
-    { id: 'cart', label: 'Panier', href: '/panier' },
+    { id: 'products', label: 'Produits', href: '/products' },
+    { id: 'cart', label: 'Panier', href: '/cart' },
     { id: 'messages', label: 'Messages', href: '/messages' },
     { id: 'settings', label: 'Mon espace', href: '/parametres' },
   ];

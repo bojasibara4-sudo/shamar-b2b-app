@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Palmtree, MapPin, Star, Calendar, Users, Coffee, Waves } from 'lucide-react';
+import Link from 'next/link';
+import { Palmtree, MapPin, Star, Coffee, Waves } from 'lucide-react';
 
 export default function AirbnbPage() {
   const listings = [
@@ -11,49 +12,55 @@ export default function AirbnbPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900">Tourisme & Airbnb</h1>
-            <p className="text-slate-500">Séjours professionnels et zones touristiques d'exception.</p>
-          </div>
-          <div className="flex bg-white p-1 rounded-2xl border border-slate-200">
-            <button className="px-6 py-2 bg-rose-500 text-white rounded-xl font-bold text-sm">Hébergements</button>
-            <button className="px-6 py-2 text-slate-500 font-bold text-sm">Expériences</button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {listings.map((item) => (
-            <div key={item.id} className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer">
-              <div className="relative h-56">
-                <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 text-xs font-black">
-                  <Star size={14} className="fill-rose-500 text-rose-500" /> {item.rating}
-                </div>
-                <button className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white transition-all">
-                  <Palmtree size={20} />
-                </button>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-1 text-xs text-rose-500 font-bold mb-2">
-                  <MapPin size={12} /> {item.location}
-                </div>
-                <h3 className="text-xl font-black text-slate-900 group-hover:text-rose-500 transition-colors">{item.title}</h3>
-                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                  <div className="flex items-center gap-4 text-slate-400">
-                     <Coffee size={18} />
-                     <Waves size={18} />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-slate-400 font-bold">À partir de</p>
-                    <p className="text-xl font-black text-slate-900">{item.price} <span className="text-xs">FCFA/Nuit</span></p>
-                  </div>
-                </div>
-              </div>
+    <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+        <div className="space-y-shamar-32">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-shamar-16">
+            <div>
+              <h1 className="text-shamar-h1 text-gray-900 tracking-tight">Tourisme & Hébergements</h1>
+              <p className="text-shamar-body text-gray-500 font-medium mt-1">Séjours professionnels et zones touristiques d&apos;exception.</p>
             </div>
-          ))}
+            <div className="flex bg-gray-0 p-1 rounded-shamar-md border border-gray-200">
+              <button className="px-shamar-24 py-2 bg-primary-600 text-gray-0 rounded-shamar-md font-semibold text-shamar-small">Hébergements</button>
+              <button className="px-shamar-24 py-2 text-gray-500 font-semibold text-shamar-small">Expériences</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-shamar-24">
+            {listings.map((item) => (
+              <Link
+                key={item.id}
+                href={`/host/${item.id}`}
+                className="group bg-gray-0 rounded-shamar-md border border-gray-200 overflow-hidden shadow-shamar-soft hover:shadow-shamar-medium hover:border-primary-600/30 transition-all block"
+              >
+                <div className="relative h-56">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-4 left-4 bg-gray-0/90 backdrop-blur-md px-3 py-1 rounded-shamar-md flex items-center gap-1 text-shamar-caption font-semibold text-gray-900">
+                    <Star size={14} className="fill-primary-500 text-primary-500" /> {item.rating}
+                  </div>
+                  <div className="absolute top-4 right-4 p-2 bg-gray-0/20 hover:bg-gray-0/40 backdrop-blur-md rounded-shamar-md text-gray-0 transition-colors">
+                    <Palmtree size={20} />
+                  </div>
+                </div>
+                <div className="p-shamar-24">
+                  <div className="flex items-center gap-1 text-shamar-caption text-primary-600 font-semibold mb-2">
+                    <MapPin size={12} /> {item.location}
+                  </div>
+                  <h3 className="text-shamar-h4 font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">{item.title}</h3>
+                  <div className="mt-shamar-16 flex items-center justify-between border-t border-gray-200 pt-shamar-16">
+                    <div className="flex items-center gap-shamar-16 text-gray-400">
+                      <Coffee size={18} />
+                      <Waves size={18} />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-shamar-caption text-gray-500 font-medium">À partir de</p>
+                      <p className="text-shamar-body font-bold text-gray-900">{item.price} <span className="text-shamar-small text-gray-500">FCFA/Nuit</span></p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

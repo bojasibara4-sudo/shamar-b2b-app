@@ -33,6 +33,8 @@ export async function createShop(
     description?: string;
     category?: string;
     country?: string;
+    city?: string;
+    region?: string;
   }
 ): Promise<Shop | null> {
   const supabase = await createClient();
@@ -67,6 +69,8 @@ export async function createShop(
         description: data.description || null,
         category: data.category || null,
         country: data.country || null,
+        city: data.city || null,
+        region: data.region || null,
         status: 'draft',
         is_verified: false,
       })
@@ -96,6 +100,8 @@ export async function updateShop(
     description?: string;
     category?: string;
     country?: string;
+    city?: string;
+    region?: string;
     status?: ShopStatus;
   }
 ): Promise<Shop | null> {

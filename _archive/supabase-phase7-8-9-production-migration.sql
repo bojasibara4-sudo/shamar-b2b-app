@@ -33,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_payments_vendor_id ON public.payments(vendor_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON public.payments(status);
 CREATE INDEX IF NOT EXISTS idx_payments_provider_payment_id ON public.payments(provider_payment_id);
 
--- Table PAYOUTS (versements aux vendeurs)
+-- Table PAYOUTS (versements aux sellers)
 CREATE TABLE IF NOT EXISTS public.payouts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vendor_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -144,8 +144,8 @@ ALTER TABLE public.disputes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Buyers can view their payments" ON public.payments
   FOR SELECT USING (buyer_id = auth.uid());
 
--- Vendors voient leurs revenus (vendor_id)
-CREATE POLICY "Vendors can view their payments" ON public.payments
+-- Sellers voient leurs revenus (vendor_id)
+CREATE POLICY "Sellers can view their payments" ON public.payments
   FOR SELECT USING (vendor_id = auth.uid());
 
 -- Admins voient tout
@@ -162,8 +162,8 @@ CREATE POLICY "Authenticated users can create payments" ON public.payments
 -- RLS POLICIES - PAYOUTS
 -- ============================================
 
--- Vendors voient leurs payouts
-CREATE POLICY "Vendors can view their payouts" ON public.payouts
+-- Sellers voient leurs payouts
+CREATE POLICY "Sellers can view their payouts" ON public.payouts
   FOR SELECT USING (vendor_id = auth.uid());
 
 -- Admins voient et gèrent tout
@@ -180,8 +180,8 @@ CREATE POLICY "Admins can manage all payouts" ON public.payouts
 CREATE POLICY "Buyers can view their deliveries" ON public.deliveries
   FOR SELECT USING (buyer_id = auth.uid());
 
--- Vendors voient leurs livraisons
-CREATE POLICY "Vendors can view and update their deliveries" ON public.deliveries
+-- Sellers voient leurs livraisons
+CREATE POLICY "Sellers can view and update their deliveries" ON public.deliveries
   FOR ALL USING (vendor_id = auth.uid());
 
 -- Admins voient tout
@@ -202,8 +202,8 @@ CREATE POLICY "Everyone can view published reviews" ON public.reviews
 CREATE POLICY "Buyers can create reviews" ON public.reviews
   FOR INSERT WITH CHECK (buyer_id = auth.uid());
 
--- Vendors voient leurs avis
-CREATE POLICY "Vendors can view their reviews" ON public.reviews
+-- Sellers voient leurs avis
+CREATE POLICY "Sellers can view their reviews" ON public.reviews
   FOR SELECT USING (vendor_id = auth.uid());
 
 -- Admins peuvent tout gérer

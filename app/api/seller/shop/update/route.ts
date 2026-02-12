@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, name, description, category, country } = body;
+    const { id, name, description, category, country, city, region } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -66,6 +66,8 @@ export async function PUT(request: NextRequest) {
     if (description !== undefined) updateData.description = description?.trim() || null;
     if (category !== undefined) updateData.category = category?.trim() || null;
     if (country !== undefined) updateData.country = country?.trim() || null;
+    if (city !== undefined) updateData.city = city?.trim() || null;
+    if (region !== undefined) updateData.region = region?.trim() || null;
 
     const shop = await updateShop(user.id, id, updateData);
 

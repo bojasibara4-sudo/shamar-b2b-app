@@ -176,21 +176,21 @@ CREATE POLICY "Only admins can update users" ON public.users
 CREATE POLICY "Active products are viewable by everyone" ON public.products
   FOR SELECT USING (status = 'active');
 
--- Les vendeurs peuvent voir leurs propres produits
+-- Les sellers peuvent voir leurs propres produits
 CREATE POLICY "Sellers can view their own products" ON public.products
   FOR SELECT USING (
     seller_id = auth.uid() OR
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
--- Les vendeurs peuvent créer leurs produits
+-- Les sellers peuvent créer leurs produits
 CREATE POLICY "Sellers can create products" ON public.products
   FOR INSERT WITH CHECK (
     seller_id = auth.uid() AND
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'seller')
   );
 
--- Les vendeurs peuvent modifier leurs produits
+-- Les sellers peuvent modifier leurs produits
 CREATE POLICY "Sellers can update their own products" ON public.products
   FOR UPDATE USING (
     seller_id = auth.uid() OR
@@ -215,7 +215,7 @@ CREATE POLICY "Buyers can create offers" ON public.offers
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'buyer')
   );
 
--- Les vendeurs et acheteurs peuvent modifier les offres
+-- Les sellers et acheteurs peuvent modifier les offres
 CREATE POLICY "Buyers and sellers can update offers" ON public.offers
   FOR UPDATE USING (
     buyer_id = auth.uid() OR
@@ -226,7 +226,7 @@ CREATE POLICY "Buyers and sellers can update offers" ON public.offers
 -- ============================================
 -- POLICIES ORDERS
 -- ============================================
--- Les acheteurs et vendeurs peuvent voir leurs commandes
+-- Les acheteurs et sellers peuvent voir leurs commandes
 CREATE POLICY "Buyers and sellers can view their orders" ON public.orders
   FOR SELECT USING (
     buyer_id = auth.uid() OR
@@ -241,7 +241,7 @@ CREATE POLICY "Buyers can create orders" ON public.orders
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'buyer')
   );
 
--- Les acheteurs et vendeurs peuvent modifier les commandes
+-- Les acheteurs et sellers peuvent modifier les commandes
 CREATE POLICY "Buyers and sellers can update orders" ON public.orders
   FOR UPDATE USING (
     buyer_id = auth.uid() OR

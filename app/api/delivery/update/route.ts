@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
+import { isAdminLike } from '@/lib/owner-roles';
 import { updateDeliveryStatus } from '@/services/delivery.service';
 import { createClient } from '@/lib/supabase/server';
 
@@ -16,7 +17,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { delivery_id, status, tracking_code, notes } = body;
+    const { delivery_id, status, tracking_code, notes, carrier_name } = body;
 
     if (!delivery_id || !status) {
       return NextResponse.json(
@@ -25,10 +26,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Vérifier que la livraison appartient au vendeur (si seller) ou admin
+    // Vérifier que la livraison appartient au vendeur (vendor_id ou seller_id) ou admin
     const { data: delivery, error: deliveryError } = await (supabase as any)
       .from('deliveries')
-      .select('vendor_id')
+      .select('vendor_id, seller_id')
       .eq('id', delivery_id)
       .single();
 
@@ -40,25 +41,29 @@ export async function PUT(request: NextRequest) {
     }
 
     const deliveryData = delivery as any;
-    if (user.role === 'seller' && deliveryData.vendor_id !== user.id) {
+    const isOwner = deliveryData.vendor_id === user.id || deliveryData.seller_id === user.id;
+    if (user.role === 'seller' && !isOwner) {
       return NextResponse.json(
         { error: 'Vous n\'êtes pas autorisé à modifier cette livraison' },
         { status: 403 }
       );
     }
 
-    if (user.role !== 'seller' && user.role !== 'admin') {
+    if (user.role !== 'seller' && !isAdminLike(user.role)) {
       return NextResponse.json(
         { error: 'Accès refusé' },
         { status: 403 }
       );
     }
 
+    // Filtrer le statut 'disputed' car updateDeliveryStatus ne l'accepte pas
+    const validStatus = status === 'disputed' ? 'pending' : (status as 'pending' | 'shipped' | 'delivered');
     const success = await updateDeliveryStatus(
       delivery_id,
-      status as 'pending' | 'shipped' | 'delivered' | 'disputed',
+      validStatus,
       tracking_code,
-      notes
+      notes,
+      carrier_name
     );
 
     if (!success) {

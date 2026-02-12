@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
+import { Settings } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,42 +8,44 @@ export default async function AdminSettingsPage() {
   requireAdmin();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                <span className="text-orange-600">Paramètres</span>
-              </h1>
-              <p className="text-lg text-slate-500 font-medium">
-                Configurez les paramètres de la plateforme
-              </p>
+    <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+        <div className="space-y-shamar-32 animate-in fade-in duration-500">
+          <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
+              <div className="flex items-center gap-shamar-16">
+                <div className="p-3 bg-primary-100 rounded-shamar-md">
+                  <Settings className="text-primary-600" size={32} />
+                </div>
+                <div>
+                  <h1 className="text-shamar-h1 text-gray-900 tracking-tight">
+                    <span className="text-primary-600">Paramètres</span>
+                  </h1>
+                  <p className="text-shamar-body text-gray-500 font-medium mt-1">
+                    Configurez les paramètres de la plateforme
+                  </p>
+                </div>
+              </div>
+              <LogoutButton />
             </div>
-            <LogoutButton />
           </div>
-        </div>
 
-        <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8">
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+          <div className="bg-gray-0 rounded-shamar-md border border-gray-200 shadow-shamar-soft p-shamar-32">
+            <div className="text-center py-shamar-48">
+              <div className="w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-shamar-24">
+                <Settings className="w-12 h-12 text-primary-600" />
+              </div>
+              <h3 className="text-shamar-h2 text-gray-900 mb-shamar-16 font-semibold">Configuration de la plateforme</h3>
+              <p className="text-gray-500 font-medium max-w-md mx-auto text-shamar-body leading-relaxed mb-shamar-24">
+                Gérez les paramètres généraux, les préférences et la configuration de votre plateforme B2B.
+              </p>
+              <span className="inline-block px-shamar-16 py-2 bg-primary-50 text-primary-600 rounded-shamar-md border border-primary-200 text-shamar-small font-semibold">
+                Interface de configuration à venir
+              </span>
             </div>
-            <h3 className="text-2xl font-black text-slate-900 mb-3">Configuration de la Plateforme</h3>
-            <p className="text-slate-500 font-medium max-w-md mx-auto">
-              Gérez les paramètres généraux, les préférences et la configuration de votre plateforme B2B.
-            </p>
-            <p className="text-sm text-slate-400 mt-4 font-medium">
-              Interface de configuration des paramètres à venir.
-            </p>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-

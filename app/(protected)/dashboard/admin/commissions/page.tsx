@@ -1,41 +1,58 @@
 import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { commissionsDB, usersDB } from '@/lib/mock-data';
+import {
+  getCommissionsForAdmin,
+  getTotalCommissionsPlatform,
+} from '@/services/commission.service';
+import { getUsersForAdmin } from '@/services/user.service';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminCommissionsPage() {
-  requireAdmin();
+type CommissionRow = {
+  id: string;
+  order_id: string;
+  seller_id: string;
+  amount: number;
+  commission_amount: number;
+  seller_revenue: number;
+  status: string;
+  created_at: string;
+};
 
-  const commissions = commissionsDB.getAll();
-  const totalCommissions = commissionsDB.getTotalCommissions();
-  const allUsers = usersDB.getAll();
+type CommissionBySeller = {
+  sellerId: string;
+  totalRevenue: number;
+  totalCommission: number;
+  commissions: CommissionRow[];
+};
+
+export default async function AdminCommissionsPage() {
+  await requireAdmin();
+
+  const [commissions, totalCommissions, allUsers] = await Promise.all([
+    getCommissionsForAdmin(),
+    getTotalCommissionsPlatform(),
+    getUsersForAdmin(),
+  ]);
   const userMap = new Map(allUsers.map((u) => [u.id, u.email]));
 
-  type CommissionBySeller = {
-    sellerId: string;
-    totalRevenue: number;
-    totalCommission: number;
-    commissions: typeof commissions;
-  };
-
-  const commissionsBySeller = commissions.reduce<Record<string, CommissionBySeller>>(
-    (acc, commission) => {
-      if (!acc[commission.sellerId]) {
-        acc[commission.sellerId] = {
-          sellerId: commission.sellerId,
-          totalRevenue: 0,
-          totalCommission: 0,
-          commissions: [],
-        };
-      }
-      acc[commission.sellerId].totalRevenue += commission.sellerRevenue;
-      acc[commission.sellerId].totalCommission += commission.commissionAmount;
-      acc[commission.sellerId].commissions.push(commission);
-      return acc;
-    },
-    {}
-  );
+  const commissionsBySeller = (commissions as CommissionRow[]).reduce<
+    Record<string, CommissionBySeller>
+  >((acc, c) => {
+    const sid = c.seller_id;
+    if (!acc[sid]) {
+      acc[sid] = {
+        sellerId: sid,
+        totalRevenue: 0,
+        totalCommission: 0,
+        commissions: [],
+      };
+    }
+    acc[sid].totalRevenue += c.seller_revenue;
+    acc[sid].totalCommission += c.commission_amount;
+    acc[sid].commissions.push(c);
+    return acc;
+  }, {});
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -106,18 +123,18 @@ export default async function AdminCommissionsPage() {
                     >
                       <div>
                         <p className="font-black text-slate-900">
-                          {commission.productName}
+                          Commande #{commission.order_id.slice(0, 8)}…
                         </p>
                         <p className="text-xs text-slate-500 font-medium">
-                          Commande #{commission.orderId} - Qté: {commission.quantity}
+                          {new Date(commission.created_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-slate-900 font-black">
-                          {commission.sellerRevenue.toFixed(2)} €
+                          {commission.seller_revenue.toFixed(2)} €
                         </p>
                         <p className="text-xs text-blue-600 font-black">
-                          +{commission.commissionAmount.toFixed(2)} €
+                          +{commission.commission_amount.toFixed(2)} €
                         </p>
                       </div>
                     </div>

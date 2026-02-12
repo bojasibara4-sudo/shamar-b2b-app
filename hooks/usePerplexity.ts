@@ -42,6 +42,7 @@ export function usePerplexity() {
     }
   };
 
+  /** Compare prix (délégué à Gemini = moteur analyse) */
   const comparePrices = async (
     product: string,
     chinaPrice: number,
@@ -50,13 +51,13 @@ export function usePerplexity() {
   ): Promise<PerplexityResponse> => {
     setLoading(true);
     try {
-      const response = await fetch('/api/ai/perplexity', {
+      const response = await fetch('/api/ai/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'comparePrices', product, chinaPrice, localPrice, currency }),
       });
       const data = await response.json();
-      return data;
+      return { success: data.success, message: data.text, error: data.error };
     } catch (error) {
       return {
         success: false,

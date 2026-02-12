@@ -1,13 +1,14 @@
 import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { usersDB } from '@/lib/mock-data';
+import { getUsersForAdmin } from '@/services/user.service';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminSellersPage() {
-  requireAdmin();
+  await requireAdmin();
 
-  const sellers = usersDB.getByRole('seller');
+  const allUsers = await getUsersForAdmin();
+  const sellers = allUsers.filter((u) => u.role === 'seller');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

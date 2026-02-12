@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { cookies } from 'next/headers';
+import { isAdminLike } from '@/lib/owner-roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,7 @@ export async function GET() {
     }
 
     const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    if (user.role !== 'admin') {
+    if (!isAdminLike(user.role)) {
       return NextResponse.json(
         { error: 'Accès refusé' },
         { status: 403 }
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    if (user.role !== 'admin') {
+    if (!isAdminLike(user.role)) {
       return NextResponse.json(
         { error: 'Accès refusé' },
         { status: 403 }

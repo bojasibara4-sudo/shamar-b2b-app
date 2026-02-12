@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/auth';
 import StatCard from '@/components/dashboard/StatCard';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
 import Link from 'next/link';
-import { ShoppingBag, Package, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { ShoppingBag, Package, DollarSign, TrendingUp, Clock, ShieldAlert } from 'lucide-react';
 
 export default async function SellerDashboardClient() {
   const user = await getCurrentUser();
@@ -12,7 +12,7 @@ export default async function SellerDashboardClient() {
   const supabase = await createClient();
 
   // Récupérer les statistiques seller
-  const [ordersResult, pendingOrdersResult, productsResult, completedOrdersResult, vendorResult] = await Promise.all([
+  const [ordersResult, pendingOrdersResult, productsResult, completedOrdersResult, vendorResult, openDisputesResult] = await Promise.all([
     (supabase as any)
       .from('orders')
       .select('id', { count: 'exact', head: true })
@@ -37,6 +37,11 @@ export default async function SellerDashboardClient() {
       .select('status, level')
       .eq('user_id', user.id)
       .single(),
+    (supabase as any)
+      .from('disputes')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'open')
+      .or(`raised_by.eq.${user.id},against_user.eq.${user.id}`),
   ]);
 
   const stats = {
@@ -46,6 +51,7 @@ export default async function SellerDashboardClient() {
     totalRevenue: completedOrdersResult.data?.reduce((sum: number, order: any) => sum + Number(order.total_amount || 0), 0) || 0,
     vendorStatus: vendorResult.data?.status || 'pending',
     vendorLevel: vendorResult.data?.level || 'bronze',
+    openDisputesCount: openDisputesResult?.count || 0,
   };
 
   // Récupérer les activités récentes
@@ -83,13 +89,13 @@ export default async function SellerDashboardClient() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Tableau de bord Vendeur</h1>
-        <p className="text-gray-600 mt-1">Bienvenue, {user.email}</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Tableau de bord Vendeur</h1>
+        <p className="text-gray-400 mt-1">Bienvenue, {user.email}</p>
         {stats.vendorStatus !== 'verified' && (
           <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
               ⚠️ Votre compte vendeur est en attente de vérification. 
-              <Link href="/dashboard/seller/onboarding" className="underline ml-1">
+              <Link href="/dashboard/onboarding-vendeur" className="underline ml-1">
                 Complétez votre profil
               </Link>
             </p>
@@ -124,63 +130,77 @@ export default async function SellerDashboardClient() {
           icon={<DollarSign className="w-6 h-6" />}
           variant="success"
         />
+        {stats.openDisputesCount > 0 && (
+          <Link href="/dashboard/seller/disputes" className="block p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-rose-500/20 rounded-lg">
+                <ShieldAlert className="w-6 h-6 text-rose-400" />
+              </div>
+              <div>
+                <p className="font-bold text-white">Litiges ouverts</p>
+                <p className="text-sm text-rose-200">{stats.openDisputesCount} litige(s) à traiter</p>
+              </div>
+              <span className="ml-auto px-2 py-1 bg-rose-500 text-white rounded-full text-sm font-bold">{stats.openDisputesCount}</span>
+            </div>
+          </Link>
+        )}
       </div>
 
       {/* Niveau vendeur */}
       {stats.vendorLevel && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-brand-bleu-ardoise/50 backdrop-blur-sm rounded-2xl border border-brand-anthracite/50 shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold mb-1">Niveau Vendeur</h2>
-              <p className="text-sm text-gray-600 capitalize">
+              <h2 className="text-lg font-semibold mb-1 text-white">Niveau Vendeur</h2>
+              <p className="text-sm text-gray-300 capitalize">
                 {stats.vendorLevel === 'bronze' && '🥉 Bronze'}
                 {stats.vendorLevel === 'silver' && '🥈 Silver'}
                 {stats.vendorLevel === 'gold' && '🥇 Gold'}
                 {stats.vendorLevel === 'premium' && '💎 Premium'}
               </p>
             </div>
-            <TrendingUp className="w-8 h-8 text-emerald-600" />
+            <TrendingUp className="w-8 h-8 text-brand-or" />
           </div>
         </div>
       )}
 
       {/* Actions rapides */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Actions rapides</h2>
+      <div className="bg-brand-bleu-ardoise/50 backdrop-blur-sm rounded-2xl border border-brand-anthracite/50 shadow-lg p-6">
+        <h2 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+          <span className="w-1 h-5 bg-brand-or rounded-full block"></span>
+          Actions rapides
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
-            href="/dashboard/seller/products/new"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            href="/dashboard/seller/products"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <Package className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Ajouter un produit</h3>
-            <p className="text-sm text-gray-600">Créer un nouveau produit</p>
+            <Package className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Ajouter un produit</h3>
+            <p className="text-sm text-gray-400">Créer un nouveau produit</p>
           </Link>
           <Link
             href="/dashboard/seller/orders"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <ShoppingBag className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Mes commandes</h3>
-            <p className="text-sm text-gray-600">Gérer les commandes</p>
+            <ShoppingBag className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Mes commandes</h3>
+            <p className="text-sm text-gray-400">Gérer les commandes</p>
           </Link>
           <Link
             href="/dashboard/seller/analytics"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <TrendingUp className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Analytics</h3>
-            <p className="text-sm text-gray-600">Voir les statistiques</p>
+            <TrendingUp className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Analytics</h3>
+            <p className="text-sm text-gray-400">Voir les statistiques</p>
           </Link>
         </div>
       </div>
 
       {/* Activités récentes */}
       {activities.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Activités récentes</h2>
-          <ActivityFeed activities={activities} />
-        </div>
+        <ActivityFeed activities={activities} />
       )}
     </div>
   );

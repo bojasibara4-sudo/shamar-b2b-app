@@ -16,16 +16,16 @@
 DELETE FROM public.order_items 
 WHERE order_id NOT IN (SELECT id FROM public.orders);
 
--- Supprimer les commandes sans acheteur ou vendeur valide
+-- Supprimer les commandes sans acheteur ou seller valide
 DELETE FROM public.orders 
 WHERE buyer_id NOT IN (SELECT id FROM public.users)
    OR seller_id NOT IN (SELECT id FROM public.users);
 
--- Supprimer les produits sans vendeur valide
+-- Supprimer les produits sans seller valide
 DELETE FROM public.products 
 WHERE seller_id NOT IN (SELECT id FROM public.users);
 
--- Supprimer les offres sans produit, acheteur ou vendeur valide
+-- Supprimer les offres sans produit, acheteur ou seller valide
 DELETE FROM public.offers 
 WHERE product_id NOT IN (SELECT id FROM public.products)
    OR buyer_id NOT IN (SELECT id FROM public.users)

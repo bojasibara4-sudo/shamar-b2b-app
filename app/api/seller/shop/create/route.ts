@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, description, category, country } = body;
+    const { name, description, category, country, city, region } = body;
 
     if (!name || name.trim().length === 0) {
       return NextResponse.json(
@@ -32,6 +32,8 @@ export async function POST(request: NextRequest) {
       description: description?.trim(),
       category: category?.trim(),
       country: country?.trim(),
+      city: city?.trim(),
+      region: region?.trim(),
     });
 
     if (!shop) {

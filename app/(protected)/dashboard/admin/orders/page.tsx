@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/lib/auth-guard';
 import LogoutButton from '@/components/LogoutButton';
-import { ordersDB, usersDB } from '@/lib/mock-data';
+import { getOrdersForAdmin } from '@/services/order.service';
 import OrderListClient from '@/components/orders/OrderListClient';
 
 export const dynamic = 'force-dynamic';
@@ -8,32 +8,44 @@ export const dynamic = 'force-dynamic';
 export default async function AdminOrdersPage() {
   await requireAdmin();
 
-  const orders = ordersDB.getAll();
-  const allUsers = usersDB.getAll();
-  const userMap = new Map(allUsers.map((u) => [u.id, u.email]));
+  const orders = await getOrdersForAdmin();
+  const orderItems = (o: any) => o.order_items || [];
+  const productName = (o: any) =>
+    orderItems(o)
+      .map((i: any) => i.product?.name)
+      .filter(Boolean)
+      .join(', ') || 'Commande';
+  const quantity = (o: any) =>
+    orderItems(o).reduce((sum: number, i: any) => sum + (Number(i.quantity) || 0), 0);
 
-  // Convertir les commandes au format attendu par OrderListClient
-  const formattedOrders = orders.map(order => ({
+  const formattedOrders = orders.map((order: any) => ({
     id: order.id,
-    productName: order.products.map(p => p.name).join(', ') || 'Commande',
-    quantity: order.products.reduce((sum, p) => sum + p.quantity, 0),
-    totalAmount: order.total,
-    status: order.status.toLowerCase() as 'pending' | 'confirmed' | 'shipped' | 'completed' | 'cancelled',
-    date: new Date(order.createdAt).toLocaleDateString('fr-FR'),
-    sellerName: order.products[0]?.sellerId ? userMap.get(order.products[0].sellerId) : undefined,
-    buyerName: userMap.get(order.buyerId),
+    productName: productName(order),
+    quantity: quantity(order),
+    totalAmount: Number(order.total_amount ?? 0),
+    status: (order.status || 'pending').toString().toLowerCase() as
+      | 'pending'
+      | 'confirmed'
+      | 'shipped'
+      | 'completed'
+      | 'cancelled',
+    date: order.created_at
+      ? new Date(order.created_at).toLocaleDateString('fr-FR')
+      : '',
+    sellerName: order.seller?.email ?? order.seller?.full_name ?? undefined,
+    buyerName: order.buyer?.email ?? order.buyer?.full_name ?? undefined,
   }));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+      <div className="space-y-shamar-32 animate-in fade-in duration-500">
+        <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
             <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                Gestion des <span className="text-orange-600">Commandes</span>
+              <h1 className="text-shamar-h1 text-gray-900 tracking-tight mb-2">
+                Gestion des <span className="text-primary-600">Commandes</span>
               </h1>
-              <p className="text-lg text-slate-500 font-medium">
+              <p className="text-shamar-body text-gray-500 font-medium">
                 Gérez toutes les commandes de la plateforme
               </p>
             </div>
@@ -41,7 +53,7 @@ export default async function AdminOrdersPage() {
           </div>
         </div>
 
-        <OrderListClient orders={formattedOrders} basePath="/dashboard/admin/orders" />
+        <OrderListClient orders={formattedOrders} basePath="/dashboard/orders" />
       </div>
     </div>
   );

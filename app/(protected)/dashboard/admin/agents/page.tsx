@@ -155,15 +155,16 @@ export default function AgentsPage() {
 
   return (
     <AuthGuard>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+      <div className="space-y-shamar-32 animate-in fade-in duration-500">
+        <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
             <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                Gestion des <span className="text-orange-600">Agents</span>
+              <h1 className="text-shamar-h1 text-gray-900 tracking-tight mb-2">
+                Gestion des <span className="text-primary-600">Agents</span>
               </h1>
-              <p className="text-lg text-slate-500 font-medium">
+              <p className="text-shamar-body text-gray-500 font-medium">
                 Gérez les agents et équipes de la plateforme
               </p>
             </div>
@@ -180,7 +181,7 @@ export default function AgentsPage() {
                 });
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-black"
+              className="flex items-center gap-2 bg-primary-600 text-gray-0 px-shamar-24 py-shamar-12 rounded-shamar-md hover:bg-primary-700 transition-colors font-semibold"
             >
               <UserPlus size={20} />
               Ajouter un agent
@@ -188,50 +189,50 @@ export default function AgentsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-shamar-24">
           {agents.map((agent) => (
             <div
               key={agent.id}
-              className="bg-white rounded-[2rem] shadow-sm p-6 border border-slate-200 hover:shadow-xl transition-all"
+              className="bg-gray-0 rounded-shamar-md shadow-shamar-soft p-shamar-24 border border-gray-200 hover:shadow-md transition-shadow"
             >
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-shamar-16 mb-shamar-16">
               {agent.photo_url ? (
                 <img
                   src={agent.photo_url}
                   alt={agent.user?.full_name || 'Agent'}
-                  className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-200"
+                  className="w-16 h-16 rounded-shamar-md object-cover border-2 border-gray-200"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center border-2 border-slate-200">
-                  <UserPlus size={32} className="text-slate-400" />
+                <div className="w-16 h-16 rounded-shamar-md bg-gray-100 flex items-center justify-center border-2 border-gray-200">
+                  <UserPlus size={32} className="text-gray-400" />
                 </div>
               )}
               <div>
-                <h3 className="font-black text-slate-900 text-lg">
+                <h3 className="font-semibold text-gray-900 text-shamar-body">
                   {agent.user?.full_name || agent.user?.email || 'Agent'}
                 </h3>
-                <p className="text-sm text-slate-500 font-medium">{agent.department}</p>
+                <p className="text-shamar-small text-gray-500 font-medium">{agent.department}</p>
               </div>
             </div>
 
             {agent.phone && (
-              <p className="text-sm text-slate-600 mb-2 font-medium">📞 {agent.phone}</p>
+              <p className="text-shamar-small text-gray-600 mb-2 font-medium">📞 {agent.phone}</p>
             )}
             {agent.address && (
-              <p className="text-sm text-slate-600 mb-2 font-medium">📍 {agent.address}</p>
+              <p className="text-shamar-small text-gray-600 mb-2 font-medium">📍 {agent.address}</p>
             )}
 
-            <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+            <div className="flex gap-2 mt-shamar-16 pt-shamar-16 border-t border-gray-200">
               <button
                 onClick={() => handleEdit(agent)}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl hover:bg-blue-100 transition-all font-black text-sm"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary-50 text-primary-600 px-shamar-16 py-shamar-8 rounded-shamar-md hover:bg-primary-100 transition-colors font-semibold text-shamar-small"
               >
                 <Edit2 size={16} />
                 Modifier
               </button>
               <button
                 onClick={() => handleDelete(agent.id)}
-                className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl hover:bg-red-100 transition-all font-black text-sm"
+                className="flex-1 flex items-center justify-center gap-2 bg-danger-500/10 text-danger-500 px-shamar-16 py-shamar-8 rounded-shamar-md hover:bg-danger-500/20 transition-colors font-semibold text-shamar-small"
               >
                 <Trash2 size={16} />
                 Supprimer
@@ -243,13 +244,13 @@ export default function AgentsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl border border-slate-200">
-            <h2 className="text-2xl font-black text-slate-900 mb-6">
+          <div className="bg-gray-0 rounded-shamar-md p-shamar-32 max-w-md w-full shadow-shamar-soft border border-gray-200">
+            <h2 className="text-shamar-h2 font-semibold text-gray-900 mb-shamar-24">
               {editingAgent ? 'Modifier l\'agent' : 'Nouvel agent'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-shamar-20">
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   ID Utilisateur
                 </label>
                 <input
@@ -258,13 +259,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, user_id: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   Département
                 </label>
                 <input
@@ -273,13 +274,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, department: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   Téléphone
                 </label>
                 <input
@@ -288,12 +289,12 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   Adresse
                 </label>
                 <textarea
@@ -301,13 +302,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                   rows={2}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   Notes
                 </label>
                 <textarea
@@ -315,13 +316,13 @@ export default function AgentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-black text-slate-900 mb-2">
+                <label className="block text-shamar-small font-semibold text-gray-900 mb-2">
                   Photo
                 </label>
                 <input
@@ -333,14 +334,14 @@ export default function AgentsPage() {
                       photo: e.target.files?.[0] || null,
                     })
                   }
-                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium"
+                  className="w-full px-shamar-16 py-shamar-12 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all font-medium text-gray-900"
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-shamar-12 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-black"
+                  className="flex-1 bg-primary-600 text-gray-0 px-shamar-24 py-shamar-12 rounded-shamar-md hover:bg-primary-700 transition-colors font-semibold"
                 >
                   {editingAgent ? 'Modifier' : 'Créer'}
                 </button>
@@ -350,7 +351,7 @@ export default function AgentsPage() {
                     setShowModal(false);
                     setEditingAgent(null);
                   }}
-                  className="flex-1 bg-slate-100 text-slate-900 px-6 py-3 rounded-xl hover:bg-slate-200 transition-all font-black"
+                  className="flex-1 bg-gray-100 text-gray-900 px-shamar-24 py-shamar-12 rounded-shamar-md hover:bg-gray-200 transition-colors font-semibold"
                 >
                   Annuler
                 </button>
@@ -360,6 +361,7 @@ export default function AgentsPage() {
         </div>
       )}
       </div>
+    </div>
     </div>
     </AuthGuard>
   );

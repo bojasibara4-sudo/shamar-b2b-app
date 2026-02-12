@@ -70,7 +70,7 @@ export default async function VendorPage() {
           </Link>
 
           <Link
-            href="/dashboard/seller/onboarding"
+            href="/dashboard/onboarding-vendeur"
             className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:-translate-y-2 transition-all"
           >
             <div className="flex items-center justify-between mb-6">

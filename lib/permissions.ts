@@ -1,6 +1,6 @@
 import { getCurrentUser } from './auth';
 
-export type UserRole = 'admin' | 'seller' | 'buyer';
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'super_admin' | 'vice_admin' | 'partner' | 'apple' | 'owner_root' | 'owner_exec' | 'admin_staff';
 
 export type UserStatus = 'pending' | 'active' | 'banned';
 export type SellerStatus = 'pending' | 'approved' | 'rejected';
@@ -59,7 +59,7 @@ export async function canAccessDashboard(role?: UserRole): Promise<boolean> {
     return user.role === role;
   }
 
-  return ['admin', 'seller', 'buyer'].includes(user.role);
+  return ['buyer', 'seller', 'admin', 'super_admin', 'vice_admin', 'partner', 'apple', 'owner_root', 'owner_exec', 'admin_staff'].includes(user.role);
 }
 
 /**

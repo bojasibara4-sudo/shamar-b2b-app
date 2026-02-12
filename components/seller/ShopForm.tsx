@@ -7,6 +7,8 @@ interface ShopFormData {
   description: string;
   category: string;
   country: string;
+  city: string;
+  region: string;
 }
 
 interface ShopFormProps {
@@ -44,6 +46,8 @@ export default function ShopForm({
     description: initialData?.description || '',
     category: initialData?.category || '',
     country: initialData?.country || '',
+    city: initialData?.city || '',
+    region: initialData?.region || '',
   });
   const [error, setError] = useState('');
 
@@ -148,6 +152,34 @@ export default function ShopForm({
             </option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+          Ville
+        </label>
+        <input
+          type="text"
+          id="city"
+          value={formData.city}
+          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="Ex: Abidjan, Douala"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">
+          Région
+        </label>
+        <input
+          type="text"
+          id="region"
+          value={formData.region}
+          onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="Ex: Afrique de l'Ouest"
+        />
       </div>
 
       <div className="flex gap-3">

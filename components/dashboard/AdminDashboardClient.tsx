@@ -86,8 +86,8 @@ export default async function AdminDashboardClient() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Tableau de bord Admin</h1>
-        <p className="text-gray-600 mt-1">Bienvenue, {user.email}</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Tableau de bord Admin</h1>
+        <p className="text-gray-400 mt-1">Bienvenue, {user.email}</p>
       </div>
 
       {/* KPIs */}
@@ -96,19 +96,19 @@ export default async function AdminDashboardClient() {
           title="Utilisateurs"
           value={stats.totalUsers}
           icon={<Users className="w-6 h-6" />}
-          link="/admin/users"
+          link="/dashboard/admin/users"
         />
         <StatCard
           title="Commandes totales"
           value={stats.totalOrders}
           icon={<ShoppingBag className="w-6 h-6" />}
-          link="/admin/orders"
+          link="/dashboard/admin/orders"
         />
         <StatCard
           title="En attente"
           value={stats.pendingOrders}
           icon={<Clock className="w-6 h-6" />}
-          link="/admin/orders?status=pending"
+          link="/dashboard/admin/orders?status=pending"
           variant="warning"
         />
         <StatCard
@@ -133,19 +133,19 @@ export default async function AdminDashboardClient() {
               {stats.pendingDocuments} document(s) nécessitent votre validation
             </p>
             <Link
-              href="/dashboard/admin/products"
+              href="/dashboard/admin/documents"
               className="inline-block bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
             >
               Voir les documents
             </Link>
           </div>
         )}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Produits actifs</h2>
-          <p className="text-3xl font-bold text-gray-900 mb-2">{stats.activeProducts}</p>
+        <div className="bg-brand-bleu-ardoise/50 backdrop-blur-sm rounded-2xl border border-brand-anthracite/50 shadow-lg p-6">
+          <h2 className="text-lg font-semibold mb-4 text-white">Produits actifs</h2>
+          <p className="text-3xl font-bold text-white mb-2">{stats.activeProducts}</p>
           <Link
             href="/dashboard/admin/products"
-            className="text-emerald-600 hover:underline text-sm"
+            className="text-brand-or hover:text-brand-or-clair hover:underline text-sm font-medium transition-colors"
           >
             Voir tous les produits →
           </Link>
@@ -153,42 +153,42 @@ export default async function AdminDashboardClient() {
       </div>
 
       {/* Actions rapides */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Actions rapides</h2>
+      <div className="bg-brand-bleu-ardoise/50 backdrop-blur-sm rounded-2xl border border-brand-anthracite/50 shadow-lg p-6">
+        <h2 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+          <span className="w-1 h-5 bg-brand-or rounded-full block"></span>
+          Actions rapides
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/dashboard/admin/users"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <Users className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Gérer les utilisateurs</h3>
-            <p className="text-sm text-gray-600">Voir et modifier les utilisateurs</p>
+            <Users className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Gérer les utilisateurs</h3>
+            <p className="text-sm text-gray-400">Voir et modifier les utilisateurs</p>
           </Link>
           <Link
             href="/dashboard/admin/orders"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <ShoppingBag className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Gérer les commandes</h3>
-            <p className="text-sm text-gray-600">Suivre toutes les commandes</p>
+            <ShoppingBag className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Gérer les commandes</h3>
+            <p className="text-sm text-gray-400">Suivre toutes les commandes</p>
           </Link>
           <Link
-            href="/admin/validation"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            href="/dashboard/admin/documents"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <AlertCircle className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Validation</h3>
-            <p className="text-sm text-gray-600">Valider documents et boutiques</p>
+            <AlertCircle className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Validation</h3>
+            <p className="text-sm text-gray-400">Valider documents et boutiques</p>
           </Link>
         </div>
       </div>
 
       {/* Activités récentes */}
       {activities.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Activités récentes</h2>
-          <ActivityFeed activities={activities} />
-        </div>
+        <ActivityFeed activities={activities} />
       )}
     </div>
   );

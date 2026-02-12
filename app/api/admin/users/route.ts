@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { usersDB } from '@/lib/mock-data';
+import { getUsersForAdmin, deleteUserById } from '@/services/user.service';
+import { isAdminLike } from '@/lib/owner-roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +12,11 @@ export async function GET() {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const users = usersDB.getAll();
+  const users = await getUsersForAdmin();
   return NextResponse.json({ users });
 }
 
@@ -26,7 +27,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
@@ -37,11 +38,13 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'ID requis' }, { status: 400 });
   }
 
-  const deleted = usersDB.delete(id);
-  if (!deleted) {
-    return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 });
+  const result = await deleteUserById(id);
+  if (!result.success) {
+    return NextResponse.json(
+      { error: result.error || 'Utilisateur non trouvé' },
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({ success: true });
 }
-

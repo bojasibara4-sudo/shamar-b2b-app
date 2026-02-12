@@ -9,12 +9,14 @@ interface Payment {
   amount_total: number;
   commission_amount: number;
   vendor_amount: number;
+  seller_amount?: number;
   currency: string;
   status: 'initiated' | 'paid' | 'failed' | 'refunded';
   provider: string;
   created_at: string;
   buyer?: { email: string; company_name?: string };
   vendor?: { email: string; company_name?: string };
+  seller?: { email: string; company_name?: string };
 }
 
 export default function PaymentsMonitor() {
@@ -151,9 +153,9 @@ export default function PaymentsMonitor() {
                           Acheteur: {payment.buyer.company_name || payment.buyer.email}
                         </p>
                       )}
-                      {payment.vendor && (
+                      {payment.seller && (
                         <p className="text-xs text-gray-500">
-                          Vendeur: {payment.vendor.company_name || payment.vendor.email}
+                          Seller: {payment.seller.company_name || payment.seller.email}
                         </p>
                       )}
                     </div>
@@ -165,7 +167,7 @@ export default function PaymentsMonitor() {
                         Commission: {Number(payment.commission_amount).toLocaleString()} {payment.currency}
                       </p>
                       <p className="text-sm text-emerald-600">
-                        Vendeur: {Number(payment.vendor_amount).toLocaleString()} {payment.currency}
+                        Vendeur: {Number(payment.seller_amount || payment.vendor_amount).toLocaleString()} {payment.currency}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
                         {new Date(payment.created_at).toLocaleDateString('fr-FR')}

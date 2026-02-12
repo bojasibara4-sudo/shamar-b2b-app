@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { Bell, Globe, Shield, Moon } from 'lucide-react';
+import type { AppRole } from '@/services/auth.service';
 
 interface SettingsFormProps {
   user: {
     id: string;
     email: string;
-    role: 'admin' | 'seller' | 'buyer';
+    role: AppRole;
   };
 }
 

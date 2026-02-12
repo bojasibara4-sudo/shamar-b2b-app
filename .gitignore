@@ -38,3 +38,13 @@ next-env.d.ts
 audit/
 .next/
 *.lnk
+
+# artefacts temporaires (non committés)
+/design-system
+/antigravity
+/_archive
+/Marketplace-shamar--main
+
+# IDE / context
+.cursor
+*AI*Context*.txt

@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { order_id, reason, description } = body;
+    const { order_id, reason, description, amount_requested } = body;
 
     if (!order_id || !reason) {
       return NextResponse.json(
@@ -57,7 +57,8 @@ export async function POST(request: NextRequest) {
       user.id,
       againstUser,
       reason,
-      description
+      description,
+      amount_requested != null ? Number(amount_requested) : undefined
     );
 
     if (!dispute) {

@@ -1,139 +1,156 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
+/* CHAMA Design System — 02-mobile-ui/login/spec: Logo top center, Form card center, CTA primary full width, Secondary ghost */
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState<'email' | 'otp'>('email');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [redirectTo, setRedirectTo] = useState<string>('/');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const next = searchParams.get('next') || searchParams.get('redirect') || '/';
+    setRedirectTo(next);
+  }, [searchParams]);
+
+  async function sendOtp() {
+    if (!email) {
+      setError('Email requis');
+      return;
+    }
     setLoading(true);
     setError(null);
+    const callbackUrl = `${window.location.origin}/auth/callback${redirectTo !== '/' ? `?next=${encodeURIComponent(redirectTo)}` : ''}`;
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: callbackUrl },
+    });
+    setLoading(false);
+    if (!otpError) setStep('otp');
+    else setError(otpError.message);
+  }
 
-    try {
-      const supabase = createClient();
-
-      // Authentification directe avec Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError || !authData.session) {
-        throw new Error(authError?.message || 'Email ou mot de passe incorrect');
-      }
-
-      // Attendre que la session soit bien établie
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Erreur lors de la création de la session');
-      }
-
-      // Récupérer le profil utilisateur pour déterminer la redirection
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser) {
-        const { data: userProfile } = await (supabase as any)
-          .from('users')
-          .select('role')
-          .eq('id', authUser.id)
-          .single();
-
-        const role = userProfile?.role || 'buyer';
-        
-        // Rediriger selon le rôle ou la page demandée
-        const redirectedFrom = searchParams.get('redirectedFrom');
-        let redirectTo = '/dashboard';
-        
-        // Si la redirection vient d'une route protégée, la préserver
-        if (redirectedFrom && redirectedFrom.startsWith('/dashboard')) {
-          redirectTo = redirectedFrom;
-        } else {
-          // Redirection par défaut selon le rôle
-          if (role === 'admin') {
-            redirectTo = '/dashboard/admin';
-          } else if (role === 'seller') {
-            redirectTo = '/dashboard/seller';
-          } else if (role === 'buyer') {
-            redirectTo = '/dashboard/buyer';
-          } else {
-            redirectTo = '/dashboard';
-          }
-        }
-        
-        // Utiliser window.location.href pour forcer un rechargement complet
-        // Cela garantit que le middleware voit la nouvelle session
-        window.location.href = redirectTo;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur de connexion');
-      setLoading(false);
+  async function verifyOtp() {
+    if (!code) {
+      setError('Code requis');
+      return;
     }
-  };
+    setLoading(true);
+    setError(null);
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'email',
+    });
+    setLoading(false);
+    if (!verifyError) {
+      window.location.href = redirectTo;
+    } else {
+      setError(verifyError.message);
+    }
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Connexion
-        </h1>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Logo top center */}
+      <div className="flex justify-center pt-shamar-40 pb-shamar-24">
+        <Link href="/" className="text-shamar-h2 text-gray-900 font-semibold tracking-tight">
+          SHAMAR
+        </Link>
+      </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-            {error}
+      {/* Form card center */}
+      <div className="flex-1 flex items-start justify-center px-4 pb-shamar-40">
+        <div className="w-full max-w-md bg-gray-0 p-shamar-16 rounded-shamar-md shadow-shamar-soft border border-gray-200">
+          <h1 className="text-shamar-h2 text-gray-900 mb-shamar-24 text-center">
+            Connexion
+          </h1>
+
+          {error && (
+            <div className="mb-shamar-16 p-shamar-12 bg-danger-500/10 border border-danger-500/30 rounded-shamar-sm text-shamar-small text-danger-500 font-medium">
+              {error}
+            </div>
+          )}
+
+          {step === 'email' && (
+            <div className="space-y-shamar-16">
+              <Input
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="votre@email.com"
+                disabled={loading}
+              />
+              <Button
+                onClick={sendOtp}
+                disabled={loading}
+                isLoading={loading}
+                className="w-full"
+              >
+                Recevoir le code
+              </Button>
+            </div>
+          )}
+
+          {step === 'otp' && (
+            <div className="space-y-shamar-16">
+              <p className="text-shamar-body text-gray-600 mb-shamar-16">
+                Un code a été envoyé à <strong className="text-gray-900">{email}</strong>
+              </p>
+              <Input
+                id="code"
+                label="Code reçu par email"
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="12345678"
+                maxLength={8}
+                disabled={loading}
+              />
+              <Button
+                onClick={verifyOtp}
+                disabled={loading}
+                isLoading={loading}
+                className="w-full"
+              >
+                Se connecter
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setStep('email')}
+                disabled={loading}
+                className="w-full"
+              >
+                Renvoyer un nouveau code
+              </Button>
+            </div>
+          )}
+
+          <div className="mt-shamar-24 flex flex-col items-center gap-shamar-8 text-center">
+            <Link
+              href="/auth/forgot-password"
+              className="text-shamar-small text-primary-600 hover:underline"
+            >
+              Mot de passe oublié
+            </Link>
+            <Link
+              href="/auth/register"
+              className="text-shamar-small text-primary-600 hover:underline"
+            >
+              Créer un compte
+            </Link>
           </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Mot de passe
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 disabled:opacity-50"
-          >
-            {loading ? 'Connexion...' : 'Se connecter'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <Link href="/auth/register" className="text-sm text-emerald-600 hover:underline">
-            Créer un compte
-          </Link>
         </div>
       </div>
     </div>

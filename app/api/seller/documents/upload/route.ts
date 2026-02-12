@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     // Créer l'enregistrement dans la table documents
     const document = await createDocument(
       vendor.id,
-      type as 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre',
+      type as 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre' | 'id_card' | 'passport' | 'selfie' | 'proof_of_address',
       fileUrl
     );
 

@@ -10,7 +10,7 @@ export type PayoutStatus = 'pending' | 'sent' | 'failed';
 
 export interface Payout {
   id: string;
-  vendor_id: string;
+  seller_id: string;
   amount: number;
   currency: string;
   status: PayoutStatus;
@@ -41,7 +41,7 @@ export async function calculateVendorPendingAmount(userId: string): Promise<numb
     // Calculer le total des paiements payés
     let totalAmount = 0;
     payments.forEach((payment: any) => {
-      totalAmount += Number(payment.vendor_amount || 0);
+      totalAmount += Number(payment.seller_amount || 0);
     });
 
     // Soustraire les payouts déjà envoyés
@@ -80,7 +80,7 @@ export async function createPayout(
     const { data: payout, error } = await (supabase as any)
       .from('payouts')
       .insert({
-        vendor_id: vendorId,
+        seller_id: vendorId,
         amount,
         currency,
         status: 'pending',
@@ -149,7 +149,7 @@ export async function getVendorPayouts(userId: string): Promise<Payout[]> {
     const { data: payouts, error } = await (supabase as any)
       .from('payouts')
       .select('*')
-      .eq('vendor_id', userId)
+      .eq('seller_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) {

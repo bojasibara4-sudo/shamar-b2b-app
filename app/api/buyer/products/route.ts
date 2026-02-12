@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { productsDB } from '@/lib/mock-data';
+import { getProductsForBuyer } from '@/services/product.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +15,6 @@ export async function GET() {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const products = productsDB.getAll();
+  const products = await getProductsForBuyer();
   return NextResponse.json({ products });
 }
-

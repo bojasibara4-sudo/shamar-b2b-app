@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost' | 'premium' | 'premium-outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,33 +12,50 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
+/* CHAMA Design System — 04-components/buttons/spec: Height 40, Padding 16, Radius medium */
 const getVariantClasses = (variant: ButtonVariant): string => {
   switch (variant) {
     case 'primary':
-      return 'bg-black hover:bg-gray-800 text-white focus:ring-black';
+      return 'btn-primary text-white shadow-shamar-soft hover:shadow-shamar-medium';
     case 'secondary':
-      return 'bg-gray-200 hover:bg-gray-300 text-gray-800 focus:ring-gray-400';
+      return 'surface text-primary hover:opacity-90';
     case 'danger':
-      return 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500';
+      return 'text-white shadow-shamar-soft hover:shadow-shamar-medium';
     case 'outline':
-      return 'border border-gray-300 hover:bg-gray-100 text-gray-700 focus:ring-gray-200';
+      return 'border surface text-primary hover:opacity-90';
     case 'ghost':
-      return 'hover:bg-gray-100 text-gray-700 focus:ring-gray-200';
+      return 'text-primary hover:opacity-80';
+    case 'premium':
+      return 'badge-premium font-semibold hover:shadow-shamar-medium border';
+    case 'premium-outline':
+      return 'border badge-premium text-primary hover:opacity-90 font-semibold';
     default:
-      return 'bg-black hover:bg-gray-800 text-white focus:ring-black';
+      return 'btn-primary text-white shadow-shamar-soft hover:shadow-shamar-medium';
+  }
+};
+
+const getVariantStyles = (variant: ButtonVariant): React.CSSProperties => {
+  switch (variant) {
+    case 'danger':
+      return { backgroundColor: 'var(--danger-500, #EF4444)' };
+    case 'premium':
+    case 'premium-outline':
+      return { borderColor: 'var(--gold)' };
+    default:
+      return {};
   }
 };
 
 const getSizeClasses = (size: ButtonSize): string => {
   switch (size) {
     case 'sm':
-      return 'px-3 py-1.5 text-sm';
+      return 'h-9 px-shamar-12 text-shamar-small';
     case 'md':
-      return 'px-4 py-2 text-base';
+      return 'h-shamar-40 px-shamar-16 text-shamar-body';
     case 'lg':
-      return 'px-6 py-3 text-lg';
+      return 'h-12 px-shamar-24 text-shamar-body-lg';
     default:
-      return 'px-4 py-2 text-base';
+      return 'h-shamar-40 px-shamar-16 text-shamar-body';
   }
 };
 
@@ -52,14 +69,16 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseClasses =
-    'relative inline-flex items-center justify-center font-medium rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+    'relative inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
   const variantClasses = getVariantClasses(variant);
+  const variantStyles = getVariantStyles(variant);
   const sizeClasses = getSizeClasses(size);
   const disabledClasses = disabled || isLoading ? 'opacity-50 cursor-not-allowed' : '';
 
   return (
     <button
       className={`${baseClasses} ${variantClasses} ${sizeClasses} ${disabledClasses} ${className}`}
+      style={{ ...variantStyles, borderRadius: 'var(--radius, 14px)' }}
       disabled={disabled || isLoading}
       {...props}
     >

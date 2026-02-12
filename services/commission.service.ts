@@ -38,7 +38,7 @@ export async function getCommissionRate(
         .from('commissions')
         .select('percentage')
         .eq('category', category)
-        .eq('vendor_level', vendorLevel)
+        .eq('seller_level', vendorLevel)
         .single();
 
       if (categoryCommission) {
@@ -51,7 +51,7 @@ export async function getCommissionRate(
       .from('commissions')
       .select('percentage')
       .is('category', null)
-      .eq('vendor_level', vendorLevel)
+      .eq('seller_level', vendorLevel)
       .single();
 
     if (generalCommission) {
@@ -180,4 +180,66 @@ export async function getVendorTransactions(vendorId: string) {
     console.error('Error getting vendor transactions:', error);
     return [];
   }
+}
+
+/**
+ * Liste toutes les transactions/commissions (admin)
+ */
+export async function getCommissionsForAdmin(): Promise<
+  { id: string; order_id: string; seller_id: string; amount: number; commission_amount: number; seller_revenue: number; status: string; created_at: string }[]
+> {
+  const supabase = await createClient();
+  const { data, error } = await (supabase as any)
+    .from('transactions')
+    .select(`
+      id,
+      order_id,
+      amount,
+      commission_amount,
+      status,
+      created_at,
+      order:orders!transactions_order_id_fkey(seller_id)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('commission.service getCommissionsForAdmin:', error);
+    return [];
+  }
+  const rows = (data || []) as Array<{
+    id: string;
+    order_id: string;
+    amount: number;
+    commission_amount: number;
+    status: string;
+    created_at: string;
+    order?: { seller_id: string };
+  }>;
+  return rows.map((r) => ({
+    id: r.id,
+    order_id: r.order_id,
+    seller_id: r.order?.seller_id ?? '',
+    amount: Number(r.amount),
+    commission_amount: Number(r.commission_amount),
+    seller_revenue: Number(r.amount) - Number(r.commission_amount),
+    status: r.status,
+    created_at: r.created_at,
+  }));
+}
+
+/**
+ * Total des commissions plateforme (admin)
+ */
+export async function getTotalCommissionsPlatform(): Promise<number> {
+  const supabase = await createClient();
+  const { data, error } = await (supabase as any)
+    .from('transactions')
+    .select('commission_amount');
+
+  if (error) {
+    console.error('commission.service getTotalCommissionsPlatform:', error);
+    return 0;
+  }
+  const rows = (data || []) as Array<{ commission_amount: number }>;
+  return rows.reduce((sum, r) => sum + Number(r.commission_amount || 0), 0);
 }

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,99 +20,81 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas');
       setLoading(false);
       return;
     }
-
     if (password.length < 6) {
       setError('Le mot de passe doit contenir au moins 6 caractères');
       setLoading(false);
       return;
     }
-
     try {
       await signUp(email, password);
       router.push('/auth/login');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de l\'inscription');
+      setError(err instanceof Error ? err.message : "Erreur lors de l'inscription");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Créer un compte
-        </h1>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="flex justify-center pt-shamar-40 pb-shamar-24">
+        <Link href="/" className="text-shamar-h2 text-gray-900 font-semibold tracking-tight">
+          SHAMAR
+        </Link>
+      </div>
+      <div className="flex-1 flex items-start justify-center px-4 pb-shamar-40">
+        <div className="w-full max-w-md bg-gray-0 p-shamar-16 rounded-shamar-md shadow-shamar-soft border border-gray-200">
+          <h1 className="text-shamar-h2 text-gray-900 mb-shamar-24 text-center">
+            Créer un compte
+          </h1>
+          {error && (
+            <div className="mb-shamar-16 p-shamar-12 bg-danger-500/10 border border-danger-500/30 rounded-shamar-sm text-shamar-small text-danger-500 font-medium">
+              {error}
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-shamar-16">
+            <Input
               id="email"
+              label="Email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Mot de passe
-            </label>
-            <input
+            <Input
               id="password"
+              label="Mot de passe"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              helperText="Minimum 6 caractères"
               required
             />
-            <p className="mt-1 text-xs text-gray-500">Minimum 6 caractères</p>
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirmer le mot de passe
-            </label>
-            <input
+            <Input
               id="confirmPassword"
+              label="Confirmer le mot de passe"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
+            <Button type="submit" disabled={loading} isLoading={loading} className="w-full">
+              Créer un compte
+            </Button>
+          </form>
+          <div className="mt-shamar-24 text-center">
+            <Link
+              href="/auth/login"
+              className="text-shamar-small text-primary-600 hover:underline"
+            >
+              Déjà un compte ? Se connecter
+            </Link>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 disabled:opacity-50"
-          >
-            {loading ? 'Inscription...' : 'Créer un compte'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <Link href="/auth/login" className="text-sm text-emerald-600 hover:underline">
-            Déjà un compte ? Se connecter
-          </Link>
         </div>
       </div>
     </div>

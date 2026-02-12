@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { createStripePayment } from '@/services/payment.service';
 import { isVendorVerified } from '@/lib/vendor-utils';
+import { analyzeTransaction } from '@/services/security.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,6 +87,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Analyse fraude ASB (async, non bloquante)
+    const { data: userRow } = await (supabase as any)
+      .from('users')
+      .select('created_at')
+      .eq('id', user.id)
+      .single();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const isNewUser = userRow?.created_at ? new Date(userRow.created_at) > thirtyDaysAgo : false;
+    analyzeTransaction(user.id, Number(orderData.total_amount), order_id, { isNewUser }).catch(() => {});
 
     // Créer le paiement Stripe
     const result = await createStripePayment(

@@ -28,14 +28,20 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'generateArguments':
-        result = await perplexityService.generateNegotiationArguments(params);
+      case 'assistNegotiation':
+        result = await perplexityService.generateNegotiationArguments(params.context || params);
         break;
-      case 'comparePrices':
-        result = await perplexityService.comparePrices(
-          params.product,
-          params.chinaPrice,
-          params.localPrice,
-          params.currency
+      case 'generateProductDescription':
+        result = await perplexityService.generateProductDescription(
+          params.productName,
+          params.category
+        );
+        break;
+      case 'translate':
+        result = await perplexityService.translate(
+          params.text,
+          params.from,
+          params.to
         );
         break;
       case 'generateObjectionResponses':

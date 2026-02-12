@@ -24,15 +24,16 @@ export default async function SellerProductsPage() {
     }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+      <div className="space-y-shamar-32 animate-in fade-in duration-500">
+        <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
             <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                Mes <span className="text-indigo-600">Produits</span>
+              <h1 className="text-shamar-h1 text-gray-900 tracking-tight mb-2">
+                Mes <span className="text-primary-600">Produits</span>
               </h1>
-              <p className="text-lg text-slate-500 font-medium">
+              <p className="text-shamar-body text-gray-500 font-medium">
                 Gérez vos produits et catalogues
               </p>
             </div>
@@ -40,40 +41,40 @@ export default async function SellerProductsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
-            <h2 className="text-xl font-black text-slate-900 mb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-shamar-24">
+          <div className="bg-gray-0 rounded-shamar-md border border-gray-200 shadow-shamar-soft p-shamar-24">
+            <h2 className="text-shamar-h3 font-semibold text-gray-900 mb-shamar-16">
               Créer un produit
             </h2>
             <ProductFormClient />
           </div>
 
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
-            <h2 className="text-xl font-black text-slate-900 mb-4">
+          <div className="bg-gray-0 rounded-shamar-md border border-gray-200 shadow-shamar-soft p-shamar-24">
+            <h2 className="text-shamar-h3 font-semibold text-gray-900 mb-shamar-16">
               Mes produits ({products.length})
             </h2>
             {products.length === 0 ? (
-              <p className="text-slate-500 text-center py-12 font-medium">Aucun produit</p>
+              <p className="text-gray-500 text-center py-shamar-48 font-medium text-shamar-body">Aucun produit</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-shamar-16">
                 {products.map((product) => (
                   <div
                     key={product.id}
-                    className="border border-slate-200 rounded-[1.5rem] p-4 hover:shadow-lg transition-all"
+                    className="border border-gray-200 rounded-shamar-md p-shamar-16 hover:shadow-shamar-soft transition-all"
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="font-black text-slate-900 text-lg">
+                        <h3 className="font-semibold text-gray-900 text-shamar-body">
                           {product.name}
                         </h3>
-                        <p className="text-sm text-slate-600 mt-1 font-medium line-clamp-2">
+                        <p className="text-shamar-small text-gray-600 mt-1 font-medium line-clamp-2">
                           {product.description}
                         </p>
-                        <p className="text-xl font-black text-slate-900 mt-2">
+                        <p className="text-shamar-body font-semibold text-gray-900 mt-2">
                           {Number(product.price || 0).toLocaleString()} {product.currency || 'FCFA'}
                         </p>
-                        <p className="text-xs text-slate-500 mt-1 font-medium">
-                          Statut: <span className={`font-black ${product.status === 'active' ? 'text-emerald-600' : 'text-slate-600'}`}>
+                        <p className="text-shamar-caption text-gray-500 mt-1 font-medium">
+                          Statut: <span className={`font-semibold ${product.status === 'active' ? 'text-success-500' : 'text-gray-600'}`}>
                             {product.status === 'active' ? 'Actif' : 'Inactif'}
                           </span>
                         </p>
@@ -81,7 +82,7 @@ export default async function SellerProductsPage() {
                       <div className="flex gap-2 ml-4">
                         <Link
                           href={`/dashboard/seller/products/${product.id}`}
-                          className="px-4 py-2 bg-slate-900 text-white text-sm rounded-xl font-black hover:bg-slate-800 transition-all"
+                          className="px-shamar-16 py-2 bg-primary-600 text-white text-shamar-small rounded-shamar-md font-semibold hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                         >
                           Modifier
                         </Link>
@@ -98,6 +99,7 @@ export default async function SellerProductsPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

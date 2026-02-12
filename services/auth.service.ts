@@ -1,7 +1,10 @@
+/** Rôles applicatifs (admin/seller/buyer + hiérarchie owner + rôles métier) */
+export type AppRole = 'buyer' | 'seller' | 'admin' | 'super_admin' | 'vice_admin' | 'partner' | 'apple' | 'owner_root' | 'owner_exec' | 'admin_staff';
+
 export type User = {
   id: string;
   email: string;
-  role: 'admin' | 'seller' | 'buyer';
+  role: AppRole;
 };
 
 export type LoginResponse = {

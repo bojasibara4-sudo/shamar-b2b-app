@@ -3,13 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import ProductForm from './ProductForm';
+import ProductForm, { type ProductFormData } from './ProductForm';
 
 type ProductFormClientProps = {
   initialData?: {
     name: string;
     description: string;
     price: number;
+    category?: string;
+    min_order_quantity?: number;
+    specifications?: Record<string, unknown>;
+    price_tiers?: { min_quantity: number; price: number }[];
   };
   productId?: string;
 };
@@ -21,19 +25,13 @@ export default function ProductFormClient({
   const router = useRouter();
   const { profile, loading } = useAuth();
 
-  // Redirection si l'utilisateur n'est pas seller
   useEffect(() => {
     if (!loading && profile && profile.role !== 'seller') {
       router.push('/dashboard');
     }
   }, [profile, loading, router]);
 
-  const handleSubmit = async (data: {
-    name: string;
-    description: string;
-    price: string;
-  }) => {
-    // Vérification du rôle avant soumission
+  const handleSubmit = async (data: ProductFormData) => {
     if (!profile || profile.role !== 'seller') {
       alert('Seuls les vendeurs peuvent créer ou modifier des produits');
       router.push('/dashboard');
@@ -45,14 +43,20 @@ export default function ProductFormClient({
       : '/api/seller/products';
     const method = productId ? 'PUT' : 'POST';
 
+    const body: Record<string, unknown> = {
+      name: data.name,
+      description: data.description,
+      price: parseFloat(data.price),
+      category: data.category || 'other',
+      min_order_quantity: Math.max(1, parseInt(data.min_order_quantity, 10) || 1),
+      specifications: Object.keys(data.specifications || {}).length ? data.specifications : {},
+      price_tiers: (data.price_tiers || []).filter((t) => Number(t.min_quantity) >= 0 && Number(t.price) >= 0),
+    };
+
     const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: data.name,
-        description: data.description,
-        price: parseFloat(data.price),
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

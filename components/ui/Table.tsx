@@ -20,6 +20,7 @@ interface TableProps<T> {
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
+  variant?: 'default' | 'premium';
 }
 
 export const Table = <T extends { id?: string | number }>({
@@ -31,6 +32,7 @@ export const Table = <T extends { id?: string | number }>({
   currentPage,
   totalPages,
   onPageChange,
+  variant = 'default',
 }: TableProps<T>) => {
   if (isLoading) {
     return (
@@ -55,9 +57,9 @@ export const Table = <T extends { id?: string | number }>({
   }
 
   return (
-    <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+    <div className={`overflow-x-auto relative shadow-md sm:rounded-lg ${variant === 'premium' ? 'border border-brand-anthracite/50 bg-brand-bleu-nuit/30 backdrop-blur-sm' : ''}`}>
+      <table className={`w-full text-sm text-left ${variant === 'premium' ? 'text-gray-300' : 'text-gray-500'}`}>
+        <thead className={`text-xs uppercase ${variant === 'premium' ? 'bg-brand-bleu-nuit text-brand-or font-black' : 'bg-gray-50 text-gray-700'}`}>
           <tr>
             {columns.map((column, index) => (
               <th
@@ -70,19 +72,25 @@ export const Table = <T extends { id?: string | number }>({
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className={variant === 'premium' ? 'divide-y divide-brand-anthracite/30' : ''}>
           {data.map((item, rowIndex) => (
-            <tr key={item.id || rowIndex} className="bg-white border-b hover:bg-gray-50">
+            <tr
+              key={item.id || rowIndex}
+              className={`border-b transition-colors ${variant === 'premium'
+                ? 'bg-transparent border-brand-anthracite/30 hover:bg-brand-bleu-nuit/60 group'
+                : 'bg-white hover:bg-gray-50'
+                }`}
+            >
               {columns.map((column, colIndex) => (
                 <td
                   key={typeof column.key === 'string' ? `${item.id}-${column.key}` : `cell-${rowIndex}-${colIndex}`}
-                  className={`py-4 px-6 ${column.className || ''}`}
+                  className={`py-4 px-6 ${column.className || ''} ${variant === 'premium' && column.key !== 'actions' ? 'group-hover:text-white' : ''}`}
                 >
-                  {column.render 
-                    ? column.render(item) 
+                  {column.render
+                    ? column.render(item)
                     : column.key !== 'actions' && typeof column.key === 'string'
-                    ? String(item[column.key as keyof T] ?? '')
-                    : null}
+                      ? String(item[column.key as keyof T] ?? '')
+                      : null}
                 </td>
               ))}
             </tr>
@@ -90,11 +98,12 @@ export const Table = <T extends { id?: string | number }>({
         </tbody>
       </table>
       {currentPage && totalPages && onPageChange && totalPages > 1 && (
-        <div className="p-4 bg-white border-t flex justify-center">
+        <div className={`p-4 border-t flex justify-center ${variant === 'premium' ? 'bg-brand-bleu-nuit/50 border-brand-anthracite/30' : 'bg-white'}`}>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
+            variant={variant}
           />
         </div>
       )}
@@ -107,10 +116,12 @@ function Pagination({
   currentPage,
   totalPages,
   onPageChange,
+  variant = 'default',
 }: {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  variant?: 'default' | 'premium';
 }) {
   const pages: (number | '...')[] = [];
   const maxVisible = 5;
@@ -129,27 +140,38 @@ function Pagination({
     pages.push(totalPages);
   }
 
+  const buttonBase = variant === 'premium'
+    ? 'border rounded-lg text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-or/50'
+    : 'border rounded text-sm';
+
+  const activeClass = variant === 'premium'
+    ? 'bg-brand-or text-brand-noir border-brand-or font-bold shadow-lg shadow-brand-or/20'
+    : 'bg-black text-white border-black';
+
+  const inactiveClass = variant === 'premium'
+    ? 'border-brand-anthracite text-gray-400 hover:text-white hover:border-brand-or hover:bg-brand-bleu-nuit'
+    : 'border-gray-300 hover:bg-gray-50';
+
+  const disabledClass = 'opacity-50 cursor-not-allowed';
+
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex items-center space-x-2">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+        className={`px-3 py-1.5 ${buttonBase} ${inactiveClass} ${currentPage === 1 ? disabledClass : ''}`}
       >
         ‹
       </button>
       {pages.map((page, idx) =>
         page === '...' ? (
-          <span key={idx} className="px-3 py-1 text-sm text-gray-500">...</span>
+          <span key={idx} className={`px-3 py-1 text-sm ${variant === 'premium' ? 'text-gray-500' : 'text-gray-500'}`}>...</span>
         ) : (
           <button
             key={page}
             onClick={() => onPageChange(page as number)}
-            className={`px-3 py-1 border rounded text-sm ${
-              page === currentPage
-                ? 'bg-black text-white border-black'
-                : 'border-gray-300 hover:bg-gray-50'
-            }`}
+            className={`px-3 py-1.5 ${buttonBase} ${page === currentPage ? activeClass : inactiveClass
+              }`}
           >
             {page}
           </button>
@@ -158,7 +180,7 @@ function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+        className={`px-3 py-1.5 ${buttonBase} ${inactiveClass} ${currentPage === totalPages ? disabledClass : ''}`}
       >
         ›
       </button>

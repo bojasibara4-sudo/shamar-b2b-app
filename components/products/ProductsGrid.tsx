@@ -48,13 +48,13 @@ export default function ProductsGrid({ products }: ProductsGridProps) {
               <button className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-md rounded-full text-slate-400 hover:text-rose-500 transition-colors">
                 <Heart size={18} />
               </button>
-              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-indigo-600 text-white text-[9px] font-black uppercase tracking-widest rounded">B2B</span>
+              <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-brand-bleu-nuit text-white text-[9px] font-black uppercase tracking-widest rounded">B2B</span>
             </div>
             <div className="p-4">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Produit</p>
               <h3 className="font-bold text-slate-900 truncate mt-1">{product.name}</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">{product.description}</p>
-              <p className="text-emerald-600 font-black text-lg mt-2">{product.price.toLocaleString()} FCFA</p>
+              <p className="text-brand-vert font-black text-lg mt-2">{product.price.toLocaleString()} FCFA</p>
               {/* Afficher le bouton de commande uniquement pour les buyers */}
               {!authLoading && userRole === 'buyer' && (
                 <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
@@ -69,9 +69,9 @@ export default function ProductsGrid({ products }: ProductsGridProps) {
         {!authLoading && userRole === 'seller' && (
           <div 
             onClick={handleAddProductClick}
-            className="border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-6 text-center space-y-3 hover:border-emerald-300 transition-colors cursor-pointer group"
+            className="border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-6 text-center space-y-3 hover:border-brand-vert/40 transition-colors cursor-pointer group"
           >
-            <div className="p-4 bg-slate-100 rounded-full text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-all">
+            <div className="p-4 bg-slate-100 rounded-full text-slate-400 group-hover:bg-brand-vert-clair group-hover:text-brand-vert transition-all">
               <Upload size={32} />
             </div>
             <div>

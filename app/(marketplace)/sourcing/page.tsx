@@ -2,94 +2,75 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { 
-  Briefcase, 
-  ShoppingBag, 
-  Globe, 
-  Palmtree, 
-  Factory, 
-  ExternalLink,
+import {
+  Search,
+  FileText,
+  MessageSquare,
+  FileSignature,
+  Truck,
+  CreditCard,
+  ShieldCheck,
   Sparkles,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 
-export default function SourcingPage() {
-  const segments = [
-    { id: 'b2b', label: 'Business B2B', icon: <Briefcase size={32} />, color: 'bg-indigo-600', desc: 'Vente en gros et solutions entreprises', href: '/b2b' },
-    { id: 'b2c', label: 'Marketplace B2C', icon: <ShoppingBag size={32} />, color: 'bg-emerald-600', desc: 'Produits pour particuliers', href: '/b2c' },
-    { id: 'international', label: 'Business International', icon: <Globe size={32} />, color: 'bg-blue-600', desc: 'Import-Export & Sourcing global', href: '/international' },
-    { id: 'airbnb', label: 'Airbnb & Tourisme', icon: <Palmtree size={32} />, color: 'bg-rose-500', desc: 'Hôtels, résidences et zones touristiques', href: '/airbnb' },
-    { id: 'matiere-premiere', label: 'Matières Premières', icon: <Factory size={32} />, color: 'bg-amber-600', desc: 'Agricole & Mines : Coopératives et Entreprises', href: '/negociation' },
-  ];
+/**
+ * Hub Sourcing — centre de commande (vision validée).
+ * Pipeline : Trouver → Comparer → Négocier → Contracter → Payer → Livrer → Sécuriser.
+ */
+const modules = [
+  { id: 'search', label: 'Recherche fournisseurs', icon: Search, href: '/sourcing/search', desc: 'Trouver entreprises, usines, grossistes' },
+  { id: 'rfq', label: 'Demande devis (RFQ)', icon: FileText, href: '/sourcing/rfq', desc: 'Créer et suivre vos demandes de devis' },
+  { id: 'negotiations', label: 'Négociations', icon: MessageSquare, href: '/sourcing/rfq', desc: 'Chat business et contre-offres' },
+  { id: 'contracts', label: 'Contrats', icon: FileSignature, href: '/sourcing/contracts', desc: 'Contrats et signatures' },
+  { id: 'logistics', label: 'Logistique', icon: Truck, href: '/sourcing/logistics', desc: 'Transport, tracking, livraison' },
+  { id: 'payments', label: 'Paiements', icon: CreditCard, href: '/sourcing/payments', desc: 'Escrow et libération des fonds' },
+  { id: 'verified', label: 'Fournisseurs validés', icon: ShieldCheck, href: '/sourcing/verified', desc: 'Partenaires officiels Shamar' },
+  { id: 'ai', label: 'IA assistant', icon: Sparkles, href: '/sourcing/search', desc: 'Aide recherche, négociation, traduction' },
+];
 
+export default function SourcingHubPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-12 animate-in fade-in duration-700">
-        <div className="flex flex-col md:flex-row items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-tight">
-              Bienvenue dans l'écosystème <span className="text-emerald-600">SHAMAR</span>.
-            </h1>
-            <p className="text-lg text-slate-500 mt-2 font-medium">
-              Une plateforme unifiée pour le commerce, les services et l'industrie.
-            </p>
-          </div>
-        </div>
+    <div className="min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+      <div className="space-y-shamar-40">
+        <header>
+          <h1 className="text-shamar-h1 text-gray-900 tracking-tight">
+            Sourcing — Hub central
+          </h1>
+          <p className="mt-2 text-gray-600 max-w-2xl text-shamar-body">
+            Pipeline complet import/export : Trouver → Comparer → Négocier → Contracter → Payer → Livrer → Sécuriser.
+          </p>
+        </header>
 
-        {/* External AI Studio Banner */}
-        <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden group shadow-2xl">
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="max-w-xl space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-black uppercase tracking-widest text-emerald-400">
-                <Sparkles size={14} /> Intelligence Artificielle
-              </div>
-              <h2 className="text-4xl font-black leading-tight">Propulsez votre catalogue avec Google AI</h2>
-              <p className="text-slate-400 text-lg">
-                Utilisez Google AI Studio pour générer des descriptions et des visuels produits de haute qualité en quelques secondes.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <a 
-                  href="https://aistudio.google.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl font-black hover:bg-emerald-50 transition-all active:scale-95"
-                >
-                  Ouvrir Google AI Studio <ExternalLink size={18} />
-                </a>
-                <p className="text-xs text-slate-500 italic max-w-[200px] text-center sm:text-left">
-                  Génération traitée exclusivement sur la plateforme de Google.
-                </p>
-              </div>
-            </div>
-            <div className="hidden lg:block w-72 h-72 bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-3xl rotate-12 opacity-80 blur-2xl absolute -right-12 top-0"></div>
-            <div className="relative w-64 h-64 flex items-center justify-center bg-white/5 border border-white/10 rounded-[3rem] backdrop-blur-3xl animate-pulse">
-              <Sparkles size={80} className="text-emerald-400" />
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {segments.map((s) => (
-            <Link
-              key={s.id}
-              href={s.href}
-              className="group bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all text-left flex flex-col h-full"
-            >
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-white mb-6 ${s.color} transition-transform group-hover:scale-110`}>
-                {s.icon}
-              </div>
-              <h3 className="text-xl font-black text-slate-900">{s.label}</h3>
-              <p className="text-slate-500 mt-2 text-sm leading-relaxed flex-1">
-                {s.desc}
-              </p>
-              <div className="mt-8 flex items-center justify-between">
-                <span className="text-sm font-bold text-emerald-600 group-hover:translate-x-1 transition-transform inline-flex items-center gap-2">
-                  Explorer maintenant <ArrowRight size={16} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-shamar-24">
+          {modules.map((m) => {
+            const Icon = m.icon;
+            return (
+              <Link
+                key={m.id}
+                href={m.href}
+                className="group flex flex-col p-shamar-24 rounded-shamar-md border border-gray-200 bg-gray-0 shadow-shamar-soft hover:shadow-shamar-medium hover:border-primary-600/30 transition-all text-left"
+              >
+                <div className="w-12 h-12 rounded-shamar-md bg-primary-100 text-primary-600 flex items-center justify-center mb-shamar-16 group-hover:bg-primary-200 transition-colors">
+                  <Icon size={24} />
+                </div>
+                <h2 className="text-shamar-body font-semibold text-gray-900">{m.label}</h2>
+                <p className="mt-1 text-shamar-small text-gray-600 flex-1">{m.desc}</p>
+                <span className="mt-shamar-16 inline-flex items-center gap-1 text-shamar-small font-medium text-primary-600">
+                  Accéder <ArrowRight size={14} />
                 </span>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
+
+        <div className="pt-shamar-24 border-t border-gray-200">
+          <p className="text-shamar-small text-gray-600 font-medium">
+            Commandes : <Link href="/sourcing/orders" className="text-primary-600 font-semibold hover:underline">Voir mes commandes sourcing</Link>
+          </p>
+        </div>
+      </div>
       </div>
     </div>
   );

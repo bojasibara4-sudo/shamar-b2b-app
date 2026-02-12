@@ -2,11 +2,11 @@
 -- MIGRATION MÉTIER SHAMAR B2B
 -- ============================================
 -- Ce fichier crée toutes les tables métier manquantes :
--- vendors, shops (complété), documents, badges, commissions, transactions
+-- sellers (vendors), shops (complété), documents, badges, commissions, transactions
 -- À exécuter dans l'éditeur SQL de Supabase APRÈS supabase-schema.sql
 
 -- ============================================
--- 1. TABLE VENDORS (Profils vendeurs avec niveaux)
+-- 1. TABLE VENDORS (Profils sellers avec niveaux)
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.vendors (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,7 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_shops_is_verified ON public.shops(is_verified);
 -- Note: Si des données existent, il faudra migrer owner_id → vendor_id
 
 -- ============================================
--- 3. TABLE DOCUMENTS (Documents légaux pour validation vendeurs)
+-- 3. TABLE DOCUMENTS (Documents légaux pour validation sellers)
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -79,7 +79,7 @@ CREATE INDEX IF NOT EXISTS idx_badges_code ON public.badges(code);
 CREATE INDEX IF NOT EXISTS idx_badges_category ON public.badges(category);
 
 -- ============================================
--- 5. TABLE VENDOR_BADGES (Attribution badges aux vendeurs)
+-- 5. TABLE VENDOR_BADGES (Attribution badges aux sellers)
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.vendor_badges (
   vendor_id UUID NOT NULL REFERENCES public.vendors(id) ON DELETE CASCADE,
@@ -137,14 +137,14 @@ ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 -- ============================================
 -- 9. RLS POLICIES - VENDORS
 -- ============================================
--- Les vendeurs peuvent voir leur propre profil
-CREATE POLICY "Vendors can view their own profile" ON public.vendors
+-- Les sellers peuvent voir leur propre profil
+CREATE POLICY "Sellers can view their own profile" ON public.vendors
   FOR SELECT USING (
     user_id = auth.uid() OR
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
--- Seuls les admins peuvent créer/modifier des vendors
+-- Seuls les admins peuvent créer/modifier des sellers (vendors)
 CREATE POLICY "Only admins can manage vendors" ON public.vendors
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
@@ -157,8 +157,8 @@ CREATE POLICY "Only admins can manage vendors" ON public.vendors
 CREATE POLICY "Verified shops are viewable by everyone" ON public.shops
   FOR SELECT USING (is_verified = TRUE);
 
--- Les vendeurs peuvent voir leurs propres boutiques
-CREATE POLICY "Vendors can view their own shops" ON public.shops
+-- Les sellers peuvent voir leurs propres boutiques
+CREATE POLICY "Sellers can view their own shops" ON public.shops
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.vendors
@@ -168,8 +168,8 @@ CREATE POLICY "Vendors can view their own shops" ON public.shops
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
--- Les vendeurs peuvent créer leurs boutiques
-CREATE POLICY "Vendors can create their own shops" ON public.shops
+-- Les sellers peuvent créer leurs boutiques
+CREATE POLICY "Sellers can create their own shops" ON public.shops
   FOR INSERT WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.vendors
@@ -179,8 +179,8 @@ CREATE POLICY "Vendors can create their own shops" ON public.shops
     )
   );
 
--- Les vendeurs peuvent modifier leurs boutiques (sauf is_verified)
-CREATE POLICY "Vendors can update their own shops" ON public.shops
+-- Les sellers peuvent modifier leurs boutiques (sauf is_verified)
+CREATE POLICY "Sellers can update their own shops" ON public.shops
   FOR UPDATE USING (
     EXISTS (
       SELECT 1 FROM public.vendors
@@ -201,8 +201,8 @@ CREATE POLICY "Only admins can verify shops" ON public.shops
 -- ============================================
 -- 11. RLS POLICIES - DOCUMENTS
 -- ============================================
--- Les vendeurs peuvent voir leurs propres documents
-CREATE POLICY "Vendors can view their own documents" ON public.documents
+-- Les sellers peuvent voir leurs propres documents
+CREATE POLICY "Sellers can view their own documents" ON public.documents
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.vendors
@@ -212,8 +212,8 @@ CREATE POLICY "Vendors can view their own documents" ON public.documents
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
--- Les vendeurs peuvent créer leurs documents
-CREATE POLICY "Vendors can create their own documents" ON public.documents
+-- Les sellers peuvent créer leurs documents
+CREATE POLICY "Sellers can create their own documents" ON public.documents
   FOR INSERT WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.vendors
@@ -245,7 +245,7 @@ CREATE POLICY "Only admins can manage badges" ON public.badges
 -- 13. RLS POLICIES - VENDOR_BADGES
 -- ============================================
 -- Tous peuvent voir les badges attribués
-CREATE POLICY "Vendor badges are viewable by everyone" ON public.vendor_badges
+CREATE POLICY "Seller badges are viewable by everyone" ON public.vendor_badges
   FOR SELECT USING (true);
 
 -- Seuls les admins peuvent attribuer des badges (via fonction RPC recommandée)
@@ -270,7 +270,7 @@ CREATE POLICY "Only admins can manage commissions" ON public.commissions
 -- ============================================
 -- 15. RLS POLICIES - TRANSACTIONS
 -- ============================================
--- Les vendeurs et acheteurs peuvent voir leurs transactions
+-- Les sellers et acheteurs peuvent voir leurs transactions
 CREATE POLICY "Users can view their transactions" ON public.transactions
   FOR SELECT USING (
     EXISTS (

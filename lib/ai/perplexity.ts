@@ -95,14 +95,9 @@ Réponds en français, de manière concise et professionnelle.`;
   }
 
   /**
-   * Analyse comparée prix Chine / marché local
+   * Génère une description de produit (rédaction)
    */
-  async comparePrices(
-    product: string,
-    chinaPrice: number,
-    localPrice: number,
-    currency: 'FCFA' | 'USD' | 'EUR'
-  ): Promise<PerplexityResponse> {
+  async generateProductDescription(productName: string, category: string): Promise<PerplexityResponse> {
     if (!PERPLEXITY_API_KEY) {
       return {
         success: false,
@@ -111,12 +106,11 @@ Réponds en français, de manière concise et professionnelle.`;
     }
 
     try {
-      const prompt = `Compare les prix pour "${product}" :
-- Prix Chine : ${chinaPrice} ${currency}
-- Prix marché local : ${localPrice} ${currency}
+      const prompt = `Génère une description professionnelle en français pour un produit B2B :
+Nom: ${productName}
+Catégorie: ${category}
 
-Analyse les avantages et inconvénients de chaque option, incluant les coûts logistiques et les délais.
-Réponds en français de manière structurée.`;
+La description doit être concise (2-3 phrases), professionnelle et mettre en avant les avantages pour les acheteurs B2B.`;
 
       const response = await fetch(PERPLEXITY_API_URL, {
         method: 'POST',
@@ -127,13 +121,10 @@ Réponds en français de manière structurée.`;
         body: JSON.stringify({
           model: 'llama-3.1-sonar-large-128k-online',
           messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
+            { role: 'user', content: prompt },
           ],
           temperature: 0.7,
-          max_tokens: 600,
+          max_tokens: 400,
         }),
       });
 
@@ -149,7 +140,59 @@ Réponds en français de manière structurée.`;
         message,
       };
     } catch (error) {
-      console.error('Perplexity price comparison error:', error);
+      console.error('Perplexity product description error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Traduit un texte (FR ↔ EN, rédaction / aide utilisateur)
+   */
+  async translate(inputText: string, from: 'fr' | 'en', to: 'fr' | 'en'): Promise<PerplexityResponse> {
+    if (!PERPLEXITY_API_KEY) {
+      return {
+        success: false,
+        error: 'Perplexity API key not configured',
+      };
+    }
+
+    try {
+      const langFrom = from === 'fr' ? 'français' : 'anglais';
+      const langTo = to === 'fr' ? 'français' : 'anglais';
+      const prompt = `Traduis ce texte de ${langFrom} vers ${langTo}. Réponds uniquement avec la traduction, sans explication:\n"${inputText}"`;
+
+      const response = await fetch(PERPLEXITY_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-large-128k-online',
+          messages: [
+            { role: 'user', content: prompt },
+          ],
+          temperature: 0.2,
+          max_tokens: 500,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Perplexity API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const message = data.choices?.[0]?.message?.content?.trim() || '';
+
+      return {
+        success: true,
+        message,
+      };
+    } catch (error) {
+      console.error('Perplexity translation error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

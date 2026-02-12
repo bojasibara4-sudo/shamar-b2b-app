@@ -176,10 +176,10 @@ export async function assignBadgesAuto(vendorId: string): Promise<void> {
   const supabase = await createClient();
 
   try {
-    // Récupérer le vendor
+    // Récupérer le vendor (user_id pour orders.seller_id)
     const { data: vendor } = await (supabase as any)
       .from('vendors')
-      .select('status, level')
+      .select('status, level, user_id')
       .eq('id', vendorId)
       .single();
 
@@ -212,12 +212,13 @@ export async function assignBadgesAuto(vendorId: string): Promise<void> {
       }
     }
 
-    // Badge "Top Vendeur" : si level = 'gold' ou 'premium' et >= 100 commandes
+    // Badge "Top Vendeur" : si level = 'gold' ou 'premium' et >= 100 commandes (orders.seller_id = user_id)
     if (vendor.level === 'gold' || vendor.level === 'premium') {
+      const sellerUserId = vendor.user_id ?? vendorId;
       const { data: orders } = await (supabase as any)
         .from('orders')
         .select('id')
-        .eq('seller_id', vendorId)
+        .eq('seller_id', sellerUserId)
         .in('status', ['CONFIRMED', 'SHIPPED', 'DELIVERED']);
 
       if (orders && orders.length >= 100) {

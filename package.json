@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
+    "clean": "node -e \"try{require('fs').rmSync('.next',{recursive:true,force:true});console.log('OK .next supprimé');}catch(e){console.warn('(ignoré) .next:', e.message);}\"",
+    "rebuild": "npm run clean && npm run build",
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx scripts/seed-data.ts"
@@ -15,12 +17,14 @@
     "@stripe/stripe-js": "^8.6.1",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^3.6.0",
-    "stripe": "^20.1.2"
+    "stripe": "^20.1.2",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",

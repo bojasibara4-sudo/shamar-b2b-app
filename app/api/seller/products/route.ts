@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, description, price, category, currency, image_url, shop_id } = body;
+    const { name, description, price, category, currency, image_url, shop_id, specifications, price_tiers, min_order_quantity } = body;
 
     if (!name || !description || price === undefined) {
       return NextResponse.json(
@@ -116,11 +116,14 @@ export async function POST(request: NextRequest) {
         description,
         price: Number(price),
         seller_id: user.id,
-        shop_id: finalShopId, // OBLIGATOIRE
+        shop_id: finalShopId,
         category: category || 'other',
         currency: currency || 'FCFA',
         image_url: image_url || null,
         status: 'active',
+        specifications: specifications && typeof specifications === 'object' ? specifications : {},
+        price_tiers: Array.isArray(price_tiers) ? price_tiers : [],
+        min_order_quantity: typeof min_order_quantity === 'number' && min_order_quantity >= 1 ? min_order_quantity : 1,
       })
       .select()
       .single();

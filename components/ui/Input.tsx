@@ -10,6 +10,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: InputType;
   error?: string;
   helperText?: string;
+  variant?: 'default' | 'premium';
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -19,27 +20,31 @@ export const Input: React.FC<InputProps> = ({
   error,
   helperText,
   className = '',
+  variant = 'default',
   ...props
 }) => {
+  /* CHAMA Design System — 04-components/forms/spec: Height 40, Radius 8, Border Gray-300, Focus Primary-600, Error Danger-500, Label top */
   const baseClasses =
-    'block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm';
-  const errorClasses = error ? 'border-red-500 focus:ring-red-500' : '';
+    variant === 'premium'
+      ? 'block w-full h-shamar-40 rounded-lg border border-gray-300 bg-gray-900 text-gray-0 placeholder-gray-500 shadow-shamar-soft focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20 transition-all text-shamar-body'
+      : 'block w-full h-shamar-40 rounded-lg border border-gray-300 bg-gray-0 text-gray-900 placeholder-gray-500 shadow-shamar-soft focus:border-primary-600 focus:ring-2 focus:ring-primary-600/20 transition-all text-shamar-body';
+  const errorClasses = error ? 'border-danger-500 focus:border-danger-500 focus:ring-danger-500/20' : '';
 
   return (
-    <div className="mb-4">
+    <div className="mb-shamar-16">
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={id} className="block text-shamar-small font-medium text-gray-700 mb-shamar-8">
           {label}
         </label>
       )}
       <input
         type={type}
         id={id}
-        className={`${baseClasses} ${errorClasses} ${className}`}
+        className={`${baseClasses} px-shamar-12 ${errorClasses} ${className}`}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-      {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
+      {error && <p className="mt-shamar-8 text-shamar-small text-danger-500">{error}</p>}
+      {helperText && !error && <p className="mt-shamar-8 text-shamar-small text-gray-500">{helperText}</p>}
     </div>
   );
 };

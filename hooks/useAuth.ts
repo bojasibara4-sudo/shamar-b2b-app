@@ -8,7 +8,7 @@ import type { User, Session } from '@supabase/supabase-js';
 interface UserProfile {
   id: string;
   email: string;
-  role: 'admin' | 'seller' | 'buyer';
+  role: 'buyer' | 'seller' | 'admin' | 'super_admin' | 'vice_admin' | 'partner' | 'apple' | 'owner_root' | 'owner_exec' | 'admin_staff';
   full_name?: string;
   company_name?: string;
 }

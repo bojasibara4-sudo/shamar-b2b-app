@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { ordersDB } from '@/lib/mock-data';
+import { getOrdersForAdmin } from '@/services/order.service';
+import { isAdminLike } from '@/lib/owner-roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +12,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const orders = ordersDB.getAll();
+  const orders = await getOrdersForAdmin();
   return NextResponse.json({ orders });
 }
-

@@ -76,8 +76,8 @@ export default async function BuyerDashboardClient() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="text-gray-600 mt-1">Bienvenue, {user.email}</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Tableau de bord</h1>
+        <p className="text-gray-400 mt-1">Bienvenue, {user.email}</p>
       </div>
 
       {/* KPIs */}
@@ -110,42 +110,42 @@ export default async function BuyerDashboardClient() {
       </div>
 
       {/* Actions rapides */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Actions rapides</h2>
+      <div className="bg-brand-bleu-ardoise/50 backdrop-blur-sm rounded-2xl border border-brand-anthracite/50 shadow-lg p-6">
+        <h2 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+          <span className="w-1 h-5 bg-brand-or rounded-full block"></span>
+          Actions rapides
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
-            href="/marketplace/products"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            href="/products"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <Package className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Parcourir les produits</h3>
-            <p className="text-sm text-gray-600">Découvrir le catalogue</p>
+            <Package className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Parcourir les produits</h3>
+            <p className="text-sm text-gray-400">Découvrir le catalogue</p>
           </Link>
           <Link
             href="/dashboard/buyer/orders"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <ShoppingBag className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Mes commandes</h3>
-            <p className="text-sm text-gray-600">Voir toutes mes commandes</p>
+            <ShoppingBag className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Mes commandes</h3>
+            <p className="text-sm text-gray-400">Voir toutes mes commandes</p>
           </Link>
           <Link
             href="/messages"
-            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-4 rounded-xl border border-brand-anthracite/30 bg-brand-bleu-nuit/50 hover:border-brand-or/40 hover:bg-brand-bleu-nuit/70 transition-all group"
           >
-            <MessageSquare className="w-5 h-5 mb-2 text-emerald-600" />
-            <h3 className="font-semibold">Messages</h3>
-            <p className="text-sm text-gray-600">Contacter les vendeurs</p>
+            <MessageSquare className="w-5 h-5 mb-2 text-brand-or group-hover:text-brand-or-clair transition-colors" />
+            <h3 className="font-semibold text-white">Messages</h3>
+            <p className="text-sm text-gray-400">Contacter les vendeurs</p>
           </Link>
         </div>
       </div>
 
       {/* Activités récentes */}
       {activities.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Activités récentes</h2>
-          <ActivityFeed activities={activities} />
-        </div>
+        <ActivityFeed activities={activities} />
       )}
     </div>
   );

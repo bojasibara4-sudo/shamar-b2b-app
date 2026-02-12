@@ -14,10 +14,10 @@ export interface Payment {
   id: string;
   order_id: string;
   buyer_id: string;
-  vendor_id: string;
+  seller_id: string;
   amount_total: number;
   commission_amount: number;
-  vendor_amount: number;
+  seller_amount: number;
   currency: string;
   status: PaymentStatus;
   provider: PaymentProvider;
@@ -70,10 +70,10 @@ export async function createStripePayment(
       .insert({
         order_id: orderId,
         buyer_id: buyerId,
-        vendor_id: vendorId,
+        seller_id: vendorId,
         amount_total: amount,
         commission_amount: commissionAmount,
-        vendor_amount: vendorAmount,
+        seller_amount: vendorAmount,
         currency,
         status: 'initiated',
         provider: 'stripe',

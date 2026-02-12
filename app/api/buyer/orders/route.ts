@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { products: orderProducts } = body;
+    const { products: orderProducts, shipping_address } = body;
 
     if (!Array.isArray(orderProducts) || orderProducts.length === 0) {
       return NextResponse.json(
@@ -106,9 +106,10 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Vérifier que le produit est actif
+      // Vérifier que le produit est disponible
       const productData = product as any;
-      if (productData.status !== 'active') {
+      const inactive = productData.status === 'inactive' || productData.status === 'draft' || productData.is_active === false;
+      if (inactive) {
         return NextResponse.json(
           { error: `Le produit ${productData.name} n'est pas disponible` },
           { status: 400 }
@@ -153,8 +154,9 @@ export async function POST(request: NextRequest) {
         seller_id: sellerId,
         total_amount: totalAmount,
         currency,
-        status: 'PENDING', // Statut en majuscules selon le schéma
+        status: 'PENDING',
         payment_status: 'pending',
+        shipping_address: shipping_address || null,
       })
       .select()
       .single();

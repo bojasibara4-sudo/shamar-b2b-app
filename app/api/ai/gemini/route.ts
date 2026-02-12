@@ -27,22 +27,17 @@ export async function POST(request: NextRequest) {
     let result;
 
     switch (action) {
-      case 'generateProductDescription':
-        result = await geminiService.generateProductDescription(
-          params.productName,
-          params.category
+      case 'comparePrices':
+        result = await geminiService.comparePrices(
+          params.product,
+          params.chinaPrice,
+          params.localPrice,
+          params.currency
         );
         break;
       case 'convertCurrency':
         result = await geminiService.convertCurrency(
           params.amount,
-          params.from,
-          params.to
-        );
-        break;
-      case 'translate':
-        result = await geminiService.translate(
-          params.text,
           params.from,
           params.to
         );

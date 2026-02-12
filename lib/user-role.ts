@@ -12,7 +12,7 @@ export async function getCurrentUserRole(): Promise<UserRole | null> {
   }
 
   // Validation stricte du rôle
-  const validRoles: UserRole[] = ['admin', 'seller', 'buyer'];
+  const validRoles: UserRole[] = ['buyer', 'seller', 'admin', 'super_admin', 'vice_admin', 'partner', 'apple', 'owner_root', 'owner_exec', 'admin_staff'];
   if (!validRoles.includes(user.role as UserRole)) {
     return null;
   }

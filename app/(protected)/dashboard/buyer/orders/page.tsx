@@ -47,6 +47,22 @@ export default async function BuyerOrdersPage() {
     orders = [];
   }
 
+  const orderIds = orders.map((o: any) => o.id).filter(Boolean);
+  const openDisputesByOrder: Record<string, string> = {};
+  if (orderIds.length > 0) {
+    const { data: disputes } = await (supabase as any)
+      .from('disputes')
+      .select('id, order_id')
+      .eq('raised_by', user.id)
+      .eq('status', 'open')
+      .in('order_id', orderIds);
+    if (Array.isArray(disputes)) {
+      disputes.forEach((d: { id: string; order_id: string }) => {
+        openDisputesByOrder[d.order_id] = d.id;
+      });
+    }
+  }
+
   // Convertir les commandes au format attendu par OrderListClient
   const formattedOrders = orders
     .filter(order => order && order.id) // Filtrer les commandes invalides
@@ -92,6 +108,7 @@ export default async function BuyerOrdersPage() {
           isPaid,
           paymentStatus: isPaid ? 'paid' : 'pending',
           currency: order.currency || 'FCFA',
+          disputeId: openDisputesByOrder[order.id] || undefined,
         };
       } catch (mapError) {
         console.error('Error formatting order:', mapError, order);
@@ -101,15 +118,16 @@ export default async function BuyerOrdersPage() {
     .filter((order): order is NonNullable<typeof order> => order !== null); // Retirer les valeurs null
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+      <div className="space-y-shamar-32 animate-in fade-in duration-500">
+        <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
             <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                Mes <span className="text-emerald-600">Commandes</span>
+              <h1 className="text-shamar-h1 text-gray-900 tracking-tight mb-2">
+                Mes <span className="text-primary-600">Commandes</span>
               </h1>
-              <p className="text-lg text-slate-500 font-medium">
+              <p className="text-shamar-body text-gray-500 font-medium">
                 Suivez vos commandes et achats
               </p>
             </div>
@@ -119,6 +137,7 @@ export default async function BuyerOrdersPage() {
 
         <OrderListClient orders={formattedOrders} basePath="/dashboard/buyer/orders" />
       </div>
+    </div>
     </div>
   );
 }

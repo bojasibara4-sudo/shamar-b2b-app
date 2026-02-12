@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
+import { createEscrow, holdEscrow } from '@/services/escrow.service';
+import { getPaymentByOrderId } from '@/services/payment.service';
+import { getVendorByUserId, updateVendorLevelAuto } from '@/services/vendor.service';
+import { assignBadgesAuto } from '@/services/badge.service';
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -55,7 +59,8 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        if (paymentIntent.metadata.order_id) {
+        const orderId = paymentIntent.metadata.order_id;
+        if (orderId) {
           // Mise à jour du statut de la commande
           await (supabase as any)
             .from('orders')
@@ -63,7 +68,35 @@ export async function POST(request: NextRequest) {
               payment_status: 'paid',
               status: 'CONFIRMED',
             })
-            .eq('id', paymentIntent.metadata.order_id);
+            .eq('id', orderId);
+
+          // Créer escrow (fonds en HOLD)
+          const { data: order } = await (supabase as any)
+            .from('orders')
+            .select('buyer_id, seller_id, total_amount, currency')
+            .eq('id', orderId)
+            .single();
+
+          if (order) {
+            const payment = await getPaymentByOrderId(orderId);
+            const escrow = await createEscrow(
+              orderId,
+              payment?.id ?? null,
+              order.buyer_id,
+              order.seller_id,
+              Number(order.total_amount),
+              order.currency || 'FCFA'
+            );
+            if (escrow) {
+              await holdEscrow(escrow.id);
+            }
+            // Mise à jour niveau vendeur et badges (non bloquant)
+            const vendor = await getVendorByUserId(order.seller_id);
+            if (vendor?.id) {
+              updateVendorLevelAuto(vendor.id).catch(() => {});
+              assignBadgesAuto(vendor.id).catch(() => {});
+            }
+          }
         }
         break;
 

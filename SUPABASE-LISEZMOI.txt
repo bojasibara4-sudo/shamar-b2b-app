@@ -1,0 +1,72 @@
+============================================
+  FICHIERS SUPABASE — À COLLER DANS SQL EDITOR
+============================================
+
+Deux options selon l'état de la base.
+
+--------------------------------------------
+OPTION A — Base vide (recommandé)
+--------------------------------------------
+
+Exécuter dans l'ordre (un bloc après l'autre) :
+
+  1. supabase/schema/01_users.sql
+  2. supabase/schema/02_marketplace.sql
+  3. supabase/schema/03_orders.sql
+  4. supabase/schema/04_payments_escrow.sql
+  5. supabase/schema/05_logistics.sql
+  6. supabase/schema/06_disputes.sql
+  7. supabase/schema/07_admin.sql
+  8. supabase/schema/08_security.sql
+  9. supabase/schema/09_notifications.sql
+ 10. supabase/schema/10_indexes.sql
+ 11. supabase/schema/11_rls.sql
+ 12. supabase/schema/12_triggers.sql
+
+ 13. SUPABASE-MARKETPLACE-COMPLET.sql
+     → product_rfqs, product_reviews, colonnes produits/shops, badges
+
+ 14. supabase-offers-marketplace.sql
+     → table offers (négociation, mes offres acheteur, RFQ)
+
+ 15. supabase-security-complet.sql
+     → table sanctions (admin > sécurité > fiche utilisateur)
+
+ 16. supabase-host-migration.sql
+     → host_properties, host_bookings, host_reviews (module Host / Airbnb)
+
+ 17. (optionnel) supabase-negoce-migration.sql
+     → negoce_offers, negoce_rfqs, etc. (module Negoce matières premières)
+
+ 18. (optionnel) supabase-international-migration.sql
+     → international_offers, etc. (si vous branchez International sur Supabase)
+
+--------------------------------------------
+OPTION B — Déjà users + orders
+--------------------------------------------
+
+Si public.users et public.orders existent déjà :
+
+  1. SUPABASE-FINANCE-COMPLET.sql
+  2. SUPABASE-LIVRAISONS-DISPUTES.sql
+  3. SUPABASE-MARKETPLACE-COMPLET.sql
+  4. SUPABASE-LITIGE-COMPLET.sql
+  5. supabase-offers-marketplace.sql   (prérequis : products + fonction update_updated_at)
+  6. supabase-security-complet.sql
+  7. supabase-host-migration.sql
+  8. (optionnel) supabase-negoce-migration.sql
+  9. (optionnel) supabase-international-migration.sql
+
+--------------------------------------------
+STORAGE (à créer dans le dashboard Supabase)
+--------------------------------------------
+
+  Bucket : vendor-documents
+  → Utilisé par l'upload de documents vendeur (API seller/documents/upload).
+  → À créer manuellement dans Storage si besoin.
+
+--------------------------------------------
+Rapport d'audit modules vs SQL
+--------------------------------------------
+
+Voir : AUDIT-MODULES-VS-SQL-SUPABASE-FEV2026.md

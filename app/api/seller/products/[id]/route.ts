@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const user = await getCurrentUser();
 
   if (!user) {
@@ -25,7 +26,7 @@ export async function PUT(
     const { data: existingProduct, error: checkError } = await (supabase as any)
       .from('products')
       .select('seller_id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (checkError || !existingProduct) {
@@ -37,7 +38,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, description, price, category, currency, image_url, status } = body;
+    const { name, description, price, category, currency, image_url, status, specifications, price_tiers, min_order_quantity } = body;
 
     if (!name || !description || price === undefined) {
       return NextResponse.json(
@@ -61,11 +62,14 @@ export async function PUT(
         price: Number(price),
         category: category || existingProduct.category || 'other',
         currency: currency || existingProduct.currency || 'FCFA',
-        image_url: image_url || existingProduct.image_url || null,
+        image_url: image_url ?? existingProduct.image_url ?? null,
         status: status || existingProduct.status || 'active',
         updated_at: new Date().toISOString(),
+        ...(specifications !== undefined && (specifications === null || typeof specifications === 'object') && { specifications: specifications || {} }),
+        ...(price_tiers !== undefined && Array.isArray(price_tiers) && { price_tiers }),
+        ...(typeof min_order_quantity === 'number' && min_order_quantity >= 1 && { min_order_quantity }),
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 

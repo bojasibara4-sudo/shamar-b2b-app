@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, ChevronRight, Download, Package } from 'lucide-react';
+import { Search, ChevronRight, Download, Package, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { STATUS_CONFIG, type OrderStatus } from './orderStatusConfig';
 
@@ -14,6 +14,8 @@ interface Order {
   date: string;
   sellerName?: string;
   buyerName?: string;
+  /** Si présent, la commande a un litige ouvert — afficher badge Litige + lien vers le dossier */
+  disputeId?: string;
 }
 
 interface OrderListClientProps {
@@ -72,26 +74,33 @@ export default function OrderListClient({ orders, basePath = '/dashboard/admin/o
       <div className="grid grid-cols-1 gap-4">
         {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
-            <Link
+            <div
               key={order.id}
-              href={`${basePath}/${order.id}`}
-              className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group"
+              className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all group"
             >
-              <div className="flex flex-wrap items-center justify-between gap-4">
+              <Link href={`${basePath}/${order.id}`} className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
                     <Package size={24} />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-slate-400">#{order.id}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-mono text-slate-400">#{order.id.slice(0, 8)}</span>
                       <span className="text-xs text-slate-400">• {order.date}</span>
+                      {order.disputeId && (
+                        <Link
+                          href={`/disputes/${order.disputeId}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 hover:bg-rose-200"
+                        >
+                          <ShieldAlert size={12} /> Litige
+                        </Link>
+                      )}
                     </div>
                     <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{order.productName}</h3>
                     <p className="text-sm text-slate-500">{order.quantity} unités • {order.sellerName || order.buyerName}</p>
                   </div>
                 </div>
-                
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-lg font-bold text-slate-900">{order.totalAmount.toLocaleString()} FCFA</p>
@@ -102,8 +111,15 @@ export default function OrderListClient({ orders, basePath = '/dashboard/admin/o
                   </div>
                   <ChevronRight size={20} className="text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
                 </div>
-              </div>
-            </Link>
+              </Link>
+              {order.disputeId && (
+                <p className="mt-2 pt-2 border-t border-slate-100 text-sm text-slate-600">
+                  <Link href={`/disputes/${order.disputeId}`} className="text-rose-600 font-medium hover:underline">
+                    Voir le dossier litige →
+                  </Link>
+                </p>
+              )}
+            </div>
           ))
         ) : (
           <div className="bg-white rounded-[2rem] border border-slate-200 p-12">

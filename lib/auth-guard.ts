@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser } from './auth';
 import { UserRole, UserStatus, SellerStatus } from './permissions';
 import { User } from '@/services/auth.service';
+import { isAdminLike, isOwnerExecOrRoot, isOwnerRoot } from './owner-roles';
 
 /**
  * Guard pour protéger une route selon le rôle
@@ -20,20 +21,46 @@ export async function requireAuth(): Promise<User> {
  */
 export async function requireRole(role: UserRole | UserRole[]): Promise<User> {
   const user = await requireAuth();
-  
+
   const allowedRoles = Array.isArray(role) ? role : [role];
   if (!allowedRoles.includes(user.role)) {
     redirect('/dashboard');
   }
-  
+
   return user;
 }
 
 /**
- * Guard pour protéger une route admin
+ * Guard pour protéger une route admin (admin, owner_exec, owner_root)
  */
 export async function requireAdmin(): Promise<User> {
-  return requireRole('admin');
+  const user = await requireAuth();
+  if (!isAdminLike(user.role)) {
+    redirect('/dashboard');
+  }
+  return user;
+}
+
+/**
+ * Guard pour /root/* — Président uniquement
+ */
+export async function requireOwnerRoot(): Promise<User> {
+  const user = await requireAuth();
+  if (!isOwnerRoot(user.role)) {
+    redirect('/dashboard');
+  }
+  return user;
+}
+
+/**
+ * Guard pour /exec/* — Vice-président ou Président
+ */
+export async function requireOwnerExecOrRoot(): Promise<User> {
+  const user = await requireAuth();
+  if (!isOwnerExecOrRoot(user.role)) {
+    redirect('/dashboard');
+  }
+  return user;
 }
 
 /**

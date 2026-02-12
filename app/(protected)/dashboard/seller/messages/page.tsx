@@ -120,143 +120,143 @@ export default function SellerMessagesPage() {
   const selectedConversation = conversations.find(c => c.order_id === selectedOrderId);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8 animate-in fade-in duration-500">
-        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">
-                <span className="text-indigo-600">Messages</span>
-              </h1>
-              <p className="text-lg text-slate-500 font-medium">Communiquez avec les acheteurs</p>
-            </div>
-            <LogoutButton />
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-12 text-slate-500 font-medium">Chargement...</div>
-        ) : conversations.length === 0 ? (
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-12 text-center">
-            <MessageCircle size={48} className="mx-auto text-slate-400 mb-4" />
-            <p className="text-slate-600 font-medium">Aucune conversation</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Liste des conversations */}
-            <div className="lg:col-span-1 bg-white rounded-[2rem] shadow-sm border border-slate-200">
-              <div className="p-6 border-b border-slate-200">
-                <h2 className="font-black text-xl text-slate-900">Conversations</h2>
+    <div className="bg-gray-50 min-h-full">
+      <div className="max-w-shamar-container mx-auto px-4 sm:px-6 lg:px-8 py-shamar-24">
+        <div className="space-y-shamar-32 animate-in fade-in duration-500">
+          <div className="bg-gray-0 rounded-shamar-md border border-gray-200 p-shamar-32 shadow-shamar-soft">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-shamar-16">
+              <div>
+                <h1 className="text-shamar-h1 text-gray-900 tracking-tight mb-2">
+                  <span className="text-primary-600">Messages</span>
+                </h1>
+                <p className="text-shamar-body text-gray-500 font-medium">Communiquez avec les acheteurs</p>
               </div>
-              <div className="divide-y divide-slate-200 max-h-[600px] overflow-y-auto">
-              {conversations.map((conv) => (
-                <button
-                  key={conv.order_id}
-                  onClick={() => setSelectedOrderId(conv.order_id)}
-                  className={`w-full p-4 text-left hover:bg-slate-50 transition-colors ${
-                    selectedOrderId === conv.order_id ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Package size={16} className="text-slate-400" />
-                      <span className="text-xs font-mono text-slate-600 font-medium">
-                        #{conv.order_id.slice(0, 8)}
-                      </span>
-                    </div>
-                    {conv.unread_count > 0 && (
-                      <span className="bg-indigo-600 text-white text-xs font-black rounded-full px-2.5 py-1">
-                        {conv.unread_count}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm font-black text-slate-900 truncate">
-                    {conv.other_user?.company_name || conv.other_user?.full_name || conv.other_user?.email || 'Utilisateur'}
-                  </p>
-                  <p className="text-xs text-slate-500 truncate mt-1 font-medium">
-                    {conv.last_message.content}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1 font-medium">
-                    {new Date(conv.last_message.created_at).toLocaleDateString('fr-FR')}
-                  </p>
-                </button>
-              ))}
+              <LogoutButton />
             </div>
           </div>
 
-            {/* Chat */}
-            <div className="lg:col-span-2 bg-white rounded-[2rem] shadow-sm border border-slate-200 flex flex-col" style={{ height: '600px' }}>
-              {selectedConversation ? (
-                <>
-                  <div className="p-6 border-b border-slate-200">
-                    <div className="flex items-center gap-3">
-                      <User size={20} className="text-slate-400" />
-                      <div>
-                        <h3 className="font-black text-slate-900 text-lg">
-                          {selectedConversation.other_user?.company_name || selectedConversation.other_user?.full_name || selectedConversation.other_user?.email || 'Utilisateur'}
-                        </h3>
-                        <p className="text-xs text-slate-500 font-medium">
-                          Commande #{selectedConversation.order_id.slice(0, 8)}
-                        </p>
+          {loading ? (
+            <div className="text-center py-shamar-48 text-gray-500 font-medium">Chargement...</div>
+          ) : conversations.length === 0 ? (
+            <div className="bg-gray-0 rounded-shamar-md border border-gray-200 shadow-shamar-soft p-shamar-48 text-center">
+              <MessageCircle size={48} className="mx-auto text-gray-400 mb-shamar-16" />
+              <p className="text-gray-600 font-medium">Aucune conversation</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-shamar-24">
+              <div className="lg:col-span-1 bg-gray-0 rounded-shamar-md shadow-shamar-soft border border-gray-200">
+                <div className="p-shamar-24 border-b border-gray-200">
+                  <h2 className="font-semibold text-shamar-h3 text-gray-900">Conversations</h2>
+                </div>
+                <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
+                  {conversations.map((conv) => (
+                    <button
+                      key={conv.order_id}
+                      onClick={() => setSelectedOrderId(conv.order_id)}
+                      className={`w-full p-shamar-16 text-left hover:bg-gray-50 transition-colors ${
+                        selectedOrderId === conv.order_id ? 'bg-primary-50 border-l-4 border-primary-600' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Package size={16} className="text-gray-400" />
+                          <span className="text-shamar-caption font-mono text-gray-600 font-medium">
+                            #{conv.order_id.slice(0, 8)}
+                          </span>
+                        </div>
+                        {conv.unread_count > 0 && (
+                          <span className="bg-primary-600 text-gray-0 text-shamar-caption font-semibold rounded-full px-2.5 py-1">
+                            {conv.unread_count}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-shamar-body font-semibold text-gray-900 truncate">
+                        {conv.other_user?.company_name || conv.other_user?.full_name || conv.other_user?.email || 'Utilisateur'}
+                      </p>
+                      <p className="text-shamar-small text-gray-500 truncate mt-1 font-medium">
+                        {conv.last_message.content}
+                      </p>
+                      <p className="text-shamar-caption text-gray-400 mt-1 font-medium">
+                        {new Date(conv.last_message.created_at).toLocaleDateString('fr-FR')}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-2 bg-gray-0 rounded-shamar-md shadow-shamar-soft border border-gray-200 flex flex-col" style={{ height: '600px' }}>
+                {selectedConversation ? (
+                  <>
+                    <div className="p-shamar-24 border-b border-gray-200">
+                      <div className="flex items-center gap-shamar-12">
+                        <User size={20} className="text-gray-400" />
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-shamar-h4">
+                            {selectedConversation.other_user?.company_name || selectedConversation.other_user?.full_name || selectedConversation.other_user?.email || 'Utilisateur'}
+                          </h3>
+                          <p className="text-shamar-small text-gray-500 font-medium">
+                            Commande #{selectedConversation.order_id.slice(0, 8)}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {messages.map((msg) => {
-                      const isSent = msg.sender_id !== selectedConversation.other_user.id;
-                      return (
-                        <div
-                          key={msg.id}
-                          className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
-                        >
+                    <div className="flex-1 overflow-y-auto p-shamar-24 space-y-shamar-16">
+                      {messages.map((msg) => {
+                        const isSent = msg.sender_id !== selectedConversation.other_user.id;
+                        return (
                           <div
-                            className={`max-w-[70%] rounded-[1.5rem] p-4 ${
-                              isSent
-                                ? 'bg-indigo-600 text-white rounded-tr-none'
-                                : 'bg-slate-100 text-slate-900 border border-slate-200 rounded-tl-none'
-                            }`}
+                            key={msg.id}
+                            className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
                           >
-                            <p className="text-sm font-medium">{msg.content}</p>
-                            <p className={`text-xs mt-1.5 ${isSent ? 'text-indigo-100' : 'text-slate-500'} font-medium`}>
-                              {new Date(msg.created_at).toLocaleString('fr-FR')}
-                            </p>
+                            <div
+                              className={`max-w-[70%] rounded-shamar-md p-shamar-16 ${
+                                isSent
+                                  ? 'bg-primary-600 text-gray-0 rounded-tr-none'
+                                  : 'bg-gray-100 text-gray-900 border border-gray-200 rounded-tl-none'
+                              }`}
+                            >
+                              <p className="text-shamar-body font-medium">{msg.content}</p>
+                              <p className={`text-shamar-small mt-1.5 ${isSent ? 'text-primary-100' : 'text-gray-500'} font-medium`}>
+                                {new Date(msg.created_at).toLocaleString('fr-FR')}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="p-6 border-t border-slate-200">
-                    <div className="flex gap-3">
-                      <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                        placeholder="Écrire votre message..."
-                        className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium"
-                        disabled={sending}
-                      />
-                      <button
-                        onClick={sendMessage}
-                        disabled={sending || !newMessage.trim()}
-                        className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 font-black shadow-md"
-                      >
-                        <Send size={18} />
-                        Envoyer
-                      </button>
+                        );
+                      })}
                     </div>
+
+                    <div className="p-shamar-24 border-t border-gray-200">
+                      <div className="flex gap-shamar-12">
+                        <input
+                          type="text"
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                          placeholder="Écrire votre message..."
+                          className="flex-1 px-4 py-3 border border-gray-200 rounded-shamar-md focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-gray-900 font-medium"
+                          disabled={sending}
+                        />
+                        <button
+                          onClick={sendMessage}
+                          disabled={sending || !newMessage.trim()}
+                          className="px-shamar-24 py-3 bg-gray-900 text-gray-0 font-semibold rounded-shamar-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                        >
+                          <Send size={18} />
+                          Envoyer
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500 font-medium">
+                    Sélectionnez une conversation
                   </div>
-                </>
-              ) : (
-                <div className="flex items-center justify-center h-full text-slate-500 font-medium">
-                  Sélectionnez une conversation
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

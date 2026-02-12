@@ -174,11 +174,19 @@ export async function calculateVendorLevel(vendorId: string): Promise<VendorLeve
   const supabase = await createClient();
 
   try {
-    // Compter les commandes validées/complétées
+    // Récupérer user_id du vendor (orders.seller_id = user_id)
+    const { data: vendor } = await (supabase as any)
+      .from('vendors')
+      .select('user_id')
+      .eq('id', vendorId)
+      .single();
+    const sellerUserId = vendor?.user_id ?? vendorId;
+
+    // Compter les commandes validées/complétées (seller_id = user_id)
     const { data: orders, error: ordersError } = await (supabase as any)
       .from('orders')
       .select('total_amount, currency')
-      .eq('seller_id', vendorId)
+      .eq('seller_id', sellerUserId)
       .in('status', ['CONFIRMED', 'SHIPPED', 'DELIVERED']);
 
     if (ordersError) {

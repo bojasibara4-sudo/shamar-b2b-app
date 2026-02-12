@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
+import { isAdminLike } from '@/lib/owner-roles';
 import { getPendingDocuments, getVendorDocuments } from '@/services/document.service';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 

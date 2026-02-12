@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
+import { isAdminLike } from '@/lib/owner-roles';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
         *,
         order:orders!payments_order_id_fkey(id, total_amount, currency, status),
         buyer:users!payments_buyer_id_fkey(email, full_name, company_name),
-        vendor:users!payments_vendor_id_fkey(email, full_name, company_name)
+        seller:users!payments_seller_id_fkey(email, full_name, company_name)
       `)
       .order('created_at', { ascending: false })
       .limit(100);

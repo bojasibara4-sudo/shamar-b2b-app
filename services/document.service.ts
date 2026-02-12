@@ -5,7 +5,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 
-export type DocumentType = 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre';
+export type DocumentType = 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre' | 'id_card' | 'passport' | 'selfie' | 'proof_of_address';
 export type DocumentStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Document {

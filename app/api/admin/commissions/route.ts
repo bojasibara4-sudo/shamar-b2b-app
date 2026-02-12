@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { commissionsDB } from '@/lib/mock-data';
+import {
+  getCommissionsForAdmin,
+  getTotalCommissionsPlatform,
+} from '@/services/commission.service';
+import { isAdminLike } from '@/lib/owner-roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,13 +15,17 @@ export async function GET() {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const commissions = commissionsDB.getAll();
-  const totalCommissions = commissionsDB.getTotalCommissions();
+  const [commissions, totalCommissions] = await Promise.all([
+    getCommissionsForAdmin(),
+    getTotalCommissionsPlatform(),
+  ]);
 
-  return NextResponse.json({ commissions, totalCommissions });
+  return NextResponse.json({
+    commissions,
+    totalCommissions,
+  });
 }
-

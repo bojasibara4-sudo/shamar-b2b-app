@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { 
   User, 
   Settings, 
@@ -20,11 +20,13 @@ import {
   TrendingUp
 } from 'lucide-react';
 
+import type { AppRole } from '@/services/auth.service';
+
 interface GlobalUserMenuProps {
   user: {
     id: string;
     email: string;
-    role: 'admin' | 'seller' | 'buyer';
+    role: AppRole;
   };
 }
 
@@ -51,7 +53,6 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
   }, []);
 
   const handleLogout = async () => {
-    const supabase = createClient();
     await supabase.auth.signOut();
     setIsOpen(false);
     setIsMobileMenuOpen(false);
@@ -63,15 +64,14 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
     { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { href: '/profile', label: 'Mon profil', icon: User },
     { href: '/settings', label: 'Paramètres', icon: Settings },
-    { href: '/marketplace/products', label: 'Produits', icon: Package },
-    { href: '/marketplace/cart', label: 'Panier', icon: ShoppingCart },
+    { href: '/products', label: 'Produits', icon: Package },
+    { href: '/cart', label: 'Panier', icon: ShoppingCart },
     { href: '/messages', label: 'Messages', icon: MessageSquare },
   ];
 
+  // Admin : route isolée /admin/* — pas de lien dans la nav publique (architecture sécurité)
   const roleSpecificItems = user.role === 'seller' 
     ? [{ href: '/vendor', label: 'Espace vendeur', icon: Store }]
-    : user.role === 'admin'
-    ? [{ href: '/admin/overview', label: 'Administration', icon: Shield }]
     : [];
 
   const allItems = [...menuItems, ...roleSpecificItems];
@@ -84,7 +84,7 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white font-semibold">
+          <div className="w-8 h-8 rounded-full bg-brand-vert flex items-center justify-center text-white font-semibold">
             {user.email.charAt(0).toUpperCase()}
           </div>
           <span className="text-sm font-medium text-gray-700">
@@ -108,7 +108,7 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
                     isActive 
-                      ? 'bg-emerald-50 text-emerald-700 font-medium' 
+                      ? 'bg-brand-vert-clair text-brand-vert font-medium' 
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => setIsOpen(false)}
@@ -142,7 +142,7 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
             <X className="h-6 w-6 text-gray-700" />
           ) : (
             <>
-              <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white font-semibold">
+              <div className="w-8 h-8 rounded-full bg-brand-vert flex items-center justify-center text-white font-semibold">
                 {user.email.charAt(0).toUpperCase()}
               </div>
               <Menu className="h-6 w-6 text-gray-700" />
@@ -178,7 +178,7 @@ export default function GlobalUserMenu({ user }: GlobalUserMenuProps) {
                       href={item.href}
                       className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
                         isActive 
-                          ? 'bg-emerald-50 text-emerald-700 font-medium border-l-4 border-emerald-600' 
+                          ? 'bg-brand-vert-clair text-brand-vert font-medium border-l-4 border-brand-vert' 
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}

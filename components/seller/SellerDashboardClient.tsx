@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { 
-  Package, 
-  ShoppingBag, 
+import {
+  Package,
+  ShoppingBag,
   TrendingUp,
   DollarSign,
   MessageSquare
@@ -39,7 +39,7 @@ export default function SellerDashboardClient() {
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/seller/stats');
-        
+
         if (!response.ok) {
           // En cas d'erreur, initialiser avec des valeurs par défaut
           setStats({
@@ -54,14 +54,14 @@ export default function SellerDashboardClient() {
           setLoading(false);
           return;
         }
-        
+
         const data = await response.json();
-        
+
         // Vérifier que data.stats existe
         if (!data.stats) {
           throw new Error('Invalid response format');
         }
-        
+
         setStats(data.stats);
 
         // Format recent activities
@@ -182,12 +182,15 @@ export default function SellerDashboardClient() {
 
       {/* Chart and Activities */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="lg:col-span-2 bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Ventes (7 derniers jours)</h3>
-            <Link 
-              href="/dashboard/seller/analytics" 
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span className="w-1 h-6 bg-primary-500 rounded-full block" />
+              Ventes (7 derniers jours)
+            </h3>
+            <Link
+              href="/dashboard/seller/analytics"
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
             >
               Voir plus →
             </Link>
@@ -197,37 +200,40 @@ export default function SellerDashboardClient() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorSeller" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1F4DFF" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#1F4DFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 12 }} 
-                  dy={10} 
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
+                  dy={10}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
+                    border: '1px solid #E5E7EB',
                     borderRadius: '8px',
+                    color: '#111827',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                   }}
+                  itemStyle={{ color: '#1F4DFF' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#8b5cf6" 
-                  fillOpacity={1} 
-                  fill="url(#colorSeller)" 
-                  strokeWidth={2} 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#1F4DFF"
+                  fillOpacity={1}
+                  fill="url(#colorSeller)"
+                  strokeWidth={2}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -240,39 +246,39 @@ export default function SellerDashboardClient() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link href="/dashboard/seller/products">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+          <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6 hover:shadow-shamar-medium hover:border-primary-200 transition-all cursor-pointer group">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
+              <div className="p-3 bg-primary-50 text-primary-600 rounded-xl group-hover:bg-primary-600 group-hover:text-white transition-colors">
                 <Package size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Gérer les produits</h3>
+                <h3 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Gérer les produits</h3>
                 <p className="text-sm text-gray-500 mt-1">Ajouter ou modifier vos produits</p>
               </div>
             </div>
           </div>
         </Link>
         <Link href="/dashboard/seller/orders">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+          <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6 hover:shadow-shamar-medium hover:border-primary-200 transition-all cursor-pointer group">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-50 text-purple-600 rounded-lg">
+              <div className="p-3 bg-primary-50 text-primary-600 rounded-xl group-hover:bg-primary-600 group-hover:text-white transition-colors">
                 <ShoppingBag size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Voir les commandes</h3>
+                <h3 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Voir les commandes</h3>
                 <p className="text-sm text-gray-500 mt-1">Suivre vos commandes</p>
               </div>
             </div>
           </div>
         </Link>
         <Link href="/dashboard/seller/analytics">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+          <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6 hover:shadow-shamar-medium hover:border-primary-200 transition-all cursor-pointer group">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+              <div className="p-3 bg-primary-50 text-primary-600 rounded-xl group-hover:bg-primary-600 group-hover:text-white transition-colors">
                 <TrendingUp size={24} />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Analytics</h3>
+                <h3 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Analytics</h3>
                 <p className="text-sm text-gray-500 mt-1">Analyser vos performances</p>
               </div>
             </div>

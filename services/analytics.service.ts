@@ -32,7 +32,7 @@ export async function getAdminAnalytics(): Promise<AnalyticsData | null> {
     // Récupérer tous les paiements payés
     const { data: payments } = await (supabase as any)
       .from('payments')
-      .select('amount_total, commission_amount, vendor_amount, vendor_id, order_id')
+      .select('amount_total, commission_amount, seller_amount, seller_id, order_id')
       .eq('status', 'paid');
 
     // Calculer GMV (somme de tous les paiements)
@@ -42,16 +42,16 @@ export async function getAdminAnalytics(): Promise<AnalyticsData | null> {
     const platformRevenue = payments?.reduce((sum: number, p: any) => sum + Number(p.commission_amount || 0), 0) || 0;
 
     // Calculer revenus vendeurs (net)
-    const vendorRevenue = payments?.reduce((sum: number, p: any) => sum + Number(p.vendor_amount || 0), 0) || 0;
+    const vendorRevenue = payments?.reduce((sum: number, p: any) => sum + Number(p.seller_amount || 0), 0) || 0;
 
-    // Top vendeurs
-    const vendorStats: Record<string, { revenue: number; orderCount: number; vendor_id: string }> = {};
+    // Top sellers
+    const vendorStats: Record<string, { revenue: number; orderCount: number; seller_id: string }> = {};
     payments?.forEach((payment: any) => {
-      const vid = payment.vendor_id;
+      const vid = payment.seller_id;
       if (!vendorStats[vid]) {
-        vendorStats[vid] = { revenue: 0, orderCount: 0, vendor_id: vid };
+        vendorStats[vid] = { revenue: 0, orderCount: 0, seller_id: vid };
       }
-      vendorStats[vid].revenue += Number(payment.vendor_amount || 0);
+      vendorStats[vid].revenue += Number(payment.seller_amount || 0);
       vendorStats[vid].orderCount += 1;
     });
 
@@ -64,10 +64,10 @@ export async function getAdminAnalytics(): Promise<AnalyticsData | null> {
 
     const topVendors = Object.values(vendorStats)
       .map((stat) => {
-        const vendor = vendors?.find((v: any) => v.id === stat.vendor_id);
+        const vendor = vendors?.find((v: any) => v.id === stat.seller_id);
         return {
-          vendor_id: stat.vendor_id,
-          vendor_name: vendor?.company_name || vendor?.full_name || vendor?.email || 'Vendeur',
+          vendor_id: stat.seller_id,
+          vendor_name: vendor?.company_name || vendor?.full_name || vendor?.email || 'Seller',
           total_revenue: stat.revenue,
           order_count: stat.orderCount,
         };

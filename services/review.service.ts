@@ -4,6 +4,8 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { getVendorByUserId, updateVendorLevelAuto } from './vendor.service';
+import { assignBadgesAuto } from './badge.service';
 
 export interface Review {
   id: string;
@@ -63,6 +65,13 @@ export async function createReview(
 
     // Recalculer la note moyenne du vendeur
     await recalculateVendorRating(vendorId);
+
+    // Mise à jour niveau et badges (vendorId = user_id dans reviews, besoin vendor.id)
+    const vendor = await getVendorByUserId(vendorId);
+    if (vendor?.id) {
+      updateVendorLevelAuto(vendor.id).catch(() => {});
+      assignBadgesAuto(vendor.id).catch(() => {});
+    }
 
     return review as Review;
   } catch (error) {

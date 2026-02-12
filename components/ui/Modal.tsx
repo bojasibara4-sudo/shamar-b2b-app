@@ -10,6 +10,7 @@ interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'default' | 'premium';
 }
 
 const getSizeClasses = (size: 'sm' | 'md' | 'lg' | 'xl'): string => {
@@ -34,6 +35,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   footer,
   size = 'md',
+  variant = 'default',
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -69,25 +71,28 @@ export const Modal: React.FC<ModalProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      {/* Overlay */}
+      {/* Overlay — premium fintech */}
       <div
-        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal panel */}
+      {/* Modal panel — spec: Modals = Large (shamar-lg), shadow large */}
       <div
         ref={modalRef}
-        className={`relative bg-white rounded-lg shadow-xl transform transition-all sm:w-full ${getSizeClasses(size)}`}
+        className={`relative rounded-shamar-lg shadow-shamar-large transform transition-all sm:w-full ${getSizeClasses(size)} ${variant === 'premium'
+            ? 'bg-brand-bleu-ardoise/90 backdrop-blur-md border border-brand-anthracite/50 text-white'
+            : 'bg-gray-0 text-gray-900 border border-gray-200'
+          }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900" id="modal-title">
+        <div className={`flex items-center justify-between p-shamar-16 border-b ${variant === 'premium' ? 'border-brand-anthracite/50' : 'border-gray-200'}`}>
+          <h3 className={`text-shamar-h3 ${variant === 'premium' ? 'text-white' : 'text-gray-900'}`} id="modal-title">
             {title}
           </h3>
           <button
             type="button"
-            className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+            className={`${variant === 'premium' ? 'text-gray-400 hover:text-white hover:bg-brand-anthracite/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} p-2 rounded-shamar-sm focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-colors`}
             onClick={onClose}
           >
             <span className="sr-only">Close</span>
@@ -96,11 +101,11 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="p-6">{children}</div>
+        <div className="p-shamar-16">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex justify-end p-4 border-t border-gray-200 space-x-2">
+          <div className={`flex justify-end p-shamar-16 border-t gap-shamar-12 ${variant === 'premium' ? 'border-brand-anthracite/50' : 'border-gray-200'}`}>
             {footer}
           </div>
         )}

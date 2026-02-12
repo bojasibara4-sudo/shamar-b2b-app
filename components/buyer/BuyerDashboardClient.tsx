@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { 
-  ShoppingBag, 
-  Package, 
+import {
+  ShoppingBag,
+  Package,
   MessageSquare,
   DollarSign,
   Clock
@@ -36,7 +36,7 @@ export default function BuyerDashboardClient() {
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/buyer/stats');
-        
+
         if (!response.ok) {
           // En cas d'erreur, initialiser avec des valeurs par défaut
           setStats({
@@ -49,14 +49,14 @@ export default function BuyerDashboardClient() {
           setLoading(false);
           return;
         }
-        
+
         const data = await response.json();
-        
+
         // Vérifier que data.stats existe
         if (!data.stats) {
           throw new Error('Invalid response format');
         }
-        
+
         setStats(data.stats);
 
         // Format recent activities
@@ -106,11 +106,11 @@ export default function BuyerDashboardClient() {
   // Si pas de stats après chargement, afficher un état par défaut
   if (!stats) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+      <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-12 text-center">
         <p className="text-gray-500 mb-4">Impossible de charger les statistiques</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
           Réessayer
         </button>
@@ -162,56 +162,59 @@ export default function BuyerDashboardClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-6">Actions rapides</h3>
+          <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-primary-500 rounded-full block" />
+              Actions rapides
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link href="/dashboard/buyer/products">
-                <div className="p-4 border border-gray-200 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-all cursor-pointer">
+                <div className="p-4 border border-gray-200 bg-gray-50 rounded-xl hover:border-primary-200 hover:bg-primary-50/50 transition-all cursor-pointer group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+                    <div className="p-2 bg-primary-50 text-primary-600 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-colors">
                       <Package size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Parcourir les produits</h4>
+                      <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Parcourir les produits</h4>
                       <p className="text-sm text-gray-500">Découvrir les produits</p>
                     </div>
                   </div>
                 </div>
               </Link>
               <Link href="/dashboard/buyer/orders">
-                <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer">
+                <div className="p-4 border border-gray-200 bg-gray-50 rounded-xl hover:border-primary-200 hover:bg-primary-50/50 transition-all cursor-pointer group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                    <div className="p-2 bg-primary-50 text-primary-600 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-colors">
                       <ShoppingBag size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Mes commandes</h4>
+                      <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mes commandes</h4>
                       <p className="text-sm text-gray-500">Suivre vos commandes</p>
                     </div>
                   </div>
                 </div>
               </Link>
               <Link href="/dashboard/buyer/search">
-                <div className="p-4 border border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all cursor-pointer">
+                <div className="p-4 border border-gray-200 bg-gray-50 rounded-xl hover:border-primary-200 hover:bg-primary-50/50 transition-all cursor-pointer group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                    <div className="p-2 bg-primary-50 text-primary-600 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-colors">
                       <MessageSquare size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Rechercher</h4>
+                      <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Rechercher</h4>
                       <p className="text-sm text-gray-500">Rechercher des produits</p>
                     </div>
                   </div>
                 </div>
               </Link>
               <Link href="/dashboard/buyer/messages">
-                <div className="p-4 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition-all cursor-pointer">
+                <div className="p-4 border border-gray-200 bg-gray-50 rounded-xl hover:border-primary-200 hover:bg-primary-50/50 transition-all cursor-pointer group">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
+                    <div className="p-2 bg-primary-50 text-primary-600 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-colors">
                       <MessageSquare size={20} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Messages</h4>
+                      <h4 className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Messages</h4>
                       <p className="text-sm text-gray-500">Voir vos messages</p>
                     </div>
                   </div>

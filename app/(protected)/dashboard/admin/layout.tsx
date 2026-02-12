@@ -1,5 +1,6 @@
 import { requireAdmin, checkUserStatus } from '@/lib/auth-guard';
 import AdminSidebar from '@/components/AdminSidebar';
+import { getThemeForSegment } from '@/lib/theme-mapping';
 
 export default async function AdminLayout({
   children,
@@ -10,9 +11,9 @@ export default async function AdminLayout({
   checkUserStatus(user);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className={`${getThemeForSegment('admin')} app-bg flex min-h-screen`}>
       <AdminSidebar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
     </div>
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { 
-  Users, 
-  ShoppingBag, 
-  Package, 
+import {
+  Users,
+  ShoppingBag,
+  Package,
   TrendingUp,
   DollarSign,
   FileText,
@@ -43,7 +43,7 @@ export default function AdminDashboardClient() {
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/admin/stats');
-        
+
         if (!response.ok) {
           // En cas d'erreur, initialiser avec des valeurs par défaut
           setStats({
@@ -60,14 +60,14 @@ export default function AdminDashboardClient() {
           setLoading(false);
           return;
         }
-        
+
         const data = await response.json();
-        
+
         // Vérifier que data.stats existe
         if (!data.stats) {
           throw new Error('Invalid response format');
         }
-        
+
         setStats(data.stats);
 
         // Format recent activities
@@ -215,44 +215,50 @@ export default function AdminDashboardClient() {
 
       {/* Chart and Activities */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-6">Activité de la plateforme</h3>
+        <div className="lg:col-span-2 bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-primary-500 rounded-full block" />
+            Activité de la plateforme
+          </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1F4DFF" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#1F4DFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 12 }} 
-                  dy={10} 
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
+                  dy={10}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: '#fff',
-                    border: '1px solid #e5e7eb',
+                    border: '1px solid #E5E7EB',
                     borderRadius: '8px',
+                    color: '#111827',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                   }}
+                  itemStyle={{ color: '#1F4DFF' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#10b981" 
-                  fillOpacity={1} 
-                  fill="url(#colorValue)" 
-                  strokeWidth={2} 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#1F4DFF"
+                  fillOpacity={1}
+                  fill="url(#colorValue)"
+                  strokeWidth={2}
                 />
               </AreaChart>
             </ResponsiveContainer>

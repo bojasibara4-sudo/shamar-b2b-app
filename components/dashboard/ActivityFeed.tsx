@@ -16,9 +16,9 @@ interface ActivityFeedProps {
 export default function ActivityFeed({ activities, emptyMessage = 'Aucune activité récente' }: ActivityFeedProps) {
   if (activities.length === 0) {
     return (
-      <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
-        <h3 className="text-lg font-black text-slate-900 mb-4">Activité récente</h3>
-        <p className="text-sm text-slate-500 text-center py-8 font-medium">{emptyMessage}</p>
+      <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Activité récente</h3>
+        <p className="text-sm text-gray-500 text-center py-8 font-medium">{emptyMessage}</p>
       </div>
     );
   }
@@ -45,20 +45,23 @@ export default function ActivityFeed({ activities, emptyMessage = 'Aucune activi
   };
 
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6">
-      <h3 className="text-lg font-black text-slate-900 mb-6">Activité récente</h3>
+    <div className="bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6">
+      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <span className="w-1 h-6 bg-primary-500 rounded-full block" />
+        Activité récente
+      </h3>
       <div className="space-y-4">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex gap-4 items-start pb-4 border-b border-slate-50 last:border-0 last:pb-0">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-black text-slate-600">
+          <div key={activity.id} className="flex gap-4 items-start pb-4 border-b border-gray-200 last:border-0 last:pb-0 group">
+            <div className="w-10 h-10 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0 text-primary-600">
+              <span className="text-xs font-bold">
                 {activity.userInitials || getInitials(activity.title)}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-900">{activity.title}</p>
-              <p className="text-xs text-slate-500 mt-0.5 font-medium">{activity.description}</p>
-              <p className="text-xs text-slate-400 mt-1 font-medium">{formatTime(activity.timestamp)}</p>
+              <p className="text-sm font-bold text-gray-900 transition-colors">{activity.title}</p>
+              <p className="text-xs text-gray-500 mt-0.5 font-medium">{activity.description}</p>
+              <p className="text-xs text-gray-400 mt-1 font-medium">{formatTime(activity.timestamp)}</p>
             </div>
           </div>
         ))}

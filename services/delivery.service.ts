@@ -1,45 +1,161 @@
 /**
  * Service de gestion des livraisons
- * PHASE 8 - Production Ready
+ * Version simplifiée - stable et fonctionnelle
  */
 
 import { createClient } from '@/lib/supabase/server';
 
-export type DeliveryMethod = 'standard' | 'express' | 'pickup';
-export type DeliveryStatus = 'pending' | 'shipped' | 'delivered' | 'disputed';
-
 export interface Delivery {
   id: string;
   order_id: string;
-  vendor_id: string;
   buyer_id: string;
-  method: DeliveryMethod;
-  cost: number;
-  currency: string;
-  status: DeliveryStatus;
-  tracking_code?: string;
-  shipping_address?: string;
-  estimated_delivery_date?: string;
-  actual_delivery_date?: string;
-  notes?: string;
+  seller_id?: string;
+  vendor_id?: string;
+  status: 'pending' | 'shipped' | 'delivered';
   created_at: string;
-  updated_at: string;
+  carrier_name?: string | null;
+  tracking_code?: string | null;
+  tracking_url?: string | null;
+  shipping_address?: string | null;
+  cost?: number | null;
+  currency?: string | null;
+  estimated_delivery_date?: string | null;
+  actual_delivery_date?: string | null;
+  notes?: string | null;
+  proof_photo_url?: string | null;
+  proof_signature_url?: string | null;
+  proof_qr_scan_at?: string | null;
 }
 
 /**
- * Calcule les frais de livraison
+ * Récupère les livraisons d'un acheteur
  */
-export function calculateDeliveryCost(
-  method: DeliveryMethod,
-  distance?: number
-): number {
-  const baseCosts = {
-    standard: 2000, // 2000 FCFA
-    express: 5000, // 5000 FCFA
-    pickup: 0,
-  };
+export async function getBuyerDeliveries(buyerId: string): Promise<Delivery[]> {
+  const supabase = await createClient();
 
-  return baseCosts[method] || 2000;
+  try {
+    const { data, error } = await (supabase as any)
+      .from('deliveries')
+      .select('*')
+      .eq('buyer_id', buyerId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return [];
+    }
+
+    return (data || []) as Delivery[];
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Récupère une livraison par ID
+ */
+export async function getDeliveryById(deliveryId: string): Promise<Delivery | null> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await (supabase as any)
+      .from('deliveries')
+      .select('*')
+      .eq('id', deliveryId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data as Delivery;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Met à jour le statut d'une livraison
+ */
+export async function updateDeliveryStatus(
+  deliveryId: string,
+  status: 'pending' | 'shipped' | 'delivered',
+  trackingCode?: string,
+  notes?: string,
+  carrierName?: string
+): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const updateData: Record<string, unknown> = { status };
+    
+    if (trackingCode) {
+      updateData.tracking_code = trackingCode;
+    }
+    if (notes) {
+      updateData.notes = notes;
+    }
+    if (carrierName) {
+      updateData.carrier_name = carrierName;
+    }
+    if (status === 'delivered') {
+      updateData.actual_delivery_date = new Date().toISOString().split('T')[0];
+    }
+
+    const { error } = await (supabase as any)
+      .from('deliveries')
+      .update(updateData)
+      .eq('id', deliveryId);
+
+    return !error;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Récupère une livraison par order_id
+ */
+export async function getDeliveryByOrderId(orderId: string): Promise<Delivery | null> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await (supabase as any)
+      .from('deliveries')
+      .select('*')
+      .eq('order_id', orderId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return data as Delivery;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Récupère les livraisons d'un vendeur
+ */
+export async function getVendorDeliveries(vendorId: string): Promise<Delivery[]> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await (supabase as any)
+      .from('deliveries')
+      .select('*')
+      .or(`vendor_id.eq.${vendorId},seller_id.eq.${vendorId}`)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return [];
+    }
+
+    return (data || []) as Delivery[];
+  } catch (error) {
+    return [];
+  }
 }
 
 /**
@@ -49,18 +165,18 @@ export async function createDelivery(
   orderId: string,
   vendorId: string,
   buyerId: string,
-  method: DeliveryMethod,
+  method: 'standard' | 'express' | 'pickup' = 'standard',
   shippingAddress?: string,
   currency: string = 'FCFA'
 ): Promise<Delivery | null> {
   const supabase = await createClient();
 
   try {
-    const cost = calculateDeliveryCost(method);
+    const cost = method === 'express' ? 5000 : method === 'pickup' ? 0 : 2000;
     const estimatedDate = new Date();
     estimatedDate.setDate(estimatedDate.getDate() + (method === 'express' ? 2 : 5));
 
-    const { data: delivery, error } = await (supabase as any)
+    const { data, error } = await (supabase as any)
       .from('deliveries')
       .insert({
         order_id: orderId,
@@ -77,126 +193,40 @@ export async function createDelivery(
       .single();
 
     if (error) {
-      console.error('Error creating delivery:', error);
       return null;
     }
 
-    return delivery as Delivery;
+    return data as Delivery;
   } catch (error) {
-    console.error('Error creating delivery:', error);
     return null;
   }
 }
 
 /**
- * Met à jour le statut d'une livraison
+ * Confirme la réception d'une livraison
  */
-export async function updateDeliveryStatus(
+export async function confirmDeliveryReceipt(
   deliveryId: string,
-  status: DeliveryStatus,
-  trackingCode?: string,
-  notes?: string
-): Promise<boolean> {
-  const supabase = await createClient();
-
-  try {
-    const updateData: any = {
-      status,
-      updated_at: new Date().toISOString(),
-    };
-
-    if (trackingCode) {
-      updateData.tracking_code = trackingCode;
-    }
-
-    if (notes) {
-      updateData.notes = notes;
-    }
-
-    if (status === 'delivered') {
-      updateData.actual_delivery_date = new Date().toISOString().split('T')[0];
-    }
-
-    const { error } = await (supabase as any)
-      .from('deliveries')
-      .update(updateData)
-      .eq('id', deliveryId);
-
-    if (error) {
-      console.error('Error updating delivery status:', error);
-      return false;
-    }
-
-    // Mettre à jour le statut de la commande si livrée
-    if (status === 'delivered') {
-      const { data: delivery } = await (supabase as any)
-        .from('deliveries')
-        .select('order_id')
-        .eq('id', deliveryId)
-        .single();
-
-      if (delivery) {
-        await (supabase as any)
-          .from('orders')
-          .update({ status: 'DELIVERED' })
-          .eq('id', delivery.order_id);
-      }
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Error updating delivery status:', error);
-    return false;
+  userId: string
+): Promise<{ ok: boolean; error?: string }> {
+  const delivery = await getDeliveryById(deliveryId);
+  
+  if (!delivery) {
+    return { ok: false, error: 'Livraison introuvable' };
   }
-}
-
-/**
- * Récupère une livraison par order_id
- */
-export async function getDeliveryByOrderId(orderId: string): Promise<Delivery | null> {
-  const supabase = await createClient();
-
-  try {
-    const { data: delivery, error } = await (supabase as any)
-      .from('deliveries')
-      .select('*')
-      .eq('order_id', orderId)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      console.error('Error getting delivery:', error);
-      return null;
-    }
-
-    return delivery as Delivery;
-  } catch (error) {
-    console.error('Error getting delivery:', error);
-    return null;
+  
+  if (delivery.buyer_id !== userId) {
+    return { ok: false, error: 'Accès refusé' };
   }
-}
-
-/**
- * Récupère les livraisons d'un vendeur
- */
-export async function getVendorDeliveries(vendorId: string): Promise<Delivery[]> {
-  const supabase = await createClient();
-
-  try {
-    const { data: deliveries, error } = await (supabase as any)
-      .from('deliveries')
-      .select('*')
-      .eq('vendor_id', vendorId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error getting vendor deliveries:', error);
-      return [];
-    }
-
-    return (deliveries || []) as Delivery[];
-  } catch (error) {
-    console.error('Error getting vendor deliveries:', error);
-    return [];
+  
+  if (delivery.status === 'delivered') {
+    return { ok: true };
   }
+
+  const okStatus = await updateDeliveryStatus(deliveryId, 'delivered');
+  if (!okStatus) {
+    return { ok: false, error: 'Erreur mise à jour livraison' };
+  }
+
+  return { ok: true };
 }

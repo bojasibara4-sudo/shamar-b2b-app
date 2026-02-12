@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { commissionsDB } from '@/lib/mock-data';
+import { getVendorTransactions } from '@/services/commission.service';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,9 +15,14 @@ export async function GET() {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const commissions = commissionsDB.getBySellerId(user.id);
-  const totalRevenue = commissionsDB.getTotalBySellerId(user.id);
+  const transactions = await getVendorTransactions(user.id);
+  const totalRevenue = transactions.reduce(
+    (sum: number, t: any) => sum + Number(t.amount || 0) - Number(t.commission_amount || 0),
+    0
+  );
 
-  return NextResponse.json({ commissions, totalRevenue });
+  return NextResponse.json({
+    commissions: transactions,
+    totalRevenue,
+  });
 }
-

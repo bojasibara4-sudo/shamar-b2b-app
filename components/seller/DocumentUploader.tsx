@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle2, XCircle, Clock } from 'lucide-react';
 
-export type DocumentType = 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre';
+export type DocumentType = 'rccm' | 'id_fiscal' | 'registre_commerce' | 'autre' | 'id_card' | 'passport' | 'selfie' | 'proof_of_address';
 
 interface Document {
   id: string;
@@ -24,6 +24,10 @@ const DOCUMENT_TYPES: Array<{ value: DocumentType; label: string; required: bool
   { value: 'rccm', label: 'RCCM (Registre de Commerce)', required: true },
   { value: 'id_fiscal', label: 'Identifiant Fiscal', required: true },
   { value: 'registre_commerce', label: 'Registre de Commerce', required: false },
+  { value: 'id_card', label: 'Carte d\'identité', required: false },
+  { value: 'passport', label: 'Passeport', required: false },
+  { value: 'selfie', label: 'Selfie / Reconnaissance faciale', required: false },
+  { value: 'proof_of_address', label: 'Justificatif d\'adresse', required: false },
   { value: 'autre', label: 'Autre document', required: false },
 ];
 

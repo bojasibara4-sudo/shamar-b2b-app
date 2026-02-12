@@ -2,14 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { User, Settings, LogOut, LayoutDashboard } from 'lucide-react';
+import type { AppRole } from '@/services/auth.service';
 
 interface UserMenuProps {
   user: {
     id: string;
     email: string;
-    role: 'admin' | 'seller' | 'buyer';
+    role: AppRole;
   };
 }
 
@@ -30,7 +31,6 @@ export default function UserMenu({ user }: UserMenuProps) {
   }, []);
 
   const handleLogout = async () => {
-    const supabase = createClient();
     await supabase.auth.signOut();
     router.push('/auth/login');
     router.refresh();
@@ -95,16 +95,7 @@ export default function UserMenu({ user }: UserMenuProps) {
             </a>
           )}
 
-          {user.role === 'admin' && (
-            <a
-              href="/dashboard/admin"
-              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="h-4 w-4" />
-              Administration
-            </a>
-          )}
+          {/* Admin : accès via /admin/login uniquement, pas de lien dans la nav publique */}
 
           <div className="border-t border-gray-100 mt-2 pt-2">
             <button

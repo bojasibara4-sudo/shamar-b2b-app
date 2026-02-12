@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
+import { isAdminLike } from '@/lib/owner-roles';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +9,7 @@ export async function GET() {
   try {
     const user = await getCurrentUser();
 
-    if (!user || user.role !== 'admin') {
+    if (!user || !isAdminLike(user.role)) {
       return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
     }
 

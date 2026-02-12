@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { productsDB } from '@/lib/mock-data';
+import {
+  getProductsForAdmin,
+  deleteProductById,
+} from '@/services/product.service';
+import { isAdminLike } from '@/lib/owner-roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +15,11 @@ export async function GET() {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
-  const products = productsDB.getAll();
+  const products = await getProductsForAdmin();
   return NextResponse.json({ products });
 }
 
@@ -26,7 +30,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  if (user.role !== 'admin') {
+  if (!isAdminLike(user.role)) {
     return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
   }
 
@@ -37,11 +41,13 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'ID requis' }, { status: 400 });
   }
 
-  const deleted = productsDB.delete(id);
-  if (!deleted) {
-    return NextResponse.json({ error: 'Produit non trouvé' }, { status: 404 });
+  const result = await deleteProductById(id);
+  if (!result.success) {
+    return NextResponse.json(
+      { error: result.error || 'Produit non trouvé' },
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({ success: true });
 }
-

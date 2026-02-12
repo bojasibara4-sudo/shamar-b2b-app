@@ -12,17 +12,17 @@ interface StatCardProps {
   variant?: 'default' | 'success' | 'warning' | 'danger';
 }
 
-export default function StatCard({ 
-  title, 
-  value, 
-  change, 
-  trend, 
+export default function StatCard({
+  title,
+  value,
+  change,
+  trend,
   icon,
   iconColor,
   link,
   variant = 'default'
 }: StatCardProps) {
-  const formattedValue = typeof value === 'number' 
+  const formattedValue = typeof value === 'number'
     ? value.toLocaleString('fr-FR')
     : value;
 
@@ -36,23 +36,21 @@ export default function StatCard({
   const iconBgColor = iconColor || variantColors[variant];
 
   const content = (
-    <div className={`bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 hover:shadow-xl transition-all ${link ? 'cursor-pointer' : ''}`}>
+    <div className={`bg-white rounded-shamar-lg border border-gray-200 shadow-shamar-soft p-6 hover:shadow-shamar-medium hover:border-primary-200 transition-all duration-200 group ${link ? 'cursor-pointer' : ''}`}>
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 rounded-xl ${iconBgColor}`}>
           {icon}
         </div>
         {change && trend && (
-          <div className={`flex items-center gap-1 text-sm font-medium ${
-            trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-600' : 'text-slate-600'
-          }`}>
+          <div className={`flex items-center gap-1 text-sm font-bold ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-500'}`}>
             {trend === 'up' && <TrendingUp size={16} />}
             {trend === 'down' && <TrendingDown size={16} />}
             {change}
           </div>
         )}
       </div>
-      <h3 className="text-slate-500 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-3xl font-black text-slate-900">{formattedValue}</p>
+      <h3 className="text-gray-500 text-sm font-medium mb-1">{title}</h3>
+      <p className="text-3xl font-bold text-gray-900 tracking-tight">{formattedValue}</p>
     </div>
   );
 

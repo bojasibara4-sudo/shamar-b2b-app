@@ -1,5 +1,5 @@
 -- ============================================
--- MIGRATION PHASE 6 - ONBOARDING VENDEUR
+-- MIGRATION PHASE 6 - ONBOARDING SELLER
 -- ============================================
 -- Complète les tables shops et documents pour l'onboarding complet
 -- À exécuter dans l'éditeur SQL de Supabase APRÈS supabase-metier-migration.sql
@@ -15,7 +15,7 @@ ALTER TABLE public.shops
   ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'pending', 'verified', 'suspended'));
 
 -- Mettre à jour seller_id depuis vendor_id si nécessaire
--- Note: seller_id est un alias pratique pour accéder rapidement au user_id depuis vendor
+-- Note: seller_id est un alias pratique pour accéder rapidement au user_id depuis seller/vendor
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shops' AND column_name = 'vendor_id') THEN
@@ -34,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_shops_status ON public.shops(status);
 UPDATE public.shops SET status = 'verified' WHERE is_verified = TRUE AND status = 'draft';
 
 -- ============================================
--- 2. COMPLÉTER TABLE DOCUMENTS (vendor_documents)
+-- 2. COMPLÉTER TABLE DOCUMENTS (seller_documents)
 -- ============================================
 
 -- Renommer la table documents en vendor_documents pour clarté (si nécessaire)
@@ -84,7 +84,7 @@ END $$;
 
 -- Supprimer les anciennes policies si elles existent (pour les recréer proprement)
 DROP POLICY IF EXISTS "Shops are viewable by everyone if verified" ON public.shops;
-DROP POLICY IF EXISTS "Vendors can view and manage their own shops" ON public.shops;
+DROP POLICY IF EXISTS "Sellers can view and manage their own shops" ON public.shops;
 
 -- Policy: Sellers peuvent voir et gérer leur propre boutique
 CREATE POLICY "Sellers can manage their own shop" ON public.shops
@@ -110,7 +110,7 @@ CREATE POLICY "Buyers can view verified shops" ON public.shops
 -- ============================================
 
 -- Supprimer les anciennes policies si elles existent
-DROP POLICY IF EXISTS "Vendors can view and upload their own documents" ON public.documents;
+DROP POLICY IF EXISTS "Sellers can view and upload their own documents" ON public.documents;
 DROP POLICY IF EXISTS "Admins can view and update all documents" ON public.documents;
 
 -- Policy: Sellers peuvent voir et uploader leurs documents
@@ -161,8 +161,8 @@ CREATE POLICY "Admins can manage all documents" ON public.documents
 -- 6. TRIGGER - MISE À JOUR STATUS VENDOR
 -- ============================================
 
--- Fonction pour mettre à jour automatiquement le status du vendor
--- Le vendor devient verified si:
+-- Fonction pour mettre à jour automatiquement le status du seller (vendor)
+-- Le seller devient verified si:
 -- - Sa boutique est verified
 -- - TOUS ses documents requis sont approved
 
@@ -199,7 +199,7 @@ BEGIN
   FROM public.documents
   WHERE vendor_id = v_vendor_id;
 
-  -- Mettre à jour le status du vendor
+  -- Mettre à jour le status du seller
   IF v_shop_verified AND v_documents_approved THEN
     UPDATE public.vendors
     SET status = 'verified', updated_at = NOW()
